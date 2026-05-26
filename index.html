@@ -3,21 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Avı PRO</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Kelime Avı Pro</title>
+    <style>
+        body { margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb') no-repeat center center fixed; background-size: cover; color: white; font-family: sans-serif; text-align: center; }
+        #app { background: rgba(0,0,0,0.7); padding: 20px; border-radius: 20px; width: 90%; max-width: 500px; }
+        #timer { font-size: 24px; color: #f1c40f; font-weight: bold; }
+        #soru { font-size: 20px; margin: 20px 0; min-height: 50px; }
+        #grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-bottom: 20px; }
+        .box { width: 45px; height: 45px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 20px; background: rgba(255,255,255,0.2); }
+        .box.filled { background: #f1c40f; color: black; border-color: #d35400; }
+        #keyboard { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
+        .key { padding: 12px 0; background: rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer; font-weight: bold; }
+        #joker { margin-top: 20px; padding: 10px 20px; border-radius: 20px; background: #27ae60; border: none; color: white; cursor: pointer; }
+    </style>
 </head>
 <body>
     <div id="app">
-        <div id="hud">
-            <div id="level-info">Bölüm: 1</div>
-            <div id="timer">07:00</div>
-        </div>
+        <div id="level-info">Bölüm: 1</div>
+        <div id="timer">07:00</div>
         <div id="soru">Soru yükleniyor...</div>
         <div id="grid"></div>
         <div id="keyboard"></div>
-        <button id="joker-btn" onclick="joker()">JOKER (Harf Al)</button>
+        <button id="joker" onclick="joker()">JOKER</button>
     </div>
-    <canvas id="fireworks"></canvas>
-    <script src="oyun.js"></script>
+
+    <script>
+        const sorular = [
+            { kelime: "İSTANBUL", ipucu: "Tarih: Osmanlı'nın başkenti" },
+            { kelime: "ANKARA", ipucu: "Tarih: Türkiye'nin başkenti" },
+            { kelime: "MATEMATİK", ipucu: "Mantık: Sayılar bilimi" }
+        ];
+        let currentLevel = 0, sure = 420;
+
+        function startGame() {
+            let q = sorular[currentLevel % sorular.length];
+            document.getElementById('level-info').innerText = "Bölüm: " + (currentLevel + 1);
+            document.getElementById('soru').innerText = q.ipucu;
+            let grid = document.getElementById('grid'); grid.innerHTML = '';
+            for(let i=0; i<q.kelime.length; i++) grid.innerHTML += `<div class="box"></div>`;
+        }
+
+        "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".split('').forEach(h => {
+            document.getElementById('keyboard').innerHTML += `<div class="key" onclick="harfGir('${h}')">${h}</div>`;
+        });
+
+        function harfGir(h) {
+            let boxes = document.querySelectorAll('.box');
+            for(let b of boxes) {
+                if(b.innerText === "") { b.innerText = h; b.classList.add('filled'); kontrolEt(); break; }
+            }
+        }
+
+        function kontrolEt() {
+            let tahmin = Array.from(document.querySelectorAll('.box')).map(b => b.innerText).join("");
+            if(tahmin === sorular[currentLevel % sorular.length].kelime) {
+                alert("Tebrikler!"); currentLevel++; startGame();
+            }
+        }
+
+        function joker() {
+            let q = sorular[currentLevel % sorular.length];
+            let boxes = document.querySelectorAll('.box');
+            for(let i=0; i<boxes.length; i++) {
+                if(boxes[i].innerText === "") { boxes[i].innerText = q.kelime[i]; boxes[i].classList.add('filled'); kontrolEt(); break; }
+            }
+        }
+
+        setInterval(() => {
+            sure--; let m = Math.floor(sure/60), s = sure%60;
+            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
+        }, 1000);
+
+        startGame();
+    </script>
 </body>
 </html>

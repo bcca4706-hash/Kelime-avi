@@ -2,28 +2,22 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <title>Sonsuz Kelime Avı</title>
-    <style>
-        body { margin: 0; background: url('https://picsum.photos/1920/1080?blur=5') no-repeat center fixed; background-size: cover; color: white; font-family: sans-serif; text-align: center; }
-        #app { background: rgba(0,0,0,0.6); min-height: 100vh; padding: 20px; }
-        #timer { font-size: 28px; font-weight: bold; color: #f1c40f; }
-        #soru { font-size: 22px; margin: 20px; min-height: 50px; text-shadow: 2px 2px 4px #000; }
-        #grid { display: flex; justify-content: center; gap: 10px; margin: 30px; }
-        .box { width: 50px; height: 50px; border-radius: 50%; border: 3px solid white; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(255,255,255,0.2); transition: 0.3s; }
-        .box.correct { background: #f1c40f; border-color: #d35400; color: black; }
-        #keyboard { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 450px; margin: 20px auto; }
-        .key { padding: 12px; background: rgba(255,255,255,0.3); border-radius: 10px; cursor: pointer; }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelime Avı PRO</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div id="app">
-        <div id="level-info">Bölüm: 1</div>
-        <div id="timer">07:00</div>
-        <div id="soru"></div>
+        <div id="hud">
+            <div id="level-info">Bölüm: 1</div>
+            <div id="timer">07:00</div>
+        </div>
+        <div id="soru">Soru yükleniyor...</div>
         <div id="grid"></div>
         <div id="keyboard"></div>
-        <button onclick="joker()" style="padding:10px 20px;">JOKER (Harf Al)</button>
+        <button id="joker-btn" onclick="joker()">JOKER (Harf Al)</button>
     </div>
+    <canvas id="fireworks"></canvas>
     <script src="oyun.js"></script>
 </body>
 </html>

@@ -1,29 +1,31 @@
-const kelimeler = ["ATA", "BAL", "CAM", "DİL", "ELİ", "FİL", "GÜL", "HAL", "IŞIK", "JEST"];
+const kelimeler = ["ATA", "BAL", "CAM", "DİL"];
 let currentLevel = 0;
-let skor = 0;
-let sure = 420; // 7 dakika = 420 saniye
 
 function startGame() {
+    let kelime = kelimeler[currentLevel];
     let grid = document.getElementById('grid');
     grid.innerHTML = '';
-    let secilenKelime = kelimeler[currentLevel];
-    
-    // Kutucukları oluştur
-    for(let harf of secilenKelime) {
-        grid.innerHTML += `<div class="letter-box">?</div>`;
+    for (let i = 0; i < kelime.length; i++) {
+        grid.innerHTML += `<input type="text" maxlength="1" class="letter-box" id="input-${i}">`;
     }
-    
-    // 7 dakikalık sayacı başlat
-    baslatSayaç();
 }
 
-function baslatSayaç() {
-    let timer = setInterval(() => {
-        sure--;
-        console.log("Kalan süre: " + sure);
-        if(sure <= 0) {
-            clearInterval(timer);
-            alert("Süre bitti! Oyun sona erdi.");
+function checkWord() {
+    let kelime = kelimeler[currentLevel];
+    let tahmin = "";
+    for (let i = 0; i < kelime.length; i++) {
+        tahmin += document.getElementById(`input-${i}`).value.toUpperCase();
+    }
+    
+    if (tahmin === kelime) {
+        alert("Tebrikler! Bir sonraki seviyeye geçiyorsun.");
+        currentLevel++;
+        if (currentLevel < kelimeler.length) {
+            startGame();
+        } else {
+            alert("Tüm bölümleri bitirdin!");
         }
-    }, 1000);
+    } else {
+        alert("Yanlış tahmin, tekrar dene!");
+    }
 }

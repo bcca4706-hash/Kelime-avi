@@ -2,23 +2,26 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kelime Avı</title>
     <style>
         body { background: #2c3e50; color: white; font-family: sans-serif; text-align: center; padding: 10px; }
         #timer { font-size: 20px; color: #f1c40f; margin: 10px 0; }
-        #soru { font-size: 18px; margin: 15px 0; font-style: italic; }
+        #soru { font-size: 18px; margin: 15px 0; font-style: italic; color: #ecf0f1; }
         #grid { display: flex; justify-content: center; gap: 5px; margin: 20px 0; }
-        .letter-box { width: 40px; height: 40px; text-align: center; font-size: 20px; text-transform: uppercase; border: none; }
+        .letter-box { width: 40px; height: 40px; text-align: center; font-size: 20px; text-transform: uppercase; border: none; border-radius: 4px; }
         #keyboard { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; max-width: 400px; margin: 20px auto; }
-        .key { padding: 10px; background: #34495e; border-radius: 5px; cursor: pointer; }
+        .key { padding: 10px; background: #34495e; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .key:active { background: #1abc9c; }
     </style>
 </head>
 <body>
     <h1>Kelime Avı</h1>
     <div id="timer">Kalan Süre: 07:00</div>
-    <div id="soru"></div>
+    <div id="soru">Bir soru seçmek için Başla'ya tıkla!</div>
     <div id="grid"></div>
     <div id="keyboard"></div>
+    <button onclick="startGame()">Oyunu Başlat</button>
 
     <script src="oyun.js"></script>
 </body>

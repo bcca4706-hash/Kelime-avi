@@ -2,108 +2,70 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelime Avı PRO</title>
+    <title>Oyun Portalı</title>
     <style>
-        body { margin: 0; background: url('https://images.unsplash.com/photo-1506744038136-46273834b3fb') center/cover fixed; color: white; font-family: 'Segoe UI', sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
-        #app { background: rgba(0,0,0,0.85); padding: 20px; border-radius: 20px; width: 95%; max-width: 400px; text-align: center; }
-        #hud { display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 15px; color: #f1c40f; }
-        #grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 20px 0; }
-        .box { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; font-size: 18px; background: rgba(255,255,255,0.1); }
-        .box.filled { background: #f1c40f; color: black; }
-        #keyboard { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; }
-        .key { padding: 10px 0; background: rgba(255,255,255,0.2); border-radius: 6px; cursor: pointer; font-weight: bold; }
-        .controls { margin-top: 20px; display: flex; justify-content: center; gap: 20px; align-items: center; }
-        #ampul { font-size: 30px; cursor: pointer; }
+        body { margin: 0; background: #2c3e50; color: white; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        #menu { padding: 20px; text-align: center; }
+        .game-screen { display: none; padding: 20px; text-align: center; width: 100%; max-width: 400px; }
+        .btn { padding: 15px 30px; margin: 10px; border-radius: 10px; border: none; background: #e74c3c; color: white; cursor: pointer; }
+        #grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 5px; margin: 20px 0; }
+        .box { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.1); }
+        .keyboard-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; }
     </style>
 </head>
 <body>
-    <div id="app">
-        <div id="hud">
-            <div id="hak">Hak: ❤️❤️❤️</div>
-            <div id="timer">00:00</div>
-        </div>
-        <div id="level-info">Bölüm: 1 | Joker: 0</div>
-        <div id="soru" style="min-height: 50px;"></div>
-        <div id="grid"></div>
-        <div id="keyboard"></div>
-        <div class="controls">
-            <span id="ampul" onclick="jokerKullan()">💡</span>
-            <button onclick="reklamIzle()" style="padding:10px; border-radius:10px;">Reklam İzle (+1 Joker)</button>
-        </div>
-    </div>
 
-    <script>
-        const sorular = [
-            { kelime: "EVLİYACELEBİ", ipucu: "17. yüzyıl gezgini" }, { kelime: "ARJANTİN", ipucu: "2022 Dünya Şampiyonu" },
-            { kelime: "SEYİTONBAŞI", ipucu: "215kg mermi kaldıran kahraman" }, { kelime: "UMRE", ipucu: "Hac dışı kutsal ziyaret" },
-            { kelime: "NEVŞEHİR", ipucu: "Peribacalarıyla ünlü il" }, { kelime: "JAPONYA", ipucu: "Atom bombası atılan ülke" },
-            { kelime: "KUM", ipucu: "Camın hammaddesi" }, { kelime: "MEVLANA", ipucu: "Mesnevi'nin yazarı" },
-            { kelime: "İMECE", ipucu: "El birliğiyle iş yapma" }, { kelime: "TEMA", ipucu: "Ağaçlandırma kuruluşu" }
-        ];
-        let currentLevel = 0, can = 3, jokerSayisi = 0, sure = 0, timerInt;
+<div id="menu">
+    <h1>Oyun Portalı</h1>
+    <button class="btn" onclick="showGame('kelime')">Kelime Avı</button>
+    <button class="btn" onclick="showGame('blok')">Blok Kırma</button>
+    <button class="btn" onclick="showGame('puzzle')">Parça Yerleştir</button>
+</div>
 
-        function startGame() {
-            let q = sorular[currentLevel % sorular.length];
-            document.getElementById('level-info').innerText = `Bölüm: ${currentLevel + 1} | Joker: ${jokerSayisi}`;
-            document.getElementById('soru').innerText = q.ipucu;
-            sure = q.kelime.length * 15; // Kutu başına 15 saniye
-            
-            let grid = document.getElementById('grid'); grid.innerHTML = '';
-            for(let i=0; i<q.kelime.length; i++) grid.innerHTML += `<div class="box"></div>`;
-            
-            clearInterval(timerInt);
-            timerInt = setInterval(updateTimer, 1000);
-        }
+<!-- Kelime Avı -->
+<div id="game-kelime" class="game-screen">
+    <h2>Kelime Avı</h2>
+    <div id="soru"></div>
+    <div id="grid"></div>
+    <div id="keyboard"></div>
+    <button onclick="pauseGame()">Duraklat</button>
+    <button onclick="nextLevel()">Sonraki</button>
+</div>
 
-        function updateTimer() {
-            sure--;
-            let m = Math.floor(sure/60), s = sure%60;
-            document.getElementById('timer').innerText = `${m}:${s < 10 ? '0'+s : s}`;
-            if(sure <= 0) { 
-                clearInterval(timerInt); 
-                can--; 
-                document.getElementById('hak').innerText = "Hak: " + "❤️".repeat(can);
-                if(can > 0) alert("Süre bitti! Yeni hakla devam et."); else alert("Oyun bitti!");
-                startGame();
-            }
-        }
+<script>
+    let state = { current: 'menu', kelimeLevel: 0, blokSkor: 0, puzzleSkor: 0 };
+    
+    // Ses Efekti Tanımı
+    const clickSound = new Audio('https://www.soundjay.com/buttons/sounds/button-1.mp3');
 
-        function harfGir(h) {
-            let boxes = document.querySelectorAll('.box');
-            for(let b of boxes) {
-                if(b.innerText === "") { b.innerText = h; b.classList.add('filled'); kontrolEt(); break; }
-            }
-        }
+    function showGame(game) {
+        clickSound.play();
+        document.getElementById('menu').style.display = 'none';
+        document.querySelectorAll('.game-screen').forEach(s => s.style.display = 'none');
+        document.getElementById('game-' + game).style.display = 'block';
+        state.current = game;
+    }
 
-        function kontrolEt() {
-            let tahmin = Array.from(document.querySelectorAll('.box')).map(b => b.innerText).join("");
-            if(tahmin === sorular[currentLevel % sorular.length].kelime) {
-                jokerSayisi++; // Her bölüm geçişte +1 Joker
-                currentLevel++; startGame();
-            }
-        }
+    function pauseGame() { alert("Oyun Duraklatıldı!"); }
 
-        function jokerKullan() {
-            if(jokerSayisi > 0) {
-                let q = sorular[currentLevel % sorular.length];
-                let boxes = document.querySelectorAll('.box');
-                for(let i=0; i<boxes.length; i++) {
-                    if(boxes[i].innerText === "") { boxes[i].innerText = q.kelime[i]; boxes[i].classList.add('filled'); jokerSayisi--; startGame(); break; }
-                }
-            } else { alert("Yetersiz Joker! Reklam izleyerek kazanabilirsin."); }
-        }
+    function nextLevel() { state.kelimeLevel++; alert("Yeni soruya geçildi!"); }
 
-        function reklamIzle() {
-            alert("Reklam izlendi, 1 Joker kazandın!");
-            jokerSayisi++; startGame();
-        }
-
-        "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".split('').forEach(h => {
-            document.getElementById('keyboard').innerHTML += `<div class="key" onclick="harfGir('${h}')">${h}</div>`;
+    // Klavye Düzeni (2 Sıra)
+    const row1 = "ABCÇDEFGĞHIİJ".split("");
+    const row2 = "KLMNOÖPRSŞTUÜVYZ".split("");
+    
+    function createKeyboard() {
+        const kb = document.getElementById('keyboard');
+        [row1, row2].forEach(row => {
+            let div = document.createElement('div'); div.className = 'keyboard-row';
+            row.forEach(h => {
+                div.innerHTML += `<div class="box" onclick="clickSound.play()">${h}</div>`;
+            });
+            kb.appendChild(div);
         });
+    }
 
-        startGame();
-    </script>
+    createKeyboard();
+</script>
 </body>
 </html>

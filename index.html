@@ -4,203 +4,227 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Mega Oyun Portalı</title>
+<!-- PWA: telefona uygulama gibi kurulabilir + çevrimdışı çalışır -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2a1f63">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Oyun Portalı">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" href="icon-192.png">
 <style>
-  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
+  html, body { margin: 0; height: 100%; }
   body {
-    margin: 0;
-    background: linear-gradient(160deg, #1a1a2e 0%, #16213e 100%);
-    color: white;
-    font-family: -apple-system, "Segoe UI", sans-serif;
+    color: #fff;
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
     text-align: center;
     min-height: 100vh;
     overflow-x: hidden;
+    position: relative;
+    background: #16213e;
   }
-  .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; }
-  .active { display: block; animation: fade .25s ease; }
-  @keyframes fade { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; } }
+  /* DUVAR KAĞIDI KATMANLARI */
+  #bg-a, #bg-b {
+    position: fixed; inset: 0; z-index: -2;
+    background-size: cover; background-position: center;
+    transition: opacity 1.1s ease;
+  }
+  #bg-b { opacity: 0; }
+  #bg-overlay { position: fixed; inset: 0; z-index: -1; background: rgba(10,12,30,.55); }
 
-  h1 { font-size: 2em; margin-top: 30px; letter-spacing: 1px; }
+  .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+  .active { display: block; animation: fade .3s ease; }
+  @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
+
+  h1 { font-size: 2em; margin-top: 26px; letter-spacing: 1px; text-shadow: 0 2px 12px rgba(0,0,0,.5); }
   h2 { margin: 10px 0 16px; }
 
   .btn {
-    display: block;
-    width: 100%;
-    max-width: 320px;
-    margin: 12px auto;
-    padding: 16px 24px;
-    border-radius: 16px;
-    border: none;
+    display: block; width: 100%; max-width: 320px; margin: 12px auto;
+    padding: 16px 24px; border-radius: 16px; border: none;
     background: linear-gradient(135deg, #e94560, #b3304a);
-    color: white;
-    font-weight: 700;
-    font-size: 1.05em;
-    cursor: pointer;
-    transition: transform .1s, box-shadow .2s;
-    box-shadow: 0 4px 14px rgba(233,69,96,.35);
+    color: #fff; font-weight: 700; font-size: 1.05em; cursor: pointer;
+    transition: transform .1s, box-shadow .2s; box-shadow: 0 4px 14px rgba(233,69,96,.4);
   }
   .btn:active { transform: scale(.97); }
-  .btn.alt { background: linear-gradient(135deg, #0f3460, #16548a); box-shadow: 0 4px 14px rgba(22,84,138,.35); }
+  .btn.alt { background: linear-gradient(135deg, #0f3460, #16548a); box-shadow: 0 4px 14px rgba(22,84,138,.4); }
   .btn.small { display: inline-block; width: auto; padding: 10px 20px; font-size: .9em; margin: 6px; }
 
   .card {
-    background: rgba(255,255,255,.06);
-    border-radius: 18px;
-    padding: 18px;
-    margin: 12px 0;
-    border: 1px solid rgba(255,255,255,.08);
+    background: rgba(255,255,255,.08); backdrop-filter: blur(6px);
+    border-radius: 18px; padding: 18px; margin: 12px 0;
+    border: 1px solid rgba(255,255,255,.12); cursor: pointer;
+    transition: transform .12s, background .2s;
   }
+  .card:active { transform: scale(.98); background: rgba(255,255,255,.14); }
   .menu-icon { font-size: 2.4em; display: block; margin-bottom: 4px; }
 
   .hud {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: rgba(0,0,0,.25);
-    padding: 10px 16px;
-    border-radius: 14px;
-    margin-bottom: 14px;
-    font-weight: 600;
-    font-size: .95em;
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,.35); backdrop-filter: blur(4px);
+    padding: 10px 16px; border-radius: 14px; margin-bottom: 12px;
+    font-weight: 600; font-size: .95em;
+  }
+  .topbar { display: flex; justify-content: flex-end; gap: 8px; max-width: 480px; margin: 6px auto 0; padding: 0 16px; }
+  .icon-btn {
+    background: rgba(255,255,255,.12); border: none; color: #fff;
+    width: 40px; height: 40px; border-radius: 12px; font-size: 1.1em; cursor: pointer;
+  }
+  .icon-btn:active { background: rgba(255,255,255,.25); }
+
+  .badge {
+    display: inline-block; padding: 4px 12px; border-radius: 20px;
+    font-size: .8em; font-weight: 700; margin-bottom: 6px;
+    background: rgba(255,255,255,.2); text-transform: uppercase; letter-spacing: .5px;
   }
 
-  /* Kelime Avı */
-  #grid { margin: 14px 0; }
-  #soru { font-size: 1.1em; min-height: 44px; display: flex; align-items: center; justify-content: center; padding: 8px; }
-  .box {
-    width: 32px; height: 42px;
-    border-radius: 8px;
-    border: 2px solid rgba(255,255,255,.35);
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    margin: 2px;
-    background: rgba(255,255,255,.08);
-    font-weight: 700;
-    font-size: 1.05em;
-    vertical-align: middle;
-  }
-  .box.filled { background: #f1c40f; color: #1a1a2e; border-color: #f1c40f; }
-  .box.correct { background: #2ecc71; color: white; border-color: #2ecc71; }
-  .box.wrong { background: #e74c3c; color: white; border-color: #e74c3c; animation: shake .3s; }
+  /* Kelime Avı — Crossword ızgara (mor + sarı neşeli tema) */
+  #soru { font-size: 1.05em; min-height: 38px; display: flex; align-items: center; justify-content: center; padding: 6px; text-shadow: 0 1px 6px rgba(0,0,0,.6); font-weight: 600; }
+  #grid-wrap { margin: 8px auto; padding: 10px; border-radius: 16px; width: fit-content;
+    background: linear-gradient(160deg, #3b2a8c, #2a1f63); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+  #grid { display: grid; gap: 4px; }
+  .gc { border-radius: 7px; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; transition: transform .15s, background .15s; }
+  .gc.empty { background: transparent; }
+  .gc.slot { background: #efe6ff; border: 1px solid #d6c4ff; color: #3b2a8c; box-shadow: inset 0 -3px 0 rgba(120,90,200,.25); }
+  .gc.hint { background: #d9ccf5; color: #6a5aa8; box-shadow: inset 0 -3px 0 rgba(120,90,200,.3); } /* önceden açık ipucu harfi */
+  .gc.fill { background: linear-gradient(160deg,#ffd84d,#f7b500); color: #4a2e00;
+    box-shadow: 0 4px 0 #c98a00, 0 6px 10px rgba(0,0,0,.3); transform: translateY(-1px); } /* yerleştirilmiş sarı harf */
+  .gc.active { outline: 3px solid #ffe46b; outline-offset: 1px; }
+  .gc.done { background: linear-gradient(160deg,#5ee06a,#2ec44f); color: #fff; box-shadow: 0 4px 0 #1f9b3a; }
+  .gc.pop { animation: pop .2s; }
+  .gc.shake { animation: shake .3s; }
+  @keyframes pop { 0%{transform:scale(.6)} 100%{transform:scale(1)} }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
 
+  /* QWERTY klavye (görseldeki mor klavye) */
+  #keyboard { margin: 10px auto; max-width: 440px; padding: 8px 4px;
+    background: linear-gradient(160deg,#4a3a9e,#372a7d); border-radius: 14px; }
+  .keyboard-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; }
   .key {
-    min-width: 28px; height: 42px;
-    border-radius: 7px;
-    border: none;
-    background: rgba(255,255,255,.14);
-    color: white;
-    font-weight: 700;
-    font-size: .95em;
-    cursor: pointer;
-    flex: 1;
+    min-width: 26px; height: 46px; border-radius: 8px; border: none;
+    background: linear-gradient(160deg,#6a5acd,#5546b5); color: #fff; font-weight: 800;
+    font-size: .95em; cursor: pointer; flex: 1; box-shadow: 0 3px 0 #3d2f8a; transition: transform .05s;
   }
-  .key:active { background: rgba(255,255,255,.3); }
-  .keyboard-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 5px; }
-  #keyboard { margin: 10px auto; max-width: 380px; }
+  .key:active { transform: translateY(2px); box-shadow: 0 1px 0 #3d2f8a; }
+  .key.sil { flex: 1.4; background: linear-gradient(160deg,#f7b500,#d99500); box-shadow: 0 3px 0 #a86f00; }
 
-  .joker-bar { display: flex; justify-content: center; gap: 14px; margin: 8px 0; }
+  .joker-bar { display: flex; justify-content: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
   .joker {
-    font-size: 1.4em; cursor: pointer;
-    background: rgba(255,255,255,.1);
-    border-radius: 12px; padding: 6px 14px;
-    border: 1px solid rgba(255,255,255,.15);
+    font-size: 1em; cursor: pointer; background: rgba(255,255,255,.14);
+    border-radius: 12px; padding: 8px 14px; border: 1px solid rgba(255,255,255,.2);
+    display: flex; align-items: center; gap: 6px; font-weight: 600;
   }
-  .joker:active { background: rgba(255,255,255,.25); }
+  .joker:active { background: rgba(255,255,255,.3); }
 
-  canvas { background: #0b0b16; display: block; margin: 0 auto; border-radius: 12px; touch-action: none; max-width: 100%; }
 
-  /* Puzzle */
-  #p-board { display: grid; gap: 3px; justify-content: center; margin: 12px auto; }
-  .cell { width: 30px; height: 30px; border-radius: 6px; background: rgba(255,255,255,.07); }
-  .cell.filled { box-shadow: inset 0 0 0 2px rgba(255,255,255,.25); }
-  #p-pieces { display: flex; justify-content: center; gap: 16px; margin: 16px 0; min-height: 100px; align-items: center; flex-wrap: wrap; }
-  .piece { display: grid; gap: 2px; cursor: grab; padding: 4px; touch-action: none; }
-  .pcell { width: 22px; height: 22px; border-radius: 5px; }
-  .piece.dragging { opacity: .4; }
+  /* DÜZELTME #1: canvas artık JS ile ekran genişliğine göre boyutlanıyor.
+     max-width yerine width:100% verip iç çözünürlüğü JS'te eşitliyoruz ki
+     bloklar dar telefonlarda taşmasın / oturmasın. */
+  canvas { background: rgba(8,8,22,.75); display: block; margin: 0 auto; border-radius: 12px; touch-action: none; width: 100%; max-width: 360px; }
+
+  /* Puzzle (Block Puzzle - canvas tabanlı, 3D kabartmalı bloklar) */
+  #p-board { display: block; margin: 14px auto 6px; touch-action: none; border-radius: 14px; max-width: 380px; width: 92%; }
+  #p-tray { display: block; margin: 6px auto; touch-action: none; max-width: 380px; width: 92%; }
 
   .toast {
-    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-    background: rgba(0,0,0,.85); padding: 12px 22px; border-radius: 30px;
-    font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100;
-    max-width: 90%;
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+    background: rgba(0,0,0,.88); padding: 12px 22px; border-radius: 30px;
+    font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100; max-width: 90%;
   }
   .toast.show { opacity: 1; }
-
-  .loader { margin-top: 40px; opacity: .7; }
+  .loader { margin-top: 40px; opacity: .8; }
 </style>
 </head>
 <body>
 
+<div id="bg-a"></div>
+<div id="bg-b"></div>
+<div id="bg-overlay"></div>
+
+<div class="topbar">
+  <button class="icon-btn" id="sound-btn" onclick="toggleSound()" title="Ses">🔊</button>
+</div>
+
 <!-- ANA MENÜ -->
 <div id="menu" class="screen active">
   <h1>🎮 Oyun Merkezi</h1>
-  <div class="card" onclick="showGame('kelime')" style="cursor:pointer">
+  <div class="card" onclick="showGame('kelime')">
     <span class="menu-icon">🔤</span>
     <strong>Kelime Avı</strong>
-    <div style="opacity:.7;font-size:.85em;margin-top:4px">100 kelime · Bölüm bölüm ilerle</div>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">100+ kelime · Kategorili bölümler</div>
   </div>
-  <div class="card" onclick="showGame('blok')" style="cursor:pointer">
+  <div class="card" onclick="showGame('blok')">
     <span class="menu-icon">🧱</span>
     <strong>Blok Kırıcı</strong>
-    <div style="opacity:.7;font-size:.85em;margin-top:4px">Topu kaçırma, blokları kır</div>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Güçlendiriciler · Sağlam bloklar</div>
   </div>
-  <div class="card" onclick="showGame('puzzle')" style="cursor:pointer">
+  <div class="card" onclick="showGame('puzzle')">
     <span class="menu-icon">🧩</span>
     <strong>Blok Yerleştir</strong>
-    <div style="opacity:.7;font-size:.85em;margin-top:4px">Satır ve sütunları doldur</div>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Döndür · Geri al · Kombo</div>
   </div>
+  <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 2.0 · 3 oyun</div>
 </div>
 
-<!-- KELİME AVI -->
+<!-- KELİME AVI (Crossword) -->
 <div id="game-kelime" class="screen">
   <div class="hud">
-    <span>Hak: <span id="hak">❤️❤️❤️</span></span>
-    <span>Bölüm: <span id="level">1</span>/100</span>
-    <span>⏱ <span id="timer">00:00</span></span>
+    <span>💡 <span id="kel-ipucu">3</span></span>
+    <span>Bölüm <span id="level">1</span></span>
+    <span>👑 <span id="kel-best">0</span></span>
   </div>
-  <div style="opacity:.8">Puan: <strong id="kel-skor">0</strong></div>
+  <div style="opacity:.85">Puan: <strong id="kel-skor">0</strong> · Kalan kelime: <strong id="kel-kalan">0</strong></div>
   <div id="kel-loader" class="loader">Sorular yükleniyor…</div>
   <div id="kel-content" style="display:none">
-    <div id="soru"></div>
-    <div id="grid"></div>
+    <div id="soru">Bir kelimeye dokun ve yaz</div>
+    <div id="grid-wrap"><div id="grid"></div></div>
     <div class="joker-bar">
-      <span class="joker" onclick="jokerHarf()">💡 <span id="joker-count">3</span></span>
-      <span class="joker" onclick="harfSil()">⌫</span>
+      <span class="joker" onclick="kelJokerHarfKullan()">💡 Harf Aç</span>
+      <span class="joker" onclick="kelSonraki()">⏭️ Sonraki Kelime</span>
     </div>
     <div id="keyboard"></div>
   </div>
   <button class="btn alt small" onclick="showGame('menu')">🏠 Ana Menü</button>
 </div>
 
-<!-- BLOK KIRICI -->
+<!-- BLOK KIRICI (Top Sürüsü) -->
 <div id="game-blok" class="screen">
   <div class="hud">
-    <span>Can: <span id="blok-can">3</span></span>
+    <span>Tur: <span id="blok-tur">1</span></span>
     <span>Skor: <span id="blok-skor">0</span></span>
-    <span>Bölüm: <span id="blok-level">1</span></span>
+    <span>Top: <span id="blok-topsayi">1</span></span>
   </div>
-  <canvas id="c1" width="320" height="440"></canvas>
+  <canvas id="c1" width="320" height="540"></canvas>
   <div style="margin-top:12px">
-    <button class="btn alt small" onclick="blokBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" id="blok-stop-btn" onclick="blokDuraklat()">⏸️ Durdur</button>
+    <button class="btn small" id="blok-atis-btn" onclick="blokEkstraAtis()">⚡ Ekstra Atış (<span id="blok-atis-sayi">3</span>)</button>
+  </div>
+  <div style="margin-top:6px">
+    <button class="btn alt small" onclick="blokYeniOyun()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.6;font-size:.8em;margin-top:6px">Raketi parmağınla / fareyle hareket ettir</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Alttan parmağınla nişan al ve bırak · Toplar blokları kırar · ⭕ topları topla</div>
 </div>
 
-<!-- BLOK YERLEŞTİR -->
+<!-- BLOK YERLEŞTİR (Block Puzzle) -->
 <div id="game-puzzle" class="screen">
   <div class="hud">
-    <span>Skor: <span id="p-skor">0</span></span>
-    <span>En İyi: <span id="p-best">0</span></span>
+    <span>👑 <span id="p-best">0</span></span>
+    <span style="font-size:1.4em;font-weight:800"><span id="p-skor">0</span></span>
+    <span>Kombo: <span id="p-kombo">0</span></span>
   </div>
-  <div id="p-board"></div>
-  <div id="p-pieces"></div>
+  <canvas id="p-board" width="360" height="360"></canvas>
+  <canvas id="p-tray" width="360" height="120"></canvas>
   <div>
+    <button class="btn alt small" onclick="puzzleGeriAl()">↩️ Geri Al</button>
     <button class="btn alt small" onclick="puzzleBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.6;font-size:.8em;margin-top:6px">Parçaları sürükleyip tahtaya bırak</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parçayı sürükleyip tahtaya bırak · Satır/sütun doldur, patlat!</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -214,481 +238,947 @@ function toast(msg) {
   clearTimeout(window._toast);
   window._toast = setTimeout(() => t.classList.remove('show'), 1600);
 }
+function load(key, def) {
+  try { const v = localStorage.getItem(key); return v === null ? def : JSON.parse(v); }
+  catch (e) { return def; }
+}
+function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+/* ---- SES (WebAudio, dosyasız) ---- */
+let sesAcik = load('ses', true);
+let audioCtx = null;
+function ses(freq, dur = 0.1, type = 'sine', vol = 0.15) {
+  if (!sesAcik) return;
+  try {
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+    o.type = type; o.frequency.value = freq;
+    g.gain.value = vol;
+    o.connect(g); g.connect(audioCtx.destination);
+    o.start();
+    g.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + dur);
+    o.stop(audioCtx.currentTime + dur);
+  } catch (e) {}
+}
+const sfx = {
+  tik: () => ses(440, 0.05, 'square', 0.08),
+  dogru: () => { ses(523, 0.1); setTimeout(() => ses(659, 0.1), 90); setTimeout(() => ses(784, 0.18), 180); },
+  yanlis: () => ses(160, 0.25, 'sawtooth', 0.12),
+  carp: () => ses(300, 0.05, 'square', 0.1),
+  kazan: () => { [523,587,659,784].forEach((f,i) => setTimeout(() => ses(f, 0.12), i * 80)); },
+  guc: () => ses(880, 0.15, 'triangle', 0.13),
+};
+function toggleSound() {
+  sesAcik = !sesAcik; save('ses', sesAcik);
+  document.getElementById('sound-btn').innerText = sesAcik ? '🔊' : '🔇';
+  if (sesAcik) sfx.tik();
+}
+document.getElementById('sound-btn').innerText = sesAcik ? '🔊' : '🔇';
+
+/* ---- DUVAR KAĞIDI GEÇİŞİ ---- */
+const DUVAR = {
+  meyve:     'linear-gradient(135deg,#ff7e5f,#feb47b)',
+  hayvan:    'linear-gradient(135deg,#134e5e,#71b280)',
+  sehir:     'linear-gradient(135deg,#0f0c29,#302b63,#24243e)',
+  doga:      'linear-gradient(135deg,#2980b9,#6dd5fa)',
+  yemek:     'linear-gradient(135deg,#c31432,#240b36)',
+  teknoloji: 'linear-gradient(135deg,#000428,#004e92)',
+  meslek:    'linear-gradient(135deg,#4b6cb7,#182848)',
+  spor:      'linear-gradient(135deg,#11998e,#38ef7d)',
+  muzik:     'linear-gradient(135deg,#8e2de2,#4a00e0)',
+  yapi:      'linear-gradient(135deg,#603813,#b29f94)',
+  varsayilan:'linear-gradient(160deg,#1a1a2e,#16213e)'
+};
+let aktifBg = 'a';
+function setDuvar(kategori) {
+  const grad = DUVAR[kategori] || DUVAR.varsayilan;
+  const gizli = aktifBg === 'a' ? document.getElementById('bg-b') : document.getElementById('bg-a');
+  const gorunen = aktifBg === 'a' ? document.getElementById('bg-a') : document.getElementById('bg-b');
+  gizli.style.background = grad;
+  gizli.style.opacity = '1';
+  gorunen.style.opacity = '0';
+  aktifBg = aktifBg === 'a' ? 'b' : 'a';
+}
+document.getElementById('bg-a').style.background = DUVAR.varsayilan;
 
 function showGame(g) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(g === 'menu' ? 'menu' : 'game-' + g).classList.add('active');
   clearInterval(window.kelTimer);
   cancelAnimationFrame(window.blokAnim);
-  if (g === 'kelime') initKelime();
-  if (g === 'blok') blokBaslat();
-  if (g === 'puzzle') puzzleBaslat();
+  if (g === 'menu') setDuvar('varsayilan');
+  if (g === 'kelime') requestAnimationFrame(() => initKelime());
+  // DÜZELTME #1c: Ekran 'active' olup gerçekten çizildikten SONRA kuruyoruz ki
+  // canvas.clientWidth 0 gelmesin (display:none iken genişlik 0 olur).
+  if (g === 'blok') { setDuvar('teknoloji'); requestAnimationFrame(() => blokYeniOyun()); }
+  if (g === 'puzzle') { setDuvar('muzik'); requestAnimationFrame(() => puzzleBaslat()); }
 }
 
-function load(key, def) {
-  try { const v = localStorage.getItem(key); return v === null ? def : JSON.parse(v); }
-  catch (e) { return def; }
-}
-function save(key, val) {
-  try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {}
-}
+// Telefon döndürülünce / pencere boyutu değişince aktif blok oyununu yeniden başlat
+window.addEventListener('resize', () => {
+  if (document.getElementById('game-blok').classList.contains('active')) {
+    cancelAnimationFrame(window.blokAnim);
+    requestAnimationFrame(() => blokYeniOyun());
+  }
+  if (document.getElementById('game-puzzle').classList.contains('active') && pBoard) {
+    requestAnimationFrame(() => { pBoyutla(); pCizTahta(); pCizTepsi(); });
+  }
+  if (document.getElementById('game-kelime').classList.contains('active') && kelIzgara) {
+    requestAnimationFrame(() => cizIzgara());
+  }
+});
 
-/* ============ KELİME AVI ============ */
-// Yedek havuz (sorular.json yüklenemezse kullanılır - örn. file:// ile açılırsa)
-const YEDEK_KELIMELER = [
-  { kelime: "ELMA", ipucu: "Newton'un kafasına düşen meyve" },
-  { kelime: "ANKARA", ipucu: "Türkiye'nin başkenti" },
-  { kelime: "DENİZ", ipucu: "Tuzlu büyük su kütlesi" },
-  { kelime: "KİTAP", ipucu: "Sayfalardan oluşan okuma materyali" },
-  { kelime: "GÜNEŞ", ipucu: "Gündüz gökyüzünü aydınlatır" }
+/* ============ KELİME AVI — CROSSWORD (ızgara, kesişen kelimeler) ============ */
+/* JSON'daki kelime havuzundan her bölümde otomatik bir ızgara üretir; kelimeler
+   ortak harfler üzerinden kesişir. Bir kelimeye dokunup QWERTY klavyeden doldurursun.
+   Tamamlanınca yeşile döner. Tüm kelimeler bitince bölüm tamam. Mor+sarı tema. */
+
+const YEDEK = [
+  { kelime: "ELMA", ipucu: "Newton'un kafasına düşen meyve", kategori: "meyve" },
+  { kelime: "ARMUT", ipucu: "Ampul şeklinde tatlı meyve", kategori: "meyve" },
+  { kelime: "KEDI", ipucu: "Miyavlayan evcil hayvan", kategori: "hayvan" },
+  { kelime: "ASLAN", ipucu: "Ormanların kralı", kategori: "hayvan" },
+  { kelime: "ANKARA", ipucu: "Türkiye'nin başkenti", kategori: "sehir" },
+  { kelime: "DENIZ", ipucu: "Tuzlu büyük su kütlesi", kategori: "doga" },
+  { kelime: "GITAR", ipucu: "Telli müzik aleti", kategori: "muzik" },
+  { kelime: "EKMEK", ipucu: "Undan yapılan temel besin", kategori: "yemek" },
+  { kelime: "KALEM", ipucu: "Yazı yazmak için kullanılır", kategori: "yapi" },
+  { kelime: "MASA", ipucu: "Üzerinde yemek yenen mobilya", kategori: "yapi" }
 ];
 
-let KELIMELER = [];
-let kelLoaded = false;
-let kelLevel = load('kel_level', 0);   // ulaşılan en yüksek bölüm (index)
-let kelCan = 3, kelSure = 0, kelJoker = 3, kelSkor = load('kel_skor', 0), kelCevap = "";
+let KELIMELER = [], kelLoaded = false;
+let kelBolum = load('kel_bolum', 0);
+let kelSkor = 0, kelBest = load('kel_best', 0), kelJoker = 3;
+let kelIzgara = null;     // { satir, sutun, hucreler:[[..]], kelimeler:[{...}] }
+let kelAktif = null;      // aktif kelime objesi
+let kelYazPos = 0;        // aktif kelimede yazılacak sonraki harf indexi
+
+const TR_BUYUK = s => s.toLocaleUpperCase('tr-TR');
 
 async function initKelime() {
-  document.getElementById('kel-skor').innerText = kelSkor;
-  if (kelLoaded) { startKelime(); return; }
-
+  document.getElementById('kel-best').innerText = kelBest;
+  if (kelLoaded) { kelBolumKur(); return; }
   document.getElementById('kel-loader').style.display = 'block';
   document.getElementById('kel-content').style.display = 'none';
-
   try {
     const res = await fetch('sorular.json', { cache: 'no-store' });
-    if (!res.ok) throw new Error('fetch failed');
+    if (!res.ok) throw 0;
     const data = await res.json();
     KELIMELER = (data.kelimeler || data).filter(k => k.kelime && k.ipucu);
-    if (!KELIMELER.length) throw new Error('empty');
+    if (!KELIMELER.length) throw 0;
   } catch (e) {
-    KELIMELER = YEDEK_KELIMELER;
-    toast("⚠️ sorular.json yüklenemedi, yedek havuz kullanılıyor");
+    KELIMELER = YEDEK;
+    toast("⚠️ sorular.json yüklenemedi, yedek havuz aktif");
   }
-
   kelLoaded = true;
   document.getElementById('kel-loader').style.display = 'none';
   document.getElementById('kel-content').style.display = 'block';
-  startKelime();
+  kelBolumKur();
 }
 
-function startKelime() {
-  if (kelCan <= 0) { kelCan = 3; kelJoker = 3; }
-  if (kelLevel >= KELIMELER.length) {
-    toast("🏆 Tüm bölümleri bitirdin! Baştan başlıyoruz.");
-    kelLevel = 0;
-    save('kel_level', 0);
-  }
+/* ---- IZGARA ÜRETİCİ ----
+   Rastgele kelimeler seçip ilkini ortaya koyar, sonrakileri ortak harf üzerinden
+   dikey/yatay kesiştirir. Çakışma/komşuluk kontrolüyle geçerli yerleşim arar. */
+function izgaraUret(adet) {
+  const N = 13; // çalışma matrisi
+  const havuz = KELIMELER
+    .map(k => ({ ...k, kelime: TR_BUYUK(k.kelime).replace(/[^A-ZÇĞİÖŞÜ]/g, '') }))
+    .filter(k => k.kelime.length >= 3 && k.kelime.length <= 8);
+  // karıştır
+  for (let i = havuz.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [havuz[i], havuz[j]] = [havuz[j], havuz[i]]; }
 
-  const q = KELIMELER[kelLevel];
-  kelCevap = q.kelime.toLocaleUpperCase('tr-TR');
-  document.getElementById('soru').innerText = "💬 " + q.ipucu;
-  document.getElementById('level').innerText = kelLevel + 1;
-  document.getElementById('hak').innerText = "❤️".repeat(kelCan) || "—";
-  document.getElementById('joker-count').innerText = kelJoker;
+  const grid = Array.from({ length: N }, () => Array(N).fill(null)); // harf veya null
+  const yerlesen = [];
 
-  const g = document.getElementById('grid');
-  g.innerHTML = '';
-  for (let i = 0; i < kelCevap.length; i++) {
-    g.innerHTML += `<div class="box" data-i="${i}"></div>`;
-  }
-
-  kelSure = Math.max(20, kelCevap.length * 10);
-  updateTimer();
-  clearInterval(window.kelTimer);
-  window.kelTimer = setInterval(() => {
-    kelSure--;
-    updateTimer();
-    if (kelSure <= 0) {
-      clearInterval(window.kelTimer);
-      kelCan--;
-      document.getElementById('hak').innerText = "❤️".repeat(kelCan) || "—";
-      toast("⏰ Süre bitti! Cevap: " + kelCevap);
-      setTimeout(() => {
-        if (kelCan <= 0) { toast("💀 Oyun bitti! Tekrar dene."); kelCan = 3; }
-        startKelime();
-      }, 1300);
+  function koy(kelime, r, c, yatay) {
+    for (let i = 0; i < kelime.length; i++) {
+      const rr = yatay ? r : r + i, cc = yatay ? c + i : c;
+      grid[rr][cc] = kelime[i];
     }
-  }, 1000);
-}
-
-function updateTimer() {
-  const m = String(Math.floor(kelSure / 60)).padStart(2, '0');
-  const s = String(kelSure % 60).padStart(2, '0');
-  document.getElementById('timer').innerText = m + ":" + s;
-}
-
-function bosKutu() {
-  return Array.from(document.querySelectorAll('#grid .box')).find(x => x.innerText === "");
-}
-
-function harfGir(h) {
-  const b = bosKutu();
-  if (b) {
-    b.innerText = h;
-    b.className = 'box filled';
-    if (!bosKutu()) kontrolEt();
+    yerlesen.push({ kelime, r, c, yatay, ipucu: null });
   }
+  function uygunMu(kelime, r, c, yatay) {
+    for (let i = 0; i < kelime.length; i++) {
+      const rr = yatay ? r : r + i, cc = yatay ? c + i : c;
+      if (rr < 0 || cc < 0 || rr >= N || cc >= N) return false;
+      const mevcut = grid[rr][cc];
+      if (mevcut && mevcut !== kelime[i]) return false;
+      // kesişmeyen hücrede yan komşu dolu olmamalı (kelimelerin yapışmasını önle)
+      if (!mevcut) {
+        if (yatay) { if ((rr > 0 && grid[rr-1][cc]) || (rr < N-1 && grid[rr+1][cc])) return false; }
+        else { if ((cc > 0 && grid[rr][cc-1]) || (cc < N-1 && grid[rr][cc+1])) return false; }
+      }
+    }
+    // baş ve son komşusu boş olmalı
+    if (yatay) {
+      if (c > 0 && grid[r][c-1]) return false;
+      if (c + kelime.length < N && grid[r][c + kelime.length]) return false;
+    } else {
+      if (r > 0 && grid[r-1][c]) return false;
+      if (r + kelime.length < N && grid[r + kelime.length][c]) return false;
+    }
+    return true;
+  }
+
+  // ilk kelimeyi ortaya yatay koy
+  const ilk = havuz.shift();
+  if (!ilk) return null;
+  koy(ilk.kelime, Math.floor(N/2), Math.floor((N - ilk.kelime.length)/2), true);
+  yerlesen[0].ipucu = ilk.ipucu;
+
+  // kalanları kesiştirerek ekle
+  for (const aday of havuz) {
+    if (yerlesen.length >= adet) break;
+    let kondu = false;
+    // adayın her harfi için, ızgaradaki aynı harfle kesişmeyi dene
+    for (let i = 0; i < aday.kelime.length && !kondu; i++) {
+      for (const yk of yerlesen) {
+        for (let j = 0; j < yk.kelime.length && !kondu; j++) {
+          if (yk.kelime[j] !== aday.kelime[i]) continue;
+          const kr = yk.yatay ? yk.r : yk.r + j;
+          const kc = yk.yatay ? yk.c + j : yk.c;
+          // aday, yerleşenin tersi yönde olmalı
+          const yatay = !yk.yatay;
+          const r = yatay ? kr : kr - i;
+          const c = yatay ? kc - i : kc;
+          if (uygunMu(aday.kelime, r, c, yatay)) {
+            koy(aday.kelime, r, c, yatay);
+            yerlesen[yerlesen.length - 1].ipucu = aday.ipucu;
+            kondu = true;
+          }
+        }
+      }
+    }
+  }
+
+  // çalışma matrisini sınırlandır (dolu bölgeyi kırp)
+  let minR = N, maxR = 0, minC = N, maxC = 0;
+  for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (grid[r][c]) {
+    minR = Math.min(minR, r); maxR = Math.max(maxR, r);
+    minC = Math.min(minC, c); maxC = Math.max(maxC, c);
+  }
+  const satir = maxR - minR + 1, sutun = maxC - minC + 1;
+  // hücre modeli: her dolu hücre {dogru, girilen, hint}
+  const hucreler = Array.from({ length: satir }, () => Array(sutun).fill(null));
+  for (let r = 0; r < satir; r++) for (let c = 0; c < sutun; c++) {
+    const ch = grid[minR + r][minC + c];
+    if (ch) hucreler[r][c] = { dogru: ch, girilen: '', hint: false };
+  }
+  // kelime koordinatlarını kırpılmış sisteme taşı + ipucu açık harf işaretle
+  const kelimeler = yerlesen.map((y, idx) => {
+    const r = y.r - minR, c = y.c - minC;
+    const hucListe = [];
+    for (let i = 0; i < y.kelime.length; i++) {
+      const rr = y.yatay ? r : r + i, cc = y.yatay ? c + i : c;
+      hucListe.push({ r: rr, c: cc });
+    }
+    return { kelime: y.kelime, ipucu: y.ipucu || '', yatay: y.yatay, hucreler: hucListe, tamam: false };
+  });
+
+  // her kelimenin ilk harfini ipucu olarak aç (kolaylaştırır, görseldeki gibi bazı harfler açık)
+  kelimeler.forEach(k => {
+    const ilkH = k.hucreler[0];
+    const cell = hucreler[ilkH.r][ilkH.c];
+    cell.girilen = cell.dogru; cell.hint = true;
+  });
+
+  return { satir, sutun, hucreler, kelimeler };
+}
+
+function kelBolumKur() {
+  // 4-6 kelimelik ızgara üret (birkaç deneme, en çok kelime yerleşeni seç)
+  let best = null;
+  for (let deneme = 0; deneme < 6; deneme++) {
+    const hedef = 4 + (kelBolum % 3); // bölüm ilerledikçe biraz daha çok kelime
+    const iz = izgaraUret(Math.min(6, hedef));
+    if (iz && (!best || iz.kelimeler.length > best.kelimeler.length)) best = iz;
+    if (best && best.kelimeler.length >= hedef) break;
+  }
+  kelIzgara = best;
+  kelAktif = null; kelYazPos = 0;
+  document.getElementById('level').innerText = kelBolum + 1;
+  document.getElementById('kel-skor').innerText = kelSkor;
+  document.getElementById('kel-best').innerText = kelBest;
+  cizIzgara();
+  // ilk kelimeyi otomatik seç
+  if (kelIzgara && kelIzgara.kelimeler.length) kelimeSec(kelIzgara.kelimeler.find(k => !k.tamam) || kelIzgara.kelimeler[0]);
+  kalanGuncelle();
+}
+
+function kalanGuncelle() {
+  const kalan = kelIzgara ? kelIzgara.kelimeler.filter(k => !k.tamam).length : 0;
+  document.getElementById('kel-kalan').innerText = kalan;
+}
+
+function cizIzgara() {
+  const g = document.getElementById('grid');
+  if (!kelIzgara) { g.innerHTML = '<div style="padding:20px">Izgara üretilemedi 😕</div>'; return; }
+  const wrap = document.getElementById('grid-wrap');
+  const ekranW = Math.min(wrap.parentElement.clientWidth - 24, 420);
+  const cell = Math.floor((ekranW - (kelIzgara.sutun + 1) * 4) / kelIzgara.sutun);
+  const boyut = Math.max(22, Math.min(cell, 40));
+  g.style.gridTemplateColumns = `repeat(${kelIzgara.sutun}, ${boyut}px)`;
+  g.style.gridAutoRows = `${boyut}px`;
+  g.style.fontSize = Math.floor(boyut * 0.5) + 'px';
+  g.innerHTML = '';
+  for (let r = 0; r < kelIzgara.satir; r++)
+    for (let c = 0; c < kelIzgara.sutun; c++) {
+      const h = kelIzgara.hucreler[r][c];
+      const el = document.createElement('div');
+      if (!h) { el.className = 'gc empty'; }
+      else {
+        const aktifHucre = kelAktif && kelAktif.hucreler.some(x => x.r === r && x.c === c);
+        let cls = 'gc ';
+        if (h.tamamRenk) cls += 'done';
+        else if (h.girilen && h.hint) cls += 'hint';
+        else if (h.girilen) cls += 'fill';
+        else cls += 'slot';
+        if (aktifHucre) cls += ' active';
+        el.className = cls;
+        el.innerText = h.girilen || '';
+        el.dataset.r = r; el.dataset.c = c;
+        el.onclick = () => hucreyeTikla(r, c);
+      }
+      g.appendChild(el);
+    }
+}
+
+// bir hücreye tıklayınca o hücreyi içeren (henüz bitmemiş) kelimeyi aktif yap
+function hucreyeTikla(r, c) {
+  const adaylar = kelIzgara.kelimeler.filter(k => !k.tamam && k.hucreler.some(x => x.r === r && x.c === c));
+  if (!adaylar.length) return;
+  // aynı hücrede birden çok kelime varsa sırayla geçiş yap
+  let secili = adaylar[0];
+  if (kelAktif && adaylar.length > 1) {
+    const idx = adaylar.indexOf(kelAktif);
+    secili = adaylar[(idx + 1) % adaylar.length];
+  }
+  kelimeSec(secili);
+}
+
+function kelimeSec(k) {
+  kelAktif = k;
+  // yazma pozisyonunu ilk boş (ipucu olmayan) hücreye al
+  kelYazPos = 0;
+  for (let i = 0; i < k.hucreler.length; i++) {
+    const h = kelIzgara.hucreler[k.hucreler[i].r][k.hucreler[i].c];
+    if (!h.girilen) { kelYazPos = i; break; }
+    kelYazPos = i + 1;
+  }
+  document.getElementById('soru').innerText = "💬 " + (k.ipucu || '...');
+  cizIzgara();
+}
+
+function kelSonraki() {
+  if (!kelIzgara) return;
+  const list = kelIzgara.kelimeler.filter(k => !k.tamam);
+  if (!list.length) return;
+  const idx = list.indexOf(kelAktif);
+  kelimeSec(list[(idx + 1) % list.length]);
+  sfx.tik();
+}
+
+function harfGir(harf) {
+  if (!kelAktif) return;
+  // sıradaki boş/ipucu olmayan hücreyi bul
+  while (kelYazPos < kelAktif.hucreler.length) {
+    const pos = kelAktif.hucreler[kelYazPos];
+    const h = kelIzgara.hucreler[pos.r][pos.c];
+    if (h.hint) { kelYazPos++; continue; } // ipucu harfini atla
+    h.girilen = harf;
+    sfx.tik();
+    kelYazPos++;
+    cizIzgara();
+    const el = document.querySelector(`#grid .gc[data-r="${pos.r}"][data-c="${pos.c}"]`);
+    if (el) { el.classList.add('pop'); }
+    break;
+  }
+  // kelime doldu mu kontrol
+  kelimeKontrol();
 }
 
 function harfSil() {
-  const dolu = Array.from(document.querySelectorAll('#grid .box')).filter(x => x.innerText !== "");
-  if (dolu.length) {
-    const son = dolu[dolu.length - 1];
-    son.innerText = "";
-    son.className = 'box';
+  if (!kelAktif) return;
+  // son yazılan (ipucu olmayan) hücreyi sil
+  for (let i = kelAktif.hucreler.length - 1; i >= 0; i--) {
+    const pos = kelAktif.hucreler[i];
+    const h = kelIzgara.hucreler[pos.r][pos.c];
+    if (h.hint) continue;
+    if (h.girilen) { h.girilen = ''; kelYazPos = i; cizIzgara(); sfx.tik(); return; }
   }
 }
 
-function kontrolEt() {
-  const girilen = Array.from(document.querySelectorAll('#grid .box')).map(x => x.innerText).join('');
-  if (girilen === kelCevap) {
-    document.querySelectorAll('#grid .box').forEach(b => b.className = 'box correct');
-    clearInterval(window.kelTimer);
-    const kazanc = 100 + kelSure * 5;
-    kelSkor += kazanc;
-    kelLevel++;
+function kelimeKontrol() {
+  if (!kelAktif) return;
+  const dolu = kelAktif.hucreler.every(p => kelIzgara.hucreler[p.r][p.c].girilen);
+  if (!dolu) return;
+  const dogru = kelAktif.hucreler.every(p => {
+    const h = kelIzgara.hucreler[p.r][p.c];
+    return h.girilen === h.dogru;
+  });
+  if (dogru) {
+    kelAktif.tamam = true;
+    kelAktif.hucreler.forEach(p => { kelIzgara.hucreler[p.r][p.c].tamamRenk = true; });
+    kelSkor += 100; sfx.dogru();
+    if (kelSkor > kelBest) { kelBest = kelSkor; save('kel_best', kelBest); }
     save('kel_skor', kelSkor);
-    save('kel_level', kelLevel);
     document.getElementById('kel-skor').innerText = kelSkor;
-    toast("🎉 Doğru! +" + kazanc + " puan");
-    setTimeout(startKelime, 1300);
+    document.getElementById('kel-best').innerText = kelBest;
+    kalanGuncelle();
+    cizIzgara();
+    // bölüm bitti mi?
+    if (kelIzgara.kelimeler.every(k => k.tamam)) {
+      kelBolum++; save('kel_bolum', kelBolum); sfx.kazan();
+      toast("🎉 Bölüm tamam! +bonus");
+      kelSkor += 200; document.getElementById('kel-skor').innerText = kelSkor;
+      setTimeout(kelBolumKur, 1400);
+    } else {
+      toast("✅ Doğru kelime!");
+      const sonraki = kelIzgara.kelimeler.find(k => !k.tamam);
+      if (sonraki) kelimeSec(sonraki);
+    }
   } else {
-    document.querySelectorAll('#grid .box').forEach(b => b.className = 'box wrong');
-    kelCan--;
-    document.getElementById('hak').innerText = "❤️".repeat(kelCan) || "—";
+    // yanlış: sarsma efekti, yanlış harfleri (ipucu olmayan) temizle
+    kelAktif.hucreler.forEach(p => {
+      const el = document.querySelector(`#grid .gc[data-r="${p.r}"][data-c="${p.c}"]`);
+      if (el) el.classList.add('shake');
+    });
+    sfx.yanlis();
     setTimeout(() => {
-      if (kelCan <= 0) {
-        clearInterval(window.kelTimer);
-        toast("💀 Oyun bitti! Cevap: " + kelCevap);
-        kelCan = 3;
-        setTimeout(startKelime, 1500);
-      } else {
-        document.querySelectorAll('#grid .box').forEach(b => { b.innerText = ""; b.className = 'box'; });
-        toast("❌ Yanlış! Kalan hak: " + kelCan);
-      }
-    }, 600);
+      kelAktif.hucreler.forEach(p => {
+        const h = kelIzgara.hucreler[p.r][p.c];
+        if (!h.hint && h.girilen !== h.dogru) h.girilen = '';
+      });
+      kelimeSec(kelAktif);
+    }, 450);
   }
 }
 
-function jokerHarf() {
+function kelJokerHarfKullan() {
+  if (!kelAktif) { toast("Önce bir kelime seç"); return; }
   if (kelJoker <= 0) { toast("Joker kalmadı!"); return; }
-  const boxes = Array.from(document.querySelectorAll('#grid .box'));
-  for (let i = 0; i < boxes.length; i++) {
-    if (boxes[i].innerText !== kelCevap[i]) {
-      boxes[i].innerText = kelCevap[i];
-      boxes[i].className = 'box filled';
-      kelJoker--;
-      document.getElementById('joker-count').innerText = kelJoker;
-      if (!bosKutu()) kontrolEt();
+  // aktif kelimede ilk yanlış/boş hücreyi doğru harfle aç
+  for (const pos of kelAktif.hucreler) {
+    const h = kelIzgara.hucreler[pos.r][pos.c];
+    if (h.girilen !== h.dogru) {
+      h.girilen = h.dogru; h.hint = true;
+      kelJoker--; document.getElementById('kel-ipucu').innerText = kelJoker;
+      sfx.guc(); cizIzgara(); kelimeKontrol();
       return;
     }
   }
+  toast("Bu kelime zaten dolu");
 }
 
-// Türkçe klavye
-const klavye = ["ABCÇDEFĞ", "GHIİJKLMN", "OÖPRSŞTUÜ", "VYZ"];
-const kb = document.getElementById('keyboard');
-klavye.forEach(row => {
-  const r = document.createElement('div');
-  r.className = 'keyboard-row';
-  row.split('').forEach(h => {
-    const btn = document.createElement('button');
-    btn.className = 'key';
-    btn.innerText = h;
-    btn.onclick = () => harfGir(h);
-    r.appendChild(btn);
+/* ---- QWERTY Türkçe klavye (görseldeki düzen) ---- */
+const QWERTY = ["QWERTYUIOPĞÜ", "ASDFGHJKLŞİ", "ZXCVBNMÖÇ"];
+(function kelKlavyeKur() {
+  const kb = document.getElementById('keyboard');
+  kb.innerHTML = '';
+  QWERTY.forEach((row, ri) => {
+    const r = document.createElement('div'); r.className = 'keyboard-row';
+    row.split('').forEach(h => {
+      const btn = document.createElement('button'); btn.className = 'key'; btn.innerText = h;
+      btn.onclick = () => harfGir(h); r.appendChild(btn);
+    });
+    if (ri === 2) { // son satıra silme tuşu
+      const sil = document.createElement('button'); sil.className = 'key sil'; sil.innerText = '⌫';
+      sil.onclick = harfSil; r.appendChild(sil);
+    }
+    kb.appendChild(r);
   });
-  kb.appendChild(r);
+})();
+
+// fiziksel klavye desteği (masaüstü)
+window.addEventListener('keydown', e => {
+  if (!document.getElementById('game-kelime').classList.contains('active')) return;
+  if (e.key === 'Backspace') { harfSil(); e.preventDefault(); }
+  else if (e.key.length === 1 && /[a-zA-ZçğıöşüÇĞİÖŞÜ]/.test(e.key)) harfGir(TR_BUYUK(e.key));
 });
 
-/* ============ BLOK KIRICI ============ */
-let blokCan, blokSkor, blokLevel = 1, paddle, ball, bricks, blokState;
 
-function blokBaslat() {
+/* ============ BLOK KIRICI — TOP SÜRÜSÜ (Bricks Breaker) ============ */
+/* Görseldeki format: raket yok. Alttan nişan alıp top sürüsü fırlatılır.
+   Bloklarda sayı = kalan can. Toplar yere düşünce sıra biter, bloklar 1 satır
+   iner ve üste yeni satır eklenir. ⭕ toplananlar top sayısını artırır.
+   Bir blok en alt çizgiye değerse oyun biter. */
+let bkBalls, bkBricks, bkBonus, bkState, bkTopSayi, bkSkor, bkTur;
+let bkLauncher, bkAiming, bkAimX, bkAimY, bkAtisYon, bkAtilan, bkDonenSayi, bkIlkDusenX, bkFireTimer;
+let bkParticles, bkEkstraAtis, bkDuraklat, bkBuTurTop;
+const BK_COLS = 7;          // sütun sayısı (görseldeki gibi)
+let BK_W, BK_H, BK_CELL, BK_TOP_Y, BK_ALT_Y, BK_R;
+
+function blokYeniOyun() {
+  bkTopSayi = 1; bkSkor = 0; bkTur = 1;
+  bkBricks = []; bkBonus = []; bkParticles = [];
+  bkEkstraAtis = 3; bkDuraklat = false;
+  blokKur();
+  yeniSatirEkle(); yeniSatirEkle(); yeniSatirEkle();
+  bkState = 'aim';
+  bkLauncher = { x: BK_W / 2, y: BK_ALT_Y - 6 };
+  guncelleButonlar();
+  bkLoop();
+}
+
+// Duraklat / devam et
+function blokDuraklat() {
+  if (bkState === 'over') return;
+  bkDuraklat = !bkDuraklat;
+  const btn = document.getElementById('blok-stop-btn');
+  btn.innerText = bkDuraklat ? '▶️ Devam' : '⏸️ Durdur';
+  if (!bkDuraklat) { cancelAnimationFrame(window.blokAnim); bkLoop(); } // devam edince döngüyü diri tut
+  sfx.tik();
+}
+
+// Ekstra atış: anında topu artırıp bir tur kazandırır (sınırlı hak)
+function blokEkstraAtis() {
+  if (bkState === 'over') return;
+  if (bkEkstraAtis <= 0) { toast('Ekstra atış hakkın bitti!'); return; }
+  if (bkState !== 'aim') { toast('Toplar dönerken kullanılamaz'); return; }
+  bkEkstraAtis--;
+  bkTopSayi += 2;             // +2 top bonusu
+  sfx.guc(); toast('⚡ +2 top!');
+  guncelleHUD(); guncelleButonlar();
+}
+
+function guncelleButonlar() {
+  const a = document.getElementById('blok-atis-sayi');
+  if (a) a.innerText = bkEkstraAtis;
+  const stop = document.getElementById('blok-stop-btn');
+  if (stop) stop.innerText = bkDuraklat ? '▶️ Devam' : '⏸️ Durdur';
+}
+
+function blokKur() {
   const canvas = document.getElementById('c1');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
+  // Canvas iç çözünürlüğünü görünen boyuta eşitle (önceki taşma hatasının çözümü korunuyor)
+  const gorunenW = Math.min(canvas.clientWidth || 320, 380);
+  canvas.width = gorunenW;
+  canvas.height = Math.round(gorunenW * 1.6);
+  BK_W = canvas.width; BK_H = canvas.height;
+  BK_CELL = Math.floor((BK_W - 8) / BK_COLS);
+  BK_TOP_Y = 8;                       // blokların başladığı üst y
+  BK_ALT_Y = BK_H - 30;               // fırlatma çizgisi (oyun biter sınırı biraz üstü)
+  BK_R = Math.max(5, BK_CELL * 0.12); // top yarıçapı
+}
 
-  if (blokState !== 'win') { blokCan = 3; blokSkor = 0; blokLevel = 1; }
-  blokState = 'play';
-  document.getElementById('blok-can').innerText = blokCan;
-  document.getElementById('blok-skor').innerText = blokSkor;
-  document.getElementById('blok-level').innerText = blokLevel;
+function guncelleHUD() {
+  document.getElementById('blok-tur').innerText = bkTur;
+  document.getElementById('blok-skor').innerText = bkSkor;
+  document.getElementById('blok-topsayi').innerText = bkTopSayi;
+}
 
-  paddle = { w: 70, h: 12, x: W / 2 - 35, y: H - 30 };
-  ball = { x: W / 2, y: H - 50, r: 7, dx: 3, dy: -3.5, speed: 1 + blokLevel * 0.15 };
-
-  bricks = [];
-  const cols = 6, rows = 3 + Math.min(blokLevel, 4);
-  const bw = (W - 20) / cols, bh = 22;
-  const colors = ['#e94560', '#f1c40f', '#2ecc71', '#3498db', '#9b59b6', '#e67e22', '#1abc9c'];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      bricks.push({ x: 10 + c * bw, y: 50 + r * (bh + 4), w: bw - 4, h: bh, alive: true, color: colors[r % colors.length] });
+// Üstte yeni bir satır oluştur, mevcut her şeyi 1 satır aşağı kaydır
+function yeniSatirEkle() {
+  bkBricks.forEach(b => b.row++);
+  bkBonus.forEach(o => o.row++);
+  const zorluk = bkTur;
+  for (let c = 0; c < BK_COLS; c++) {
+    const r = Math.random();
+    if (r < 0.64) {
+      // blok canı tur ile artar: ilk turlarda küçük, ilerledikçe büyür (görseldeki 1..50 hissi)
+      const taban = Math.max(1, Math.round(zorluk * 1.2));
+      const can = taban + Math.floor(Math.random() * (Math.ceil(zorluk * 1.5) + 2));
+      bkBricks.push({ col: c, row: 0, hp: can, max: can });
+    } else if (r < 0.76) {
+      bkBonus.push({ col: c, row: 0, tip: 'top' }); // +1 top (⭕)
     }
-  }
-
-  function movePaddle(clientX) {
-    const rect = canvas.getBoundingClientRect();
-    const scale = canvas.width / rect.width;
-    let x = (clientX - rect.left) * scale - paddle.w / 2;
-    paddle.x = Math.max(0, Math.min(W - paddle.w, x));
-  }
-  canvas.onmousemove = e => movePaddle(e.clientX);
-  canvas.ontouchmove = e => { e.preventDefault(); movePaddle(e.touches[0].clientX); };
-
-  cancelAnimationFrame(window.blokAnim);
-  loop();
-
-  function loop() {
-    ctx.clearRect(0, 0, W, H);
-
-    if (blokState === 'play') {
-      ball.x += ball.dx * ball.speed;
-      ball.y += ball.dy * ball.speed;
-
-      if (ball.x - ball.r < 0 || ball.x + ball.r > W) ball.dx *= -1;
-      if (ball.y - ball.r < 0) ball.dy *= -1;
-
-      if (ball.y + ball.r >= paddle.y && ball.y + ball.r <= paddle.y + paddle.h &&
-          ball.x >= paddle.x && ball.x <= paddle.x + paddle.w && ball.dy > 0) {
-        ball.dy *= -1;
-        const hit = (ball.x - (paddle.x + paddle.w / 2)) / (paddle.w / 2);
-        ball.dx = hit * 4;
-      }
-
-      if (ball.y - ball.r > H) {
-        blokCan--;
-        document.getElementById('blok-can').innerText = blokCan;
-        if (blokCan <= 0) {
-          blokState = 'over';
-          toast("💀 Oyun bitti! Skor: " + blokSkor);
-        } else {
-          ball.x = W / 2; ball.y = H - 50; ball.dx = 3; ball.dy = -3.5;
-        }
-      }
-
-      bricks.forEach(b => {
-        if (b.alive && ball.x > b.x && ball.x < b.x + b.w && ball.y > b.y && ball.y < b.y + b.h) {
-          b.alive = false;
-          ball.dy *= -1;
-          blokSkor += 10;
-          document.getElementById('blok-skor').innerText = blokSkor;
-        }
-      });
-
-      if (bricks.every(b => !b.alive)) {
-        blokState = 'win';
-        blokLevel++;
-        toast("🎉 Bölüm " + (blokLevel - 1) + " tamam!");
-        setTimeout(blokBaslat, 1200);
-      }
-    }
-
-    bricks.forEach(b => {
-      if (b.alive) { ctx.fillStyle = b.color; ctx.fillRect(b.x, b.y, b.w, b.h); }
-    });
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(paddle.x, paddle.y, paddle.w, paddle.h);
-    ctx.beginPath();
-    ctx.arc(ball.x, ball.y, ball.r, 0, Math.PI * 2);
-    ctx.fillStyle = '#f1c40f';
-    ctx.fill();
-
-    if (blokState === 'over') {
-      ctx.fillStyle = 'rgba(0,0,0,.6)';
-      ctx.fillRect(0, 0, W, H);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 24px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('OYUN BİTTİ', W / 2, H / 2 - 10);
-      ctx.font = '16px sans-serif';
-      ctx.fillText('"Yeniden" butonuna bas', W / 2, H / 2 + 20);
-    }
-
-    if (blokState === 'play') window.blokAnim = requestAnimationFrame(loop);
+    // kalanı boş
   }
 }
 
-/* ============ BLOK YERLEŞTİR (1010 tarzı) ============ */
-const PB = 9;
-let pBoard, pSkor, pBest = load('p_best', 0), pPieces, pDrag = null;
+function brickRect(o) {
+  const x = 4 + o.col * BK_CELL;
+  const y = BK_TOP_Y + o.row * BK_CELL;
+  return { x: x + 2, y: y + 2, w: BK_CELL - 4, h: BK_CELL - 4, cx: x + BK_CELL / 2, cy: y + BK_CELL / 2 };
+}
 
-const SEKILLER = [
-  { c: '#e94560', g: [[1]] },
-  { c: '#f1c40f', g: [[1, 1]] },
-  { c: '#2ecc71', g: [[1, 1, 1]] },
-  { c: '#3498db', g: [[1], [1]] },
-  { c: '#9b59b6', g: [[1], [1], [1]] },
-  { c: '#e67e22', g: [[1, 1], [1, 1]] },
-  { c: '#1abc9c', g: [[1, 0], [1, 1]] },
-  { c: '#e74c3c', g: [[1, 1], [0, 1]] },
-  { c: '#16a085', g: [[1, 1, 1], [1, 0, 0]] },
+// HP'ye göre neon renk (düşük=mavi, orta=yeşil/sarı, yüksek=kırmızı) — görseldeki gibi
+function bkRenk(hp) {
+  if (hp <= 2) return '#19d3e0';
+  if (hp <= 5) return '#2ecc71';
+  if (hp <= 10) return '#f1c40f';
+  if (hp <= 20) return '#e67e22';
+  return '#e94560';
+}
+
+function patlat(x, y, renk) {
+  for (let i = 0; i < 10; i++)
+    bkParticles.push({ x, y, dx: (Math.random()-.5)*5, dy: (Math.random()-.5)*5, life: 1, renk });
+}
+
+/* ---- Nişan alma (dokunmatik + fare) ---- */
+function bkAimStart(e) {
+  if (bkState !== 'aim' || bkDuraklat) return;
+  bkAiming = true; bkAimGuncelle(e);
+}
+function bkAimMove(e) { if (bkAiming) bkAimGuncelle(e); }
+function bkAimEnd(e) {
+  if (!bkAiming) return;
+  bkAiming = false;
+  if (bkState !== 'aim') return;
+  const dx = bkAimX - bkLauncher.x, dy = bkAimY - bkLauncher.y;
+  const uzunluk = Math.hypot(dx, dy);
+  if (uzunluk < 12 || dy > -8) return; // yukarı doğru anlamlı bir nişan yoksa atma
+  const nx = dx / uzunluk, ny = dy / uzunluk;
+  bkAtisYon = { x: nx, y: ny };
+  bkAtisBaslat();
+}
+function bkAimGuncelle(e) {
+  const canvas = document.getElementById('c1');
+  const rect = canvas.getBoundingClientRect(), scale = canvas.width / rect.width;
+  const p = e.touches ? e.touches[0] : e;
+  bkAimX = (p.clientX - rect.left) * scale;
+  bkAimY = (p.clientY - rect.top) * scale;
+}
+
+function bkAtisBaslat() {
+  bkState = 'fire';
+  bkBalls = [];
+  bkAtilan = 0; bkDonenSayi = 0; bkIlkDusenX = null;
+  bkBuTurTop = bkTopSayi;   // bu turda fırlatılacak top sayısını SABİTLE (bonus sonraki tura geçer)
+  const hiz = Math.max(7, BK_W * 0.022);
+  // topları sırayla (gecikmeli) fırlat
+  bkFireTimer = setInterval(() => {
+    if (bkAtilan >= bkBuTurTop) { clearInterval(bkFireTimer); return; }
+    bkBalls.push({
+      x: bkLauncher.x, y: bkLauncher.y,
+      dx: bkAtisYon.x * hiz, dy: bkAtisYon.y * hiz, canli: true
+    });
+    bkAtilan++;
+    sfx.carp();
+  }, 90);
+}
+
+function bkTurBitir() {
+  // sıra bitti: yeni topların başlangıç x'i ilk düşen topun yeri olur
+  if (bkIlkDusenX !== null) bkLauncher.x = Math.max(BK_R, Math.min(BK_W - BK_R, bkIlkDusenX));
+  bkTur++;
+  yeniSatirEkle();
+  guncelleHUD();
+  // alt çizgiye değen blok var mı? (oyun biter)
+  const sonRow = Math.floor((BK_ALT_Y - BK_TOP_Y) / BK_CELL);
+  if (bkBricks.some(b => b.row >= sonRow)) { bkState = 'over'; sfx.yanlis(); toast('💀 Oyun bitti! Skor: ' + bkSkor); return; }
+  bkState = 'aim';
+}
+
+function bkLoop() {
+  const canvas = document.getElementById('c1'), ctx = canvas.getContext('2d');
+  const W = BK_W, H = BK_H;
+  ctx.clearRect(0, 0, W, H);
+
+  // çerçeve
+  ctx.strokeStyle = 'rgba(120,140,255,.5)'; ctx.lineWidth = 2;
+  ctx.strokeRect(2, 2, W - 4, BK_ALT_Y + 4);
+
+  if (bkState === 'fire' && !bkDuraklat) {
+    bkBalls.forEach(ball => {
+      if (!ball.canli) return;
+      // alt-adımlı hareket (tünelleme önlenir)
+      const adim = 3;
+      for (let s = 0; s < adim; s++) {
+        ball.x += ball.dx / adim; ball.y += ball.dy / adim;
+        if (ball.x - BK_R < 4) { ball.x = 4 + BK_R; ball.dx = Math.abs(ball.dx); }
+        if (ball.x + BK_R > W - 4) { ball.x = W - 4 - BK_R; ball.dx = -Math.abs(ball.dx); }
+        if (ball.y - BK_R < 4) { ball.y = 4 + BK_R; ball.dy = Math.abs(ball.dy); }
+        // bloklar
+        for (const b of bkBricks) {
+          if (b.hp <= 0) continue;
+          const R = brickRect(b);
+          if (ball.x + BK_R > R.x && ball.x - BK_R < R.x + R.w && ball.y + BK_R > R.y && ball.y - BK_R < R.y + R.h) {
+            // hangi yönden çarptı (basit AABB)
+            const oncekiX = ball.x - ball.dx / adim, oncekiY = ball.y - ball.dy / adim;
+            if (oncekiX <= R.x || oncekiX >= R.x + R.w) ball.dx *= -1;
+            else ball.dy *= -1;
+            b.hp--; bkSkor += 1; sfx.carp();
+            if (b.hp <= 0) { patlat(R.cx, R.cy, '#fff'); bkSkor += 4; }
+            guncelleHUD();
+            break;
+          }
+        }
+        // bonus toplar (⭕) - topa değince topla
+        for (const o of bkBonus) {
+          if (o.alindi) continue;
+          const R = brickRect(o);
+          if (ball.x > R.x && ball.x < R.x + R.w && ball.y > R.y && ball.y < R.y + R.h) {
+            o.alindi = true; bkTopSayi++; sfx.guc(); guncelleHUD();
+            patlat(R.cx, R.cy, '#fff');
+          }
+        }
+      }
+      // yere düştü
+      if (ball.y - BK_R > BK_ALT_Y) {
+        ball.canli = false; bkDonenSayi++;
+        if (bkIlkDusenX === null) bkIlkDusenX = ball.x;
+      }
+    });
+    bkBonus = bkBonus.filter(o => !o.alindi);
+    // bu turda fırlatılan tüm toplar atıldı ve hepsi döndü mü?
+    if (bkAtilan >= bkBuTurTop && bkDonenSayi >= bkBuTurTop) bkTurBitir();
+  }
+
+  // --- çizim ---
+  // bloklar (neon glow)
+  bkBricks.forEach(b => {
+    if (b.hp <= 0) return;
+    const R = brickRect(b), renk = bkRenk(b.hp);
+    ctx.save();
+    ctx.shadowColor = renk; ctx.shadowBlur = 12;
+    ctx.fillStyle = renk + '33'; ctx.strokeStyle = renk; ctx.lineWidth = 2;
+    roundRect(ctx, R.x, R.y, R.w, R.h, 6); ctx.fill(); ctx.stroke();
+    ctx.restore();
+    ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(BK_CELL*0.32)}px sans-serif`;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(b.hp, R.cx, R.cy);
+  });
+  // bonus toplar
+  bkBonus.forEach(o => {
+    const R = brickRect(o);
+    ctx.save(); ctx.shadowColor = '#fff'; ctx.shadowBlur = 14;
+    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.arc(R.cx, R.cy, BK_CELL * 0.18, 0, 7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(R.cx, R.cy, BK_CELL * 0.07, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.restore();
+  });
+  // parçacıklar
+  bkParticles.forEach(p => { p.x += p.dx; p.y += p.dy; p.life -= 0.05; });
+  bkParticles = bkParticles.filter(p => p.life > 0);
+  bkParticles.forEach(p => { ctx.globalAlpha = p.life; ctx.fillStyle = p.renk; ctx.fillRect(p.x, p.y, 3, 3); });
+  ctx.globalAlpha = 1;
+
+  // toplar
+  if (bkBalls) bkBalls.forEach(ball => {
+    if (!ball.canli) return;
+    ctx.save(); ctx.shadowColor = '#d56bff'; ctx.shadowBlur = 12;
+    ctx.beginPath(); ctx.arc(ball.x, ball.y, BK_R, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.restore();
+  });
+
+  // fırlatıcı + nişan çizgisi
+  if (bkState === 'aim') {
+    ctx.save(); ctx.shadowColor = '#d56bff'; ctx.shadowBlur = 14;
+    ctx.beginPath(); ctx.arc(bkLauncher.x, bkLauncher.y, BK_R + 2, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    ctx.restore();
+    if (bkAiming && bkAimY < bkLauncher.y) {
+      const dx = bkAimX - bkLauncher.x, dy = bkAimY - bkLauncher.y, len = Math.hypot(dx, dy);
+      const nx = dx / len, ny = dy / len;
+      ctx.setLineDash([6, 8]); ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(bkLauncher.x, bkLauncher.y);
+      ctx.lineTo(bkLauncher.x + nx * 220, bkLauncher.y + ny * 220); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  if (bkState === 'over') {
+    ctx.fillStyle = 'rgba(0,0,0,.65)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('OYUN BİTTİ', W / 2, H / 2 - 10);
+    ctx.font = '15px sans-serif'; ctx.fillText('Skor: ' + bkSkor + ' · "Yeniden"e bas', W / 2, H / 2 + 18);
+  }
+
+  if (bkDuraklat) {
+    ctx.fillStyle = 'rgba(0,0,0,.55)'; ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#fff'; ctx.font = 'bold 24px sans-serif'; ctx.textAlign = 'center';
+    ctx.fillText('⏸️ DURAKLATILDI', W / 2, H / 2);
+    return; // duraklatıldıysa yeni kare isteme (Devam'a basınca tekrar başlar)
+  }
+
+  if (bkState !== 'over') window.blokAnim = requestAnimationFrame(bkLoop);
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// kontrol bağlama (bir kez)
+(function bkBind() {
+  const canvas = document.getElementById('c1');
+  canvas.addEventListener('mousedown', bkAimStart);
+  canvas.addEventListener('mousemove', bkAimMove);
+  window.addEventListener('mouseup', bkAimEnd);
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); bkAimStart(e); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); bkAimMove(e); }, { passive: false });
+  canvas.addEventListener('touchend', e => { e.preventDefault(); bkAimEnd(e); }, { passive: false });
+})();
+
+
+/* ============ BLOK YERLEŞTİR — BLOCK PUZZLE (canvas, 3D kabartmalı) ============ */
+/* Görseldeki stil: 8x8 tahta, parlak 3D bloklar, alttan 3 parça sürükle-bırak,
+   satır/sütun dolunca patlama, 👑 en yüksek skor. Mantık korunmuş + canvas çizim. */
+const PB = 8;                       // görseldeki gibi 8x8
+let pBoard, pSkor, pKombo, pBest = load('p_best', 0), pTepsi, pGecmis = [];
+let pDrag = null;                   // {gi, piece, offX, offY, x, y}
+let P_W, P_CELL, P_GAP, P_PAD, T_W, T_H, T_CELL;
+
+// Görseldeki canlı renk paleti (her renk için açık-koyu ton = 3D his)
+const RENKLER = [
+  { ana:'#4a90e2', acik:'#7fb4f5', koyu:'#2c6cb8' }, // mavi
+  { ana:'#52c41a', acik:'#85e84a', koyu:'#389010' }, // yeşil
+  { ana:'#9b5de5', acik:'#c08bff', koyu:'#6f37b0' }, // mor
+  { ana:'#fa8c16', acik:'#ffb152', koyu:'#c96a05' }, // turuncu
+  { ana:'#f5222d', acik:'#ff6168', koyu:'#c20c16' }, // kırmızı
+  { ana:'#fadb14', acik:'#fff04d', koyu:'#d4b900' }, // sarı
+  { ana:'#13c2c2', acik:'#5cf0f0', koyu:'#0a9494' }, // camgöbeği
 ];
 
-function puzzleBaslat() {
-  pBoard = Array.from({ length: PB }, () => Array(PB).fill(null));
-  pSkor = 0;
-  document.getElementById('p-skor').innerText = 0;
-  document.getElementById('p-best').innerText = pBest;
-  cizTahta();
-  yeniParcalar();
+// Block-puzzle parça şekilleri (1x1 .. L, T, kare, çizgi vb.)
+const SEKILLER = [
+  [[1]],
+  [[1,1]], [[1],[1]],
+  [[1,1,1]], [[1],[1],[1]],
+  [[1,1],[1,1]],
+  [[1,1,1,1]], [[1],[1],[1],[1]],
+  [[1,0],[1,0],[1,1]], [[0,1],[0,1],[1,1]],
+  [[1,1],[1,0],[1,0]], [[1,1],[0,1],[0,1]],
+  [[1,1,1],[0,1,0]],   [[0,1,0],[1,1,1]],
+  [[1,0],[1,1],[0,1]], [[0,1],[1,1],[1,0]],
+  [[1,1],[1,0]], [[1,1],[0,1]], [[1,0],[1,1]], [[0,1],[1,1]],
+  [[1,1,1],[1,0,0]], [[1,1,1],[0,0,1]], [[1,0,0],[1,1,1]], [[0,0,1],[1,1,1]],
+];
+
+function pBoyutla() {
+  const board = document.getElementById('p-board');
+  const tray = document.getElementById('p-tray');
+  P_W = Math.min(board.clientWidth || 360, 380);
+  board.width = P_W; board.height = P_W;
+  P_PAD = Math.round(P_W * 0.03);
+  P_GAP = Math.max(2, Math.round(P_W * 0.012));
+  P_CELL = (P_W - P_PAD * 2 - P_GAP * (PB - 1)) / PB;
+  T_W = P_W; T_H = Math.round(P_W * 0.34);
+  tray.width = T_W; tray.height = T_H;
+  T_CELL = P_CELL * 0.8;
 }
 
-function cizTahta() {
-  const board = document.getElementById('p-board');
-  board.style.gridTemplateColumns = `repeat(${PB}, 30px)`;
-  board.innerHTML = '';
-  for (let r = 0; r < PB; r++) {
+function puzzleBaslat() {
+  pBoyutla();
+  pBoard = Array.from({ length: PB }, () => Array(PB).fill(null));
+  pSkor = 0; pKombo = 0; pGecmis = [];
+  document.getElementById('p-skor').innerText = 0;
+  document.getElementById('p-kombo').innerText = 0;
+  document.getElementById('p-best').innerText = pBest;
+  yeniTepsi();
+  pCizTahta(); pCizTepsi();
+}
+
+// rastgele 3 parça (renk + şekil)
+function yeniTepsi() {
+  pTepsi = [];
+  for (let i = 0; i < 3; i++) {
+    const g = SEKILLER[Math.floor(Math.random() * SEKILLER.length)];
+    const renk = RENKLER[Math.floor(Math.random() * RENKLER.length)];
+    pTepsi.push({ g, renk });
+  }
+  if (oyunBittiMi()) setTimeout(() => { toast('💀 Hamle kalmadı! Skor: ' + pSkor); sfx.yanlis(); setTimeout(puzzleBaslat, 1800); }, 500);
+}
+
+/* ---- 3D blok çizimi (görseldeki kabartma efekti) ---- */
+function blokCiz(ctx, x, y, size, renk, alpha) {
+  const r = Math.max(3, size * 0.18);
+  ctx.globalAlpha = alpha == null ? 1 : alpha;
+  // gövde gradyan
+  const grad = ctx.createLinearGradient(x, y, x, y + size);
+  grad.addColorStop(0, renk.acik); grad.addColorStop(0.5, renk.ana); grad.addColorStop(1, renk.koyu);
+  ctx.fillStyle = grad;
+  pRoundRect(ctx, x, y, size, size, r); ctx.fill();
+  // üst parlama
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  pRoundRect(ctx, x + size*0.14, y + size*0.12, size*0.72, size*0.22, r*0.6); ctx.fill();
+  // alt koyu kenar
+  ctx.fillStyle = 'rgba(0,0,0,.18)';
+  pRoundRect(ctx, x + size*0.1, y + size*0.74, size*0.8, size*0.16, r*0.5); ctx.fill();
+  ctx.globalAlpha = 1;
+}
+function bosHucreCiz(ctx, x, y, size) {
+  const r = Math.max(3, size * 0.18);
+  ctx.fillStyle = 'rgba(255,255,255,.06)';
+  pRoundRect(ctx, x, y, size, size, r); ctx.fill();
+}
+
+function pCizTahta() {
+  const ctx = document.getElementById('p-board').getContext('2d');
+  ctx.clearRect(0, 0, P_W, P_W);
+  // arka panel
+  ctx.fillStyle = 'rgba(20,24,60,.55)';
+  pRoundRect(ctx, 0, 0, P_W, P_W, 14); ctx.fill();
+  for (let r = 0; r < PB; r++)
     for (let c = 0; c < PB; c++) {
-      const cell = document.createElement('div');
-      cell.className = 'cell' + (pBoard[r][c] ? ' filled' : '');
-      cell.style.background = pBoard[r][c] || 'rgba(255,255,255,.07)';
-      cell.dataset.r = r;
-      cell.dataset.c = c;
-      board.appendChild(cell);
+      const x = P_PAD + c * (P_CELL + P_GAP), y = P_PAD + r * (P_CELL + P_GAP);
+      if (pBoard[r][c]) blokCiz(ctx, x, y, P_CELL, pBoard[r][c]);
+      else bosHucreCiz(ctx, x, y, P_CELL);
+    }
+  // sürükleme önizlemesi (yerleşir konumda yarı saydam göster)
+  if (pDrag) {
+    const pos = pHedef();
+    if (pos && yerlesirMi(pDrag.piece, pos.r, pos.c)) {
+      pDrag.piece.g.forEach((row, dr) => row.forEach((v, dc) => {
+        if (v) {
+          const x = P_PAD + (pos.c + dc) * (P_CELL + P_GAP), y = P_PAD + (pos.r + dr) * (P_CELL + P_GAP);
+          blokCiz(ctx, x, y, P_CELL, pDrag.piece.renk, 0.45);
+        }
+      }));
     }
   }
 }
 
-function yeniParcalar() {
-  pPieces = [];
-  for (let i = 0; i < 3; i++) {
-    pPieces.push(SEKILLER[Math.floor(Math.random() * SEKILLER.length)]);
-  }
-  cizParcalar();
-  if (oyunBittiMi()) {
-    setTimeout(() => {
-      toast("💀 Hamle kalmadı! Skor: " + pSkor);
-      setTimeout(puzzleBaslat, 1800);
-    }, 400);
-  }
-}
-
-function cizParcalar() {
-  const cont = document.getElementById('p-pieces');
-  cont.innerHTML = '';
-  pPieces.forEach((p, idx) => {
-    if (!p) return;
-    const el = document.createElement('div');
-    el.className = 'piece';
-    el.style.gridTemplateColumns = `repeat(${p.g[0].length}, 22px)`;
-    el.dataset.idx = idx;
-    p.g.forEach(row => row.forEach(v => {
-      const pc = document.createElement('div');
-      pc.className = 'pcell';
-      pc.style.background = v ? p.c : 'transparent';
-      el.appendChild(pc);
+function pCizTepsi() {
+  const ctx = document.getElementById('p-tray').getContext('2d');
+  ctx.clearRect(0, 0, T_W, T_H);
+  const slotW = T_W / 3;
+  pTepsi.forEach((p, i) => {
+    if (!p || (pDrag && pDrag.gi === i)) return; // sürüklenen parçayı tepside gösterme
+    const gw = p.g[0].length, gh = p.g.length;
+    const bx = i * slotW + slotW / 2 - (gw * T_CELL) / 2;
+    const by = T_H / 2 - (gh * T_CELL) / 2;
+    p.g.forEach((row, dr) => row.forEach((v, dc) => {
+      if (v) blokCiz(ctx, bx + dc * T_CELL, by + dr * T_CELL, T_CELL - 2, p.renk);
     }));
-    el.addEventListener('pointerdown', e => startDrag(e, idx, el));
-    cont.appendChild(el);
   });
 }
 
-let dragGhost = null;
-function startDrag(e, idx, el) {
-  e.preventDefault();
-  pDrag = { idx, piece: pPieces[idx] };
-  el.classList.add('dragging');
-  dragGhost = el.cloneNode(true);
-  dragGhost.style.position = 'fixed';
-  dragGhost.style.pointerEvents = 'none';
-  dragGhost.style.opacity = '.85';
-  dragGhost.style.zIndex = 200;
-  dragGhost.style.transform = 'scale(1.15)';
-  document.body.appendChild(dragGhost);
-  moveGhost(e);
-  document.addEventListener('pointermove', moveGhost);
-  document.addEventListener('pointerup', endDrag);
-}
-
-function moveGhost(e) {
-  if (!dragGhost) return;
-  dragGhost.style.left = (e.clientX - 30) + 'px';
-  dragGhost.style.top = (e.clientY - 60) + 'px';
-  highlightHedef(e);
-}
-
-let lastTarget = null;
-function highlightHedef(e) {
-  if (lastTarget) { cizTahta(); lastTarget = null; }
-  const pos = hedefHucre(e);
-  if (pos && yerlesirMi(pDrag.piece, pos.r, pos.c)) {
-    const cells = document.querySelectorAll('#p-board .cell');
-    pDrag.piece.g.forEach((row, dr) => row.forEach((v, dc) => {
-      if (v) {
-        const idx = (pos.r + dr) * PB + (pos.c + dc);
-        if (cells[idx]) cells[idx].style.background = pDrag.piece.c + '88';
-      }
-    }));
-    lastTarget = pos;
-  }
-}
-
-function hedefHucre(e) {
-  const board = document.getElementById('p-board');
-  const rect = board.getBoundingClientRect();
-  const cellSize = 33;
-  const c = Math.floor((e.clientX - rect.left) / cellSize);
-  const r = Math.floor((e.clientY - rect.top) / cellSize);
-  if (r >= 0 && r < PB && c >= 0 && c < PB) return { r, c };
-  return null;
-}
-
+/* ---- yerleştirme mantığı (korundu) ---- */
 function yerlesirMi(piece, r, c) {
-  for (let dr = 0; dr < piece.g.length; dr++) {
-    for (let dc = 0; dc < piece.g[dr].length; dc++) {
-      if (piece.g[dr][dc]) {
-        const nr = r + dr, nc = c + dc;
-        if (nr >= PB || nc >= PB || pBoard[nr][nc]) return false;
-      }
-    }
-  }
+  for (let dr = 0; dr < piece.g.length; dr++)
+    for (let dc = 0; dc < piece.g[dr].length; dc++)
+      if (piece.g[dr][dc]) { const nr = r + dr, nc = c + dc; if (nr < 0 || nc < 0 || nr >= PB || nc >= PB || pBoard[nr][nc]) return false; }
   return true;
 }
-
-function endDrag(e) {
-  document.removeEventListener('pointermove', moveGhost);
-  document.removeEventListener('pointerup', endDrag);
-  if (dragGhost) { dragGhost.remove(); dragGhost = null; }
-
-  const pos = hedefHucre(e);
-  if (pos && pDrag && yerlesirMi(pDrag.piece, pos.r, pos.c)) {
-    let konan = 0;
-    pDrag.piece.g.forEach((row, dr) => row.forEach((v, dc) => {
-      if (v) { pBoard[pos.r + dr][pos.c + dc] = pDrag.piece.c; konan++; }
-    }));
-    pSkor += konan;
-    pPieces[pDrag.idx] = null;
-    satirTemizle();
-    document.getElementById('p-skor').innerText = pSkor;
-    if (pSkor > pBest) { pBest = pSkor; save('p_best', pBest); document.getElementById('p-best').innerText = pBest; }
-    if (pPieces.every(p => !p)) yeniParcalar();
-    else cizParcalar();
-  }
-  cizTahta();
-  pDrag = null;
-  lastTarget = null;
+function snapshot() {
+  pGecmis.push({ board: pBoard.map(r => r.slice()), tepsi: pTepsi.slice(), skor: pSkor, kombo: pKombo });
+  if (pGecmis.length > 5) pGecmis.shift();
+}
+function puzzleGeriAl() {
+  if (!pGecmis.length) { toast('Geri alınacak hamle yok'); return; }
+  const s = pGecmis.pop();
+  pBoard = s.board.map(r => r.slice()); pTepsi = s.tepsi.slice();
+  pSkor = s.skor; pKombo = s.kombo;
+  document.getElementById('p-skor').innerText = pSkor;
+  document.getElementById('p-kombo').innerText = pKombo;
+  pCizTahta(); pCizTepsi(); sfx.tik();
 }
 
 function satirTemizle() {
   const dolSatir = [], dolSutun = [];
   for (let r = 0; r < PB; r++) if (pBoard[r].every(c => c)) dolSatir.push(r);
   for (let c = 0; c < PB; c++) if (pBoard.every(row => row[c])) dolSutun.push(c);
-
-  dolSatir.forEach(r => { for (let c = 0; c < PB; c++) pBoard[r][c] = null; });
-  dolSutun.forEach(c => { for (let r = 0; r < PB; r++) pBoard[r][c] = null; });
-
   const temizlenen = dolSatir.length + dolSutun.length;
   if (temizlenen > 0) {
-    pSkor += temizlenen * 10 * temizlenen;
-    toast("✨ " + temizlenen + " sıra temizlendi! +" + (temizlenen * 10 * temizlenen));
-  }
+    dolSatir.forEach(r => { for (let c = 0; c < PB; c++) pBoard[r][c] = null; });
+    dolSutun.forEach(c => { for (let r = 0; r < PB; r++) pBoard[r][c] = null; });
+    pKombo++;
+    const puan = temizlenen * 10 * temizlenen + pKombo * 5;
+    pSkor += puan; sfx.kazan();
+    document.getElementById('p-kombo').innerText = pKombo;
+    toast('✨ ' + temizlenen + ' sıra! +' + puan + (pKombo > 1 ? ' (Kombo x' + pKombo + ')' : ''));
+  } else { pKombo = 0; document.getElementById('p-kombo').innerText = 0; }
 }
 
 function oyunBittiMi() {
-  for (const p of pPieces) {
+  for (const p of pTepsi) {
     if (!p) continue;
     for (let r = 0; r < PB; r++)
       for (let c = 0; c < PB; c++)
@@ -696,6 +1186,156 @@ function oyunBittiMi() {
   }
   return true;
 }
+
+/* ---- sürükle-bırak (tepsiden tahtaya) ---- */
+let pPointer = { x: 0, y: 0 };
+function pHedef() {
+  if (!pDrag) return null;
+  const board = document.getElementById('p-board');
+  const rect = board.getBoundingClientRect();
+  const scale = P_W / rect.width;             // ekran px -> canvas iç px
+  const g = pDrag.piece.g, gw = g[0].length, gh = g.length;
+  // Hayaletin sol-üst köşesinin EKRAN konumu (pCizHayalet ile birebir aynı formül)
+  const hayaletW = gw * (P_CELL + P_GAP);     // canvas iç genişlik
+  const hayaletH = gh * (P_CELL + P_GAP);
+  const ekranSolX = pDrag.x - (hayaletW / scale) / 2;
+  const ekranSolY = pDrag.y - (hayaletH / scale) / 2 - P_CELL / scale;
+  // tahta canvas iç koordinatına çevir
+  const icX = (ekranSolX - rect.left) * scale;
+  const icY = (ekranSolY - rect.top) * scale;
+  // ilk hücrenin merkezini baz alıp en yakın hücreyi bul
+  const c = Math.round((icX - P_PAD) / (P_CELL + P_GAP));
+  const r = Math.round((icY - P_PAD) / (P_CELL + P_GAP));
+  return { r, c };
+}
+function trayHit(clientX, clientY) {
+  const tray = document.getElementById('p-tray');
+  const rect = tray.getBoundingClientRect(), scale = T_W / rect.width;
+  const x = (clientX - rect.left) * scale;
+  const slotW = T_W / 3;
+  const i = Math.floor(x / slotW);
+  return (i >= 0 && i < 3 && pTepsi[i]) ? i : -1;
+}
+function pDown(e) {
+  const p = e.touches ? e.touches[0] : e;
+  const gi = trayHit(p.clientX, p.clientY);
+  if (gi < 0) return;
+  if (e.cancelable) e.preventDefault();
+  pDrag = { gi, piece: pTepsi[gi], x: p.clientX, y: p.clientY };
+  pPointer = { x: p.clientX, y: p.clientY };
+  pCizTahta(); pCizTepsi(); pCizHayalet();
+}
+function pMove(e) {
+  if (!pDrag) return;
+  if (e.cancelable) e.preventDefault();
+  const p = e.touches ? e.touches[0] : e;
+  pDrag.x = p.clientX; pDrag.y = p.clientY;
+  pCizTahta(); pCizHayalet();
+}
+function pUp() {
+  if (!pDrag) return;
+  const pos = pHedef();
+  if (pos && yerlesirMi(pDrag.piece, pos.r, pos.c)) {
+    snapshot();
+    let konan = 0;
+    pDrag.piece.g.forEach((row, dr) => row.forEach((v, dc) => { if (v) { pBoard[pos.r + dr][pos.c + dc] = pDrag.piece.renk; konan++; } }));
+    pSkor += konan; pTepsi[pDrag.gi] = null; sfx.tik();
+    satirTemizle();
+    document.getElementById('p-skor').innerText = pSkor;
+    if (pSkor > pBest) { pBest = pSkor; save('p_best', pBest); document.getElementById('p-best').innerText = pBest; }
+    if (pTepsi.every(x => !x)) yeniTepsi();
+  }
+  pDrag = null;
+  document.getElementById('p-hayalet') && document.getElementById('p-hayalet').remove();
+  pCizTahta(); pCizTepsi();
+}
+// sürüklenen parçayı parmağın altında gösteren geçici katman
+function pCizHayalet() {
+  let h = document.getElementById('p-hayalet');
+  if (!pDrag) { if (h) h.remove(); return; }
+  if (!h) {
+    h = document.createElement('canvas'); h.id = 'p-hayalet';
+    Object.assign(h.style, { position: 'fixed', pointerEvents: 'none', zIndex: 300, opacity: '.9' });
+    document.body.appendChild(h);
+  }
+  const g = pDrag.piece.g, gw = g[0].length, gh = g.length, cell = P_CELL;
+  h.width = gw * (cell + P_GAP); h.height = gh * (cell + P_GAP);
+  const board = document.getElementById('p-board');
+  const scale = board.getBoundingClientRect().width / P_W; // ekran ölçeği
+  h.style.width = (h.width * scale) + 'px';
+  h.style.height = (h.height * scale) + 'px';
+  h.style.left = (pDrag.x - (h.width * scale) / 2) + 'px';
+  h.style.top = (pDrag.y - (h.height * scale) / 2 - cell * scale) + 'px';
+  const ctx = h.getContext('2d');
+  ctx.clearRect(0, 0, h.width, h.height);
+  g.forEach((row, dr) => row.forEach((v, dc) => {
+    if (v) blokCiz(ctx, dc * (cell + P_GAP), dr * (cell + P_GAP), cell, pDrag.piece.renk);
+  }));
+}
+
+function pRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// kontrol bağlama (bir kez) — tepsi üzerinden başlat, her yerde sürükle/bırak
+(function pBind() {
+  const tray = document.getElementById('p-tray');
+  tray.addEventListener('mousedown', pDown);
+  window.addEventListener('mousemove', pMove);
+  window.addEventListener('mouseup', pUp);
+  tray.addEventListener('touchstart', pDown, { passive: false });
+  window.addEventListener('touchmove', pMove, { passive: false });
+  window.addEventListener('touchend', pUp, { passive: false });
+})();
+
+/* ============ PWA — Service Worker + Yükleme Düğmesi ============ */
+// Service worker'ı kaydet (çevrimdışı çalışma + hızlı açılış).
+// NOT: SW yalnızca https VEYA localhost'ta ve sandbox/önizleme dışında çalışır.
+// Claude önizlemesi gibi ortamlarda kayıt engellenir; bu normaldir, sessizce atlanır.
+(function swKaydet() {
+  if (!('serviceWorker' in navigator)) return;
+  const host = location.hostname;
+  const guvenli = location.protocol === 'https:' || host === 'localhost' || host === '127.0.0.1';
+  // bilinen önizleme/sandbox alan adlarında deneme (CSP nedeniyle hata verir)
+  const sandbox = /usercontent|sandbox|webcontainer|stackblitz|codesandbox/i.test(host);
+  if (!guvenli || sandbox) return; // GitHub Pages'te bu koşul geçilir ve SW kaydolur
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => { /* sessiz: ortam desteklemiyor */ });
+  });
+})();
+
+// "Ana ekrana ekle" yükleme akışı (Android/Chrome)
+let kurulumOlayi = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  kurulumOlayi = e;
+  const btn = document.getElementById('kurulum-btn');
+  if (btn) btn.style.display = 'block';
+});
+function uygulamayiKur() {
+  if (!kurulumOlayi) {
+    toast('Tarayıcı menüsünden "Ana ekrana ekle" seçeneğini kullanabilirsin');
+    return;
+  }
+  kurulumOlayi.prompt();
+  kurulumOlayi.userChoice.then(sonuc => {
+    if (sonuc.outcome === 'accepted') toast('🎉 Uygulama yüklendi!');
+    kurulumOlayi = null;
+    const btn = document.getElementById('kurulum-btn');
+    if (btn) btn.style.display = 'none';
+  });
+}
+// zaten kuruluysa düğmeyi gizle
+window.addEventListener('appinstalled', () => {
+  const btn = document.getElementById('kurulum-btn');
+  if (btn) btn.style.display = 'none';
+});
 </script>
 </body>
 </html>

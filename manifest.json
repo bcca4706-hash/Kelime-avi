@@ -1,7 +1,7 @@
 {
   "name": "Mega Oyun Portalı",
   "short_name": "Oyun Portalı",
-  "description": "Kelime Avı, Blok Kırıcı ve Blok Yerleştir — üç oyun tek uygulamada.",
+  "description": "Kelime Avı, Blok Kırıcı, Blok Yerleştir ve Meyve Eşleştir.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

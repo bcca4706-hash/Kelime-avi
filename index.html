@@ -3,64 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Süper Oyun Portalı</title>
+    <title>Mega Oyun Portalı</title>
     <style>
-        body { margin: 0; background: #1a1a2e; color: white; font-family: sans-serif; text-align: center; display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .screen { display: none; padding: 20px; width: 100%; max-width: 400px; }
+        body { margin: 0; background: #1a1a2e; color: white; font-family: sans-serif; text-align: center; }
+        .screen { display: none; padding: 20px; }
         .active { display: block; }
         .btn { padding: 15px 30px; margin: 10px; border-radius: 15px; border: none; background: #e94560; color: white; font-weight: bold; cursor: pointer; }
-        .game-area { border: 2px solid #555; padding: 20px; border-radius: 20px; margin-top: 10px; }
-        .box { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; display: inline-flex; align-items: center; justify-content: center; margin: 2px; }
-        .keyboard-row { display: flex; justify-content: center; margin-bottom: 10px; }
+        .box { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; display: inline-flex; align-items: center; justify-content: center; margin: 2px; background: rgba(255,255,255,0.1); }
+        .filled { background: #f1c40f; color: black; }
+        .keyboard-row { display: flex; justify-content: center; gap: 5px; margin-bottom: 5px; }
+        canvas { background: #000; display: block; margin: 0 auto; }
     </style>
 </head>
 <body>
 
 <div id="menu" class="screen active">
-    <h1>Oyun Portalı</h1>
+    <h1>Oyun Merkezi</h1>
     <button class="btn" onclick="showGame('kelime')">Kelime Avı</button>
-    <button class="btn" onclick="showGame('blok')">Blok Kırma</button>
-    <button class="btn" onclick="showGame('puzzle')">Puzzle</button>
-    <p id="stats">Toplam Skor: 0</p>
+    <button class="btn" onclick="showGame('blok')">Blok Kırıcı</button>
+    <button class="btn" onclick="showGame('puzzle')">Blok Yerleştir</button>
 </div>
 
 <div id="game-kelime" class="screen">
-    <h2>Kelime Avı</h2>
-    <div id="soru">Soru: Osmanlı'nın başkenti?</div>
+    <div id="hud">Hak: <span id="hak">❤️❤️❤️</span> | Süre: <span id="timer">00:00</span></div>
+    <div id="soru" style="height: 50px; margin: 10px;"></div>
     <div id="grid"></div>
     <div id="keyboard"></div>
-    <button class="btn" onclick="showGame('menu')">Geri Dön</button>
+    <span id="ampul" onclick="jokerKullan()" style="font-size:30px; cursor:pointer;">💡</span>
+    <button onclick="showGame('menu')">Ana Menü</button>
 </div>
 
-<div id="game-blok" class="screen"><h2>Blok Kırma (Geliştiriliyor)</h2><button class="btn" onclick="showGame('menu')">Geri Dön</button></div>
-<div id="game-puzzle" class="screen"><h2>Puzzle (Geliştiriliyor)</h2><button class="btn" onclick="showGame('menu')">Geri Dön</button></div>
+<div id="game-blok" class="screen"><h2>Blok Kırıcı</h2><canvas id="c1" width="300" height="400"></canvas><br><button onclick="showGame('menu')">Geri</button></div>
+<div id="game-puzzle" class="screen"><h2>Blok Yerleştir</h2><div id="p-area" style="width:200px; height:200px; border:2px solid white; margin:auto;"></div><br><button onclick="showGame('menu')">Geri</button></div>
 
 <script>
-    let state = { skor: 0 };
-    const clickSound = new Audio('https://actions.google.com/sounds/v1/ui/click.ogg');
+    // KELİME AVI MANTIĞI
+    const sorular = [{kelime:"İSTANBUL", ipucu:"Osmanlı başkenti"}, {kelime:"ANKARA", ipucu:"Türkiye başkenti"}];
+    let currentLevel = 0, can = 3, sure = 0, joker = 0;
 
-    function showGame(game) {
-        clickSound.play();
+    function showGame(g) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.getElementById('game-' + game)?.classList.add('active');
-        if(game === 'menu') document.getElementById('menu').classList.add('active');
+        document.getElementById('game-'+g).classList.add('active');
+        if(g === 'kelime') startKelime();
     }
 
-    // 2 Sıralı Klavye
-    const row1 = "ABCÇDEFGĞHIİJ".split("");
-    const row2 = "KLMNOÖPRSŞTUÜVYZ".split("");
-    
-    function initKeyboard() {
-        const kb = document.getElementById('keyboard');
-        [row1, row2].forEach(row => {
-            let r = document.createElement('div'); r.className = 'keyboard-row';
-            row.forEach(h => {
-                r.innerHTML += `<div class="box" onclick="clickSound.play()">${h}</div>`;
-            });
-            kb.appendChild(r);
-        });
+    function startKelime() {
+        let q = sorular[currentLevel % sorular.length];
+        document.getElementById('soru').innerText = q.ipucu;
+        sure = q.kelime.length * 15;
+        let g = document.getElementById('grid'); g.innerHTML = '';
+        for(let i=0; i<q.kelime.length; i++) g.innerHTML += `<div class="box"></div>`;
+        clearInterval(window.timer);
+        window.timer = setInterval(() => {
+            sure--; document.getElementById('timer').innerText = sure;
+            if(sure <= 0) { can--; alert("Süre bitti!"); startKelime(); }
+        }, 1000);
     }
-    initKeyboard();
+
+    function harfGir(h) {
+        let b = Array.from(document.querySelectorAll('.box')).find(x => x.innerText === "");
+        if(b) { b.innerText = h; b.className = 'box filled'; }
+    }
+
+    // Klavye
+    "ABCÇDEFGĞHIİJKLMNOÖPRSŞTUÜVYZ".match(/.{1,7}/g).forEach(row => {
+        let r = document.createElement('div'); r.className = 'keyboard-row';
+        row.split('').forEach(h => r.innerHTML += `<div class="box" onclick="harfGir('${h}')">${h}</div>`);
+        document.getElementById('keyboard').appendChild(r);
+    });
+
+    function jokerKullan() { if(joker > 0) { joker--; alert("Joker kullanıldı!"); } else alert("Joker yok!"); }
+
+    // DİĞER OYUNLAR İSKELET
+    function initCanvas() {
+        let ctx = document.getElementById('c1').getContext('2d');
+        ctx.fillStyle = "white"; ctx.fillRect(140, 380, 50, 10); // Basit Raket
+    }
+    initCanvas();
 </script>
 </body>
 </html>
+

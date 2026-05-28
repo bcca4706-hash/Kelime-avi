@@ -113,7 +113,6 @@
 
   /* YILAN */
   #sn-board { display: block; margin: 10px auto; touch-action: none; border-radius: 14px; max-width: 380px; width: 94%; background: rgba(8,8,22,.6); }
-  #sn-dpad div { display: flex; justify-content: center; gap: 6px; margin: 4px 0; }
 
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,.88); padding: 12px 22px; border-radius: 30px;
@@ -268,19 +267,11 @@
     <button class="btn small" onclick="snakeBaslat()">🔄 Tekrar Oyna</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div id="sn-dpad" style="margin:10px auto; max-width:200px;">
-    <div><button class="btn alt small" style="width:60px" onclick="snYonDegis(0,-1)">⬆️</button></div>
-    <div>
-      <button class="btn alt small" style="width:60px" onclick="snYonDegis(-1,0)">⬅️</button>
-      <button class="btn alt small" style="width:60px" onclick="snYonDegis(0,1)">⬇️</button>
-      <button class="btn alt small" style="width:60px" onclick="snYonDegis(1,0)">➡️</button>
-    </div>
-  </div>
   <div>
     <button class="btn alt small" onclick="snakeBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağınla kaydır ya da okları kullan · Duvara/kendine çarpma</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Ekranda gitmek istediğin yöne dokun · Hız sürekli artar</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -1642,7 +1633,7 @@ function eKaristir() {
 /* ============ YILAN (SNAKE) ============ */
 const SN_GRID = 17;            // 17x17 hücre
 let snBoard, snYilan, snYon, snSonrakiYon, snYem, snSkor, snBest = load('sn_best', 0);
-let snHiz, snBitti, snCell, snTouchStart = null;
+let snHiz, snBitti, snCell;
 
 function snakeBaslat() {
   document.getElementById('sn-gameover').style.display = 'none';
@@ -1661,7 +1652,7 @@ function snakeBaslat() {
   window.snTimer = setInterval(snAdim, snHizMs());
 }
 
-function snHizMs() { return Math.max(70, 200 - snHiz * 12); }
+function snHizMs() { return Math.max(50, 180 - snHiz * 6); }
 
 function snBoyutla() {
   const canvas = document.getElementById('sn-board');
@@ -1701,15 +1692,11 @@ function snAdim() {
     document.getElementById('sn-skor').innerText = snSkor;
     if (snSkor > snBest) { snBest = snSkor; save('sn_best', snBest); document.getElementById('sn-best').innerText = snBest; }
     sfx.dogru();
-    // her 50 puanda hızlan
-    const yeniHiz = 1 + Math.floor(snSkor / 50);
-    if (yeniHiz > snHiz) {
-      snHiz = yeniHiz;
-      document.getElementById('sn-hiz').innerText = snHiz;
-      clearInterval(window.snTimer);
-      window.snTimer = setInterval(snAdim, snHizMs());
-      toast('⚡ Hız ' + snHiz);
-    }
+    // HER yemde hız artar (sürekli hızlanma)
+    snHiz++;
+    document.getElementById('sn-hiz').innerText = snHiz;
+    clearInterval(window.snTimer);
+    window.snTimer = setInterval(snAdim, snHizMs());
     snYemKoy();
   } else {
     snYilan.pop(); // yem yoksa kuyruk kısalır (boyut sabit)
@@ -1729,42 +1716,92 @@ function snCiz() {
   const canvas = document.getElementById('sn-board');
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
-  ctx.clearRect(0, 0, W, W);
-  // ızgara arka plan (hafif kareler)
-  for (let x = 0; x < SN_GRID; x++)
-    for (let y = 0; y < SN_GRID; y++) {
-      if ((x + y) % 2 === 0) {
-        ctx.fillStyle = 'rgba(255,255,255,.03)';
-        ctx.fillRect(x * snCell, y * snCell, snCell, snCell);
-      }
-    }
-  // yem (kırmızı elma, parlak)
+  // DOKULU ZEMİN: koyu toprak + hafif benekli doku
+  const zg = ctx.createLinearGradient(0, 0, 0, W);
+  zg.addColorStop(0, '#4a3b28');
+  zg.addColorStop(1, '#3a2e1f');
+  ctx.fillStyle = zg;
+  ctx.fillRect(0, 0, W, W);
+  // toprak benek dokusu
+  ctx.fillStyle = 'rgba(255,255,255,.03)';
+  for (let i = 0; i < 60; i++) {
+    const rx = (i * 53 % W), ry = (i * 97 % W);
+    ctx.beginPath(); ctx.arc(rx, ry, 2 + (i % 3), 0, 7); ctx.fill();
+  }
+  // kenar çim şeridi
+  ctx.fillStyle = '#3e7d32';
+  ctx.fillRect(0, 0, W, snCell * 0.5);
+  ctx.fillRect(0, W - snCell * 0.5, W, snCell * 0.5);
+  ctx.fillRect(0, 0, snCell * 0.5, W);
+  ctx.fillRect(W - snCell * 0.5, 0, snCell * 0.5, W);
+
+  // YEM: fare/böcek tarzı (kırmızımsı, parlak)
   const yx = snYem.x * snCell + snCell / 2, yy = snYem.y * snCell + snCell / 2;
-  const yr = snCell * 0.38;
+  const yr = snCell * 0.42;
   const yg = ctx.createRadialGradient(yx - yr*0.3, yy - yr*0.3, yr*0.1, yx, yy, yr);
-  yg.addColorStop(0, '#ff8a80'); yg.addColorStop(1, '#d50000');
+  yg.addColorStop(0, '#fff0f0'); yg.addColorStop(0.5, '#ff5a5a'); yg.addColorStop(1, '#c41818');
   ctx.fillStyle = yg;
-  ctx.beginPath(); ctx.arc(yx, yy, yr, 0, 7); ctx.fill();
-  // yılan (3D yuvarlak segmentler, baş daha parlak)
-  snYilan.forEach((s, i) => {
-    const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
-    const r = snCell * (i === 0 ? 0.46 : 0.4);
-    const bas = i === 0;
-    const g = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, r*0.1, cx, cy, r);
-    g.addColorStop(0, bas ? '#aeffa0' : '#7bed9f');
-    g.addColorStop(1, bas ? '#2ec44f' : '#1f9b3a');
-    ctx.fillStyle = g;
+  ctx.beginPath(); ctx.ellipse(yx, yy, yr, yr * 0.8, 0, 0, 7); ctx.fill();
+  // kuyruk
+  ctx.strokeStyle = '#c41818'; ctx.lineWidth = yr * 0.18;
+  ctx.beginPath(); ctx.moveTo(yx + yr*0.7, yy); ctx.quadraticCurveTo(yx + yr*1.3, yy - yr*0.2, yx + yr*1.5, yy + yr*0.3); ctx.stroke();
+
+  // YILAN: kalın, çizgili desenli (turuncu-amber tonları, görseldekinden farklı renk)
+  const govdeAna = '#e8821e', govdeAcik = '#ffc04d', cizgi = '#fff3c4';
+  // önce kalın sürekli gövde çiz (segmentleri birleştiren)
+  if (snYilan.length > 1) {
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.strokeStyle = govdeAna;
+    ctx.lineWidth = snCell * 0.82;
     ctx.beginPath();
-    snRoundRect(ctx, cx - r, cy - r, r * 2, r * 2, r * 0.5);
-    ctx.fill();
-    // başta göz
-    if (bas) {
-      ctx.fillStyle = '#fff';
-      const ex = cx + snYon.x * r * 0.3, ey = cy + snYon.y * r * 0.3;
-      ctx.beginPath(); ctx.arc(ex - 3, ey - 3, r * 0.18, 0, 7); ctx.fill();
-      ctx.beginPath(); ctx.arc(ex + 3, ey + 3, r * 0.18, 0, 7); ctx.fill();
-    }
-  });
+    snYilan.forEach((s, i) => {
+      const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+      if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+    });
+    ctx.stroke();
+    // üst parlama şeridi (3D his)
+    ctx.strokeStyle = govdeAcik;
+    ctx.lineWidth = snCell * 0.4;
+    ctx.beginPath();
+    snYilan.forEach((s, i) => {
+      const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2 - snCell * 0.12;
+      if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+    });
+    ctx.stroke();
+    // çapraz çizgi desenleri (her segmentte)
+    ctx.strokeStyle = cizgi; ctx.lineWidth = snCell * 0.14;
+    snYilan.forEach((s, i) => {
+      if (i % 1 !== 0) return;
+      const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+      ctx.beginPath();
+      ctx.moveTo(cx - snCell*0.22, cy - snCell*0.28);
+      ctx.lineTo(cx + snCell*0.22, cy + snCell*0.28);
+      ctx.stroke();
+    });
+  }
+  // BAŞ (yuvarlak, gözlü, dil)
+  const bas = snYilan[0];
+  const bx = bas.x * snCell + snCell / 2, by = bas.y * snCell + snCell / 2;
+  const br = snCell * 0.5;
+  const bg = ctx.createRadialGradient(bx - br*0.3, by - br*0.3, br*0.1, bx, by, br);
+  bg.addColorStop(0, govdeAcik); bg.addColorStop(1, govdeAna);
+  ctx.fillStyle = bg;
+  ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.fill();
+  // gözler
+  ctx.fillStyle = '#fff';
+  const gx = bx + snYon.x * br * 0.25, gy = by + snYon.y * br * 0.25;
+  const dik = { x: -snYon.y, y: snYon.x };
+  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4, gy + dik.y*br*0.4, br*0.26, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4, gy - dik.y*br*0.4, br*0.26, 0, 7); ctx.fill();
+  ctx.fillStyle = '#222';
+  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4 + snYon.x*br*0.1, gy + dik.y*br*0.4 + snYon.y*br*0.1, br*0.13, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4 + snYon.x*br*0.1, gy - dik.y*br*0.4 + snYon.y*br*0.1, br*0.13, 0, 7); ctx.fill();
+  // dil
+  ctx.strokeStyle = '#ff3b3b'; ctx.lineWidth = br*0.12;
+  ctx.beginPath();
+  ctx.moveTo(bx + snYon.x*br, by + snYon.y*br);
+  ctx.lineTo(bx + snYon.x*br*1.5, by + snYon.y*br*1.5);
+  ctx.stroke();
 }
 
 function snRoundRect(ctx, x, y, w, h, r) {
@@ -1780,23 +1817,26 @@ function snRoundRect(ctx, x, y, w, h, r) {
 // PARMAKLA KAYDIRMA kontrolü
 (function snBind() {
   const canvas = document.getElementById('sn-board');
-  function basla(e) {
-    const p = e.touches ? e.touches[0] : e;
-    snTouchStart = { x: p.clientX, y: p.clientY };
-  }
-  function bitir(e) {
-    if (!snTouchStart) return;
-    const p = e.changedTouches ? e.changedTouches[0] : e;
-    const dx = p.clientX - snTouchStart.x, dy = p.clientY - snTouchStart.y;
-    if (Math.abs(dx) < 18 && Math.abs(dy) < 18) { snTouchStart = null; return; }
+  // Ekranda dokunulan nokta, yılanın başına göre hangi yöndeyse o yöne dön
+  function dokun(e) {
+    if (!snYilan || snBitti) return;
+    if (e.cancelable) e.preventDefault();
+    const p = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e);
+    const rect = canvas.getBoundingClientRect();
+    const scale = canvas.width / rect.width;
+    const tx = (p.clientX - rect.left) * scale;
+    const ty = (p.clientY - rect.top) * scale;
+    // yılanın başının piksel konumu
+    const bas = snYilan[0];
+    const bx = bas.x * snCell + snCell / 2;
+    const by = bas.y * snCell + snCell / 2;
+    const dx = tx - bx, dy = ty - by;
+    // hangi eksende fark daha büyükse o yöne dön
     if (Math.abs(dx) > Math.abs(dy)) snYonDegis(dx > 0 ? 1 : -1, 0);
     else snYonDegis(0, dy > 0 ? 1 : -1);
-    snTouchStart = null;
   }
-  canvas.addEventListener('touchstart', e => { e.preventDefault(); basla(e); }, { passive: false });
-  canvas.addEventListener('touchend', e => { e.preventDefault(); bitir(e); }, { passive: false });
-  canvas.addEventListener('mousedown', basla);
-  canvas.addEventListener('mouseup', bitir);
+  canvas.addEventListener('touchstart', dokun, { passive: false });
+  canvas.addEventListener('mousedown', dokun);
 })();
 
 // klavye ok tuşları (masaüstü)

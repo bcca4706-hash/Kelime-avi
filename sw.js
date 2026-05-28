@@ -51,3 +51,4 @@ self.addEventListener('fetch', e => {
 self.addEventListener('message', e => {
   if (e.data === 'GUNCELLE') self.skipWaiting();
 });
+

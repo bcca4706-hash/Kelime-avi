@@ -160,17 +160,23 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 6.0 · 5 oyun · hedefli bölümler</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 7.0 · 5 oyun · full güncelleme</div>
 </div>
 
 <!-- KELİME AVI -->
 <div id="game-kelime" class="screen">
   <div class="hud">
     <span>💡 <span id="kel-joker">3</span></span>
-    <span>Bölüm <span id="kel-level">1</span></span>
+    <span><span id="kel-zorluk">Kolay</span> · Bölüm <span id="kel-level">1</span></span>
     <span>👑 <span id="kel-best">0</span></span>
   </div>
   <div style="opacity:.85">Puan: <strong id="kel-skor">0</strong> · Kalan: <strong id="kel-kalan">0</strong></div>
+  <div id="kel-zorluk-secim" style="margin:10px 0; display:none">
+    <div style="opacity:.8;margin-bottom:6px">Zorluk seç:</div>
+    <button class="btn small" onclick="kelZorlukSec('kolay')">🟢 Kolay</button>
+    <button class="btn small" onclick="kelZorlukSec('orta')">🟡 Orta</button>
+    <button class="btn small" onclick="kelZorlukSec('zor')">🔴 Zor</button>
+  </div>
   <div id="kel-loader" class="loader">Sorular yükleniyor…</div>
   <div id="kel-content" style="display:none">
     <div id="soru">Bir kelimeye dokun ve yaz</div>
@@ -178,6 +184,7 @@
     <div class="joker-bar">
       <span class="joker" onclick="kelJokerHarf()">💡 Harf Aç</span>
       <span class="joker" onclick="kelSonraki()">⏭️ Sonraki</span>
+      <span class="joker" onclick="kelZorlukDegis()">⚙️ Zorluk</span>
     </div>
     <div id="keyboard"></div>
   </div>
@@ -192,7 +199,12 @@
     <span>Top: <span id="blok-topsayi">1</span></span>
   </div>
   <canvas id="c1" width="320" height="540"></canvas>
-  <div style="margin-top:10px">
+  <div style="margin-top:6px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap">
+    <button class="btn small" id="bk-tip-normal" onclick="bkTipSec('normal')" style="padding:8px 12px">⚪ Normal</button>
+    <button class="btn alt small" id="bk-tip-dagit" onclick="bkTipSec('dagit')" style="padding:8px 12px">💥 Dağıtıcı</button>
+    <button class="btn alt small" id="bk-tip-cift" onclick="bkTipSec('cift')" style="padding:8px 12px">2️⃣ Çift Yıkıcı</button>
+  </div>
+  <div style="margin-top:6px">
     <button class="btn alt small" id="blok-stop-btn" onclick="blokDuraklat()">⏸️ Durdur</button>
     <button class="btn small" onclick="blokEkstraAtis()">⚡ Ekstra (<span id="blok-ekstra">3</span>)</button>
   </div>
@@ -200,7 +212,7 @@
     <button class="btn alt small" onclick="blokYeniOyun()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Alttan parmağınla nişan al ve bırak · ⭕ topları topla</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Alttan nişan al · ⭕ topları topla · ⚡ flaş bloklar sırayı temizler</div>
 </div>
 
 <!-- BLOK YERLEŞTİR -->
@@ -208,8 +220,9 @@
   <div class="hud">
     <span>👑 <span id="p-best">0</span></span>
     <span style="font-size:1.4em;font-weight:800"><span id="p-skor">0</span></span>
-    <span>Kombo: <span id="p-kombo">0</span></span>
+    <span>🎁 <span id="p-odul">0</span></span>
   </div>
+  <div style="font-size:.8em;opacity:.8;margin-bottom:4px">Kombo: <span id="p-kombo">0</span></div>
   <canvas id="p-board" width="360" height="360"></canvas>
   <div id="p-gameover" style="display:none; background:rgba(0,0,0,.8); border-radius:16px; padding:20px; margin:12px auto; max-width:300px;">
     <div style="font-size:2em">💀</div>
@@ -222,10 +235,11 @@
   <canvas id="p-tray" width="360" height="120"></canvas>
   <div>
     <button class="btn alt small" onclick="puzzleGeriAl()">↩️ Geri Al</button>
+    <button class="btn small" onclick="puzzleOdulKullan()">💣 Bomba Kullan</button>
     <button class="btn alt small" onclick="puzzleBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parçayı sürükleyip tahtaya bırak</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Sürükle-bırak · Her 3 temizlemede 💣 ödül · Bomba 3x3 alan patlatır</div>
 </div>
 
 <!-- MEYVE EŞLEŞTİR -->
@@ -271,7 +285,7 @@
     <button class="btn alt small" onclick="snakeBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Ekranda gitmek istediğin yöne dokun · Hız sürekli artar</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Ekrana dokun → yön değiştir · Duvardan geçer · Sadece kendine çarpınca ölür</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -369,12 +383,14 @@ const YEDEK_KEL = [
 ];
 let KELIMELER = [], kelLoaded = false;
 let kelBolum = load('kel_bolum', 0);
+let kelZorluk = load('kel_zorluk', 'kolay'); // kolay | orta | zor
 let kelSkor = 0, kelBest = load('kel_best', 0), kelJoker = 3;
 let kelIzgara = null, kelAktif = null, kelYazPos = 0;
 const TR_BUYUK = s => s.toLocaleUpperCase('tr-TR');
 
 async function initKelime() {
   document.getElementById('kel-best').innerText = kelBest;
+  kelZorlukGoster();
   if (kelLoaded) { kelBolumKur(); return; }
   document.getElementById('kel-loader').style.display = 'block';
   document.getElementById('kel-content').style.display = 'none';
@@ -394,11 +410,36 @@ async function initKelime() {
   kelBolumKur();
 }
 
+function kelZorlukGoster() {
+  const ad = kelZorluk === 'kolay' ? '🟢 Kolay' : kelZorluk === 'orta' ? '🟡 Orta' : '🔴 Zor';
+  document.getElementById('kel-zorluk').innerText = ad;
+}
+function kelZorlukSec(z) {
+  kelZorluk = z; save('kel_zorluk', z);
+  document.getElementById('kel-zorluk-secim').style.display = 'none';
+  document.getElementById('kel-content').style.display = 'block';
+  kelZorlukGoster();
+  kelBolum = 0; save('kel_bolum', 0);
+  kelBolumKur();
+}
+function kelZorlukDegis() {
+  document.getElementById('kel-zorluk-secim').style.display = 'block';
+  document.getElementById('kel-content').style.display = 'none';
+}
+
+// Zorluğa göre hedef ayarları (kelime sayısı, kelime uzunluğu, grid yoğunluğu)
+function kelZorlukAyar() {
+  if (kelZorluk === 'kolay') return { hedef: 4, minUz: 3, maxUz: 5, ekstraKelime: 0 };
+  if (kelZorluk === 'orta') return { hedef: 6, minUz: 4, maxUz: 7, ekstraKelime: 1 };
+  return { hedef: 8, minUz: 5, maxUz: 9, ekstraKelime: 2 }; // zor
+}
+
 function izgaraUret(adet) {
-  const N = 13;
+  const N = 15;
+  const ayar = kelZorlukAyar();
   const havuz = KELIMELER
     .map(k => ({ kelime: TR_BUYUK(k.kelime).replace(/[^A-ZÇĞİÖŞÜ]/g, ''), ipucu: k.ipucu }))
-    .filter(k => k.kelime.length >= 3 && k.kelime.length <= 8);
+    .filter(k => k.kelime.length >= ayar.minUz && k.kelime.length <= ayar.maxUz);
   for (let i = havuz.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     const t = havuz[i]; havuz[i] = havuz[j]; havuz[j] = t;
@@ -434,7 +475,8 @@ function izgaraUret(adet) {
   }
   const ilk = havuz.shift();
   if (!ilk) return null;
-  koy(ilk.kelime, Math.floor(N/2), Math.floor((N - ilk.kelime.length)/2), true, ilk.ipucu);
+  // İlk kelimeyi DİKEY yerleştir (sütunlar alt alta, ekranı dikey doldur)
+  koy(ilk.kelime, Math.floor((N - ilk.kelime.length)/2), Math.floor(N/2), false, ilk.ipucu);
   for (const aday of havuz) {
     if (yerlesen.length >= adet) break;
     let kondu = false;
@@ -484,10 +526,11 @@ function izgaraUret(adet) {
 }
 
 function kelBolumKur() {
+  const ayar = kelZorlukAyar();
   let best = null;
-  for (let d = 0; d < 6; d++) {
-    const hedef = 4 + (kelBolum % 3);
-    const iz = izgaraUret(Math.min(6, hedef));
+  for (let d = 0; d < 8; d++) {
+    const hedef = ayar.hedef + (kelBolum % 3);
+    const iz = izgaraUret(hedef);
     if (iz && (!best || iz.kelimeler.length > best.kelimeler.length)) best = iz;
     if (best && best.kelimeler.length >= hedef) break;
   }
@@ -683,6 +726,9 @@ window.addEventListener('keydown', e => {
 
 /* ============ BLOK KIRICI - TOP SÜRÜSÜ (20 LEVEL) ============ */
 let bkBalls, bkBricks, bkBonus, bkState, bkTopSayi, bkSkor, bkTur, bkLevel;
+let bkTopTip = 'normal'; // normal | dagit | cift
+let bkFlas = false; // sıra flaş etkisi devam ediyor mu
+let bkFlasTimer = null;
 let bkLauncher, bkAiming, bkAimX, bkAimY, bkAtisYon, bkAtilan, bkDonenSayi, bkIlkDusenX, bkFireTimer;
 let bkParticles, bkEkstra, bkDuraklat, bkBuTurTop;
 const BK_COLS = 7;
@@ -817,14 +863,32 @@ function yeniSatirEkle() {
   const zorluk = bkTur + bkLevel * 2;
   for (let c = 0; c < BK_COLS; c++) {
     const r = Math.random();
-    if (r < 0.68) {
+    if (r < 0.58) {
+      // normal blok
       const taban = Math.max(1, Math.round(zorluk * 1.1));
       const can = taban + Math.floor(Math.random() * (Math.ceil(zorluk * 1.3) + 2));
-      bkBricks.push({ col: c, row: 0, hp: can, max: can });
-    } else if (r < 0.78) {
+      bkBricks.push({ col: c, row: 0, hp: can, max: can, tip: 'normal' });
+    } else if (r < 0.66) {
+      // PUZZLE PARÇA blok (blok yerleştir tarzı, dayanıklı)
+      const can = Math.max(2, Math.round(zorluk * 1.5));
+      bkBricks.push({ col: c, row: 0, hp: can, max: can, tip: 'puzzle' });
+    } else if (r < 0.74) {
+      // FLAŞ KIRICI blok - sütun arasına gelir, çarpılınca sırayı temizler
+      bkBricks.push({ col: c, row: 0, hp: 1, max: 1, tip: 'flas' });
+    } else if (r < 0.84) {
       bkBonus.push({ col: c, row: 0, tip: 'top' });
     }
   }
+}
+
+// Top tipi seçimi
+function bkTipSec(tip) {
+  bkTopTip = tip;
+  ['normal','dagit','cift'].forEach(t => {
+    const el = document.getElementById('bk-tip-' + t);
+    if (el) el.className = (t === tip) ? 'btn small' : 'btn alt small';
+  });
+  sfx.tik();
 }
 
 function brickRect(o) {
@@ -867,12 +931,55 @@ function bkAtisBaslat() {
   bkAtilan = 0; bkDonenSayi = 0; bkIlkDusenX = null;
   bkBuTurTop = bkTopSayi;
   const hiz = Math.max(7, BK_W * 0.022);
+  // Top tipi etkisi: dagit -> her topun yanına 2 top eklenir (sağa-sola yayılır)
+  //                  cift -> her top 2 vuruşluk (hasar=2)
   bkFireTimer = setInterval(() => {
     if (bkAtilan >= bkBuTurTop) { clearInterval(bkFireTimer); return; }
-    bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx: bkAtisYon.x * hiz, dy: bkAtisYon.y * hiz, canli: true });
+    const dx = bkAtisYon.x * hiz, dy = bkAtisYon.y * hiz;
+    const hasar = bkTopTip === 'cift' ? 2 : 1;
+    bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx, dy, canli: true, hasar });
+    if (bkTopTip === 'dagit') {
+      // sapma açıları (+/- 12 derece)
+      const aci = 0.21;
+      const cosA = Math.cos(aci), sinA = Math.sin(aci);
+      bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx: dx*cosA - dy*sinA, dy: dx*sinA + dy*cosA, canli: true, hasar });
+      bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx: dx*cosA + dy*sinA, dy: -dx*sinA + dy*cosA, canli: true, hasar });
+    }
     bkAtilan++;
     sfx.carp();
   }, 90);
+}
+
+// FLAŞ TETİKLENDİ: sağdan sola, yukarıdan aşağıya tüm blokların sayılarını hızla düşür
+// O sıra (satır) komple bitene kadar 1 seferlik devam eder
+function bkFlasiTetikle(tetikleyenRow) {
+  if (bkFlas) return; // 1 seferlik
+  bkFlas = true;
+  sfx.guc();
+  toast('⚡ FLAŞ! Sıra temizleniyor...');
+  let satir = tetikleyenRow;
+  let sutunIdx = BK_COLS - 1; // sağdan sola
+  bkFlasTimer = setInterval(() => {
+    // o satırdaki bloklara bak
+    const buSiradakiler = bkBricks.filter(b => b.hp > 0 && b.row === satir);
+    if (buSiradakiler.length === 0) {
+      // bir alttaki satıra in
+      satir++;
+      sutunIdx = BK_COLS - 1;
+      // eğer aşağıda da yoksa bitir
+      const altta = bkBricks.some(b => b.hp > 0 && b.row >= satir);
+      if (!altta) { clearInterval(bkFlasTimer); bkFlas = false; return; }
+      return;
+    }
+    // o satırdaki en sağdaki blokta sayıyı 1 düşür
+    const hedef = buSiradakiler.reduce((a,b) => b.col > a.col ? b : a, buSiradakiler[0]);
+    hedef.hp--;
+    bkSkor += 2;
+    const R = brickRect(hedef);
+    bkPatlat(R.cx, R.cy, '#ffe46b');
+    guncelleHUD();
+    sutunIdx--;
+  }, 60);
 }
 
 function bkTurBitir() {
@@ -927,8 +1034,15 @@ function bkLoop() {
             const oncekiX = ball.x - ball.dx / adim;
             if (oncekiX <= R.x || oncekiX >= R.x + R.w) ball.dx *= -1;
             else ball.dy *= -1;
-            b.hp--; bkSkor += 1; sfx.carp();
-            if (b.hp <= 0) { bkPatlat(R.cx, R.cy, bkLevelRenk(b.max, palet)); bkSkor += 4; }
+            const hasar = ball.hasar || 1;
+            b.hp -= hasar; bkSkor += hasar; sfx.carp();
+            if (b.hp <= 0) {
+              bkPatlat(R.cx, R.cy, bkLevelRenk(b.max, palet)); bkSkor += 4;
+              // FLAŞ blok yıkıldıysa sırayı tetikle
+              if (b.tip === 'flas') bkFlasiTetikle(b.row);
+              // PUZZLE parça yıkıldıysa bonus
+              if (b.tip === 'puzzle') { bkSkor += 8; bkPatlat(R.cx, R.cy, '#9b5de5'); }
+            }
             guncelleHUD();
             break;
           }
@@ -959,13 +1073,38 @@ function bkLoop() {
   // DOLU kutular: 3D gradyan + parlama + sayı
   bkBricks.forEach(b => {
     if (b.hp <= 0) return;
-    const R = brickRect(b), renk = bkLevelRenk(b.max, palet);
-    bkBlokCiz(ctx, R.x, R.y, R.w, R.h, renk);
-    ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(BK_CELL*0.34)}px sans-serif`;
-    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-    ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 3;
-    ctx.fillText(b.hp, R.cx, R.cy);
-    ctx.shadowBlur = 0;
+    const R = brickRect(b);
+    let renk;
+    if (b.tip === 'flas') {
+      // FLAŞ blok: parlayan sarı/beyaz şimşek
+      renk = '#ffe46b';
+      const titreşim = 0.5 + 0.5 * Math.sin(Date.now() / 100);
+      ctx.shadowColor = '#fff'; ctx.shadowBlur = 18 * titreşim;
+      bkBlokCiz(ctx, R.x, R.y, R.w, R.h, renk);
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = '#000'; ctx.font = `bold ${Math.floor(BK_CELL*0.5)}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('⚡', R.cx, R.cy);
+    } else if (b.tip === 'puzzle') {
+      // PUZZLE blok: mor, deseni var
+      renk = '#9b5de5';
+      bkBlokCiz(ctx, R.x, R.y, R.w, R.h, renk);
+      ctx.fillStyle = 'rgba(255,255,255,.3)';
+      ctx.fillRect(R.x + R.w*0.3, R.y + R.h*0.3, R.w*0.4, R.h*0.4);
+      ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(BK_CELL*0.34)}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 3;
+      ctx.fillText(b.hp, R.cx, R.cy);
+      ctx.shadowBlur = 0;
+    } else {
+      renk = bkLevelRenk(b.max, palet);
+      bkBlokCiz(ctx, R.x, R.y, R.w, R.h, renk);
+      ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(BK_CELL*0.34)}px sans-serif`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.shadowColor = 'rgba(0,0,0,.5)'; ctx.shadowBlur = 3;
+      ctx.fillText(b.hp, R.cx, R.cy);
+      ctx.shadowBlur = 0;
+    }
   });
   bkBonus.forEach(o => {
     const R = brickRect(o);
@@ -1056,7 +1195,7 @@ function bkRoundRect(ctx, x, y, w, h, r) {
 
 /* ============ BLOK YERLEŞTİR - BLOCK PUZZLE ============ */
 const PB = 8;
-let pBoard, pSkor, pKombo, pBest = load('p_best', 0), pTepsi, pGecmis = [];
+let pBoard, pSkor, pKombo, pBest = load('p_best', 0), pTepsi, pGecmis = [], pOdul = 0, pTemizSayac = 0;
 let pDrag = null;
 let P_W, P_CELL, P_GAP, P_PAD, T_W, T_H, T_CELL;
 
@@ -1097,10 +1236,11 @@ function puzzleBaslat() {
   document.getElementById('p-gameover').style.display = 'none';
   pBoyutla();
   pBoard = Array.from({ length: PB }, () => Array(PB).fill(null));
-  pSkor = 0; pKombo = 0; pGecmis = [];
+  pSkor = 0; pKombo = 0; pGecmis = []; pOdul = 0; pTemizSayac = 0;
   document.getElementById('p-skor').innerText = 0;
   document.getElementById('p-kombo').innerText = 0;
   document.getElementById('p-best').innerText = pBest;
+  document.getElementById('p-odul').innerText = pOdul;
   yeniTepsi();
   pCizTahta(); pCizTepsi();
 }
@@ -1217,8 +1357,50 @@ function pSatirTemizle() {
     const puan = temizlenen * 10 * temizlenen + pKombo * 5;
     pSkor += puan; sfx.kazan();
     document.getElementById('p-kombo').innerText = pKombo;
+    // ÖDÜL: her temizlemede sayaç artar, 3 dolunca bomba ödülü kazan
+    pTemizSayac += temizlenen;
+    while (pTemizSayac >= 3) {
+      pTemizSayac -= 3;
+      pOdul++;
+      document.getElementById('p-odul').innerText = pOdul;
+      toast('🎁 +1 Bomba ödülü kazandın!');
+      sfx.guc();
+    }
     toast('✨ +' + puan + (pKombo > 1 ? ' (Kombo x' + pKombo + ')' : ''));
   } else { pKombo = 0; document.getElementById('p-kombo').innerText = 0; }
+}
+
+// ÖDÜL: bomba kullanımı - tahtanın merkezinde 3x3 alanı temizler
+function puzzleOdulKullan() {
+  if (pOdul <= 0) { toast('Henüz bomba ödülün yok'); return; }
+  pSnapshot();
+  pOdul--;
+  document.getElementById('p-odul').innerText = pOdul;
+  // doluluk merkezini bul (en yoğun bölge)
+  let enIyi = { r: PB/2, c: PB/2, sayi: -1 };
+  for (let r = 1; r < PB-1; r++)
+    for (let c = 1; c < PB-1; c++) {
+      let sayi = 0;
+      for (let dr = -1; dr <= 1; dr++)
+        for (let dc = -1; dc <= 1; dc++)
+          if (pBoard[r+dr][c+dc]) sayi++;
+      if (sayi > enIyi.sayi) enIyi = { r, c, sayi };
+    }
+  // 3x3 patlat
+  let silinen = 0;
+  for (let dr = -1; dr <= 1; dr++)
+    for (let dc = -1; dc <= 1; dc++) {
+      const nr = enIyi.r + dr, nc = enIyi.c + dc;
+      if (nr >= 0 && nc >= 0 && nr < PB && nc < PB && pBoard[nr][nc]) {
+        pBoard[nr][nc] = null; silinen++;
+      }
+    }
+  pSkor += silinen * 3;
+  document.getElementById('p-skor').innerText = pSkor;
+  sfx.kazan();
+  toast('💥 ' + silinen + ' blok patladı! +' + (silinen*3));
+  pSatirTemizle();
+  pCizTahta();
 }
 
 function puzzleBitti() {
@@ -1355,6 +1537,7 @@ const E_RENK = [
   { ana:'#fadb14', acik:'#fff04d', koyu:'#d4b900', ad:'☀️' }  // sarı güneş
 ];
 let eBoard, eSkor, eHamle, eLevel, eBest = load('e_best', 0);
+let eOzel; // [satir][sutun] = null | 'flas' | 'roket' | 'ucak'
 let eSec = null, eKilit = false, eCesit = 5;
 let E_W, E_CELL, E_PAD;
 let eDragStart = null;
@@ -1401,6 +1584,7 @@ function eYeniBolum() {
       Array.from({ length: E_SUTUN }, () => Math.floor(Math.random() * eCesit)));
     deneme++;
   } while ((eEslesmeBul().length > 0 || !eHamleVarMi()) && deneme < 60);
+  eOzel = Array.from({ length: E_SATIR }, () => Array(E_SUTUN).fill(null));
   eCiz();
 }
 
@@ -1455,13 +1639,42 @@ function eCiz() {
   for (let r = 0; r < E_SATIR; r++)
     for (let c = 0; c < E_SUTUN; c++) {
       const t = eBoard[r][c];
-      if (t === null || t === undefined) continue;
       const cx = E_PAD + c * E_CELL + E_CELL / 2;
       const cy = E_PAD + r * E_CELL + E_CELL / 2;
       const secili = eSec && eSec.r === r && eSec.c === c;
-      ctx.fillStyle = secili ? 'rgba(255,228,107,.3)' : 'rgba(255,255,255,.06)';
+      // KUTU ZEMİN: ahşap-sarımsı dolu kare (Farm Heroes tarzı)
+      const kg = ctx.createLinearGradient(0, E_PAD + r*E_CELL, 0, E_PAD + (r+1)*E_CELL);
+      kg.addColorStop(0, secili ? '#ffe46b' : '#f3c97b');
+      kg.addColorStop(1, secili ? '#f0c83e' : '#d6a857');
+      ctx.fillStyle = kg;
       eRoundRect(ctx, E_PAD + c*E_CELL + 2, E_PAD + r*E_CELL + 2, E_CELL - 4, E_CELL - 4, 8); ctx.fill();
-      eMeyveCiz(ctx, cx, cy, E_CELL * 0.38, E_RENK[t], secili ? 0.85 : 1);
+      ctx.strokeStyle = 'rgba(120,80,30,.4)'; ctx.lineWidth = 1.5;
+      eRoundRect(ctx, E_PAD + c*E_CELL + 2, E_PAD + r*E_CELL + 2, E_CELL - 4, E_CELL - 4, 8); ctx.stroke();
+      if (t === null || t === undefined) continue;
+      // özel parça?
+      const oz = eOzel && eOzel[r] && eOzel[r][c];
+      if (oz === 'flas') {
+        // FLAŞ: parlayan büyük yıldız
+        const titre = 0.7 + 0.3 * Math.sin(Date.now() / 150);
+        ctx.shadowColor = '#fff'; ctx.shadowBlur = 22 * titre;
+        eMeyveCiz(ctx, cx, cy, E_CELL * 0.42, E_RENK[t], 1);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(E_CELL*0.5)}px sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('✨', cx, cy);
+      } else if (oz === 'roket') {
+        eMeyveCiz(ctx, cx, cy, E_CELL * 0.38, E_RENK[t], 1);
+        ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(E_CELL*0.5)}px sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('🚀', cx, cy);
+      } else if (oz === 'ucak') {
+        eMeyveCiz(ctx, cx, cy, E_CELL * 0.38, E_RENK[t], 1);
+        ctx.fillStyle = '#fff'; ctx.font = `bold ${Math.floor(E_CELL*0.5)}px sans-serif`;
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('✈️', cx, cy);
+      } else {
+        eMeyveCiz(ctx, cx, cy, E_CELL * 0.38, E_RENK[t], secili ? 0.85 : 1);
+      }
     }
   // uçan +N baloncukları
   eBaloncuklar.forEach(b => {
@@ -1497,12 +1710,49 @@ function eHucreBul(clientX, clientY) {
   return null;
 }
 
+// Özel parça yönlendirme modu: özel parçaya tıklanınca aktif olur
+// İkinci dokunmadaki meyve türüne göre güç patlar
+let eOzelBekleyen = null; // {r,c,tip} - hangi özel parça aktive bekliyor
+
 function eDown(e) {
   if (eKilit) return;
   const p = e.touches ? e.touches[0] : e;
   const h = eHucreBul(p.clientX, p.clientY);
   if (!h) return;
   if (e.cancelable) e.preventDefault();
+  // ÖZEL PARÇA bekleme modunda mı?
+  if (eOzelBekleyen) {
+    const hedefTip = eBoard[h.r][h.c];
+    eOzelTetikle(eOzelBekleyen, hedefTip);
+    eOzelBekleyen = null; eSec = null;
+    return;
+  }
+  // Bu hücrede özel parça var mı? Aktive et
+  if (eOzel && eOzel[h.r][h.c]) {
+    const mevcut = eOzel[h.r][h.c];
+    // ROKETİN ÜSTÜNE TIKLAYINCA UÇAĞA YÜKSELT
+    if (mevcut === 'roket' && (!eOzelBekleyen || eOzelBekleyen.r !== h.r || eOzelBekleyen.c !== h.c)) {
+      // ilk tık: roket aktif; ikinci tıkı bekle ya da uçağa yükselt seçeneği ver
+      // basit yaklaşım: roket aktif olmuşken aynı hücreye tekrar dokunulursa uçağa dönsün
+      // Aşağıdaki "aynı hücreye iki kez basma" mantığını kullanıyoruz:
+    }
+    if (eOzelBekleyen && eOzelBekleyen.r === h.r && eOzelBekleyen.c === h.c && mevcut === 'roket') {
+      // ikinci dokunuş = uçağa yükselt
+      eOzel[h.r][h.c] = 'ucak';
+      eOzelBekleyen = { r: h.r, c: h.c, tip: 'ucak' };
+      sfx.guc();
+      toast('✈️ Roket uçağa yükseldi! Hedef meyveye dokun');
+      eCiz();
+      return;
+    }
+    eOzelBekleyen = { r: h.r, c: h.c, tip: mevcut };
+    eSec = h; sfx.guc();
+    toast(mevcut === 'flas' ? '✨ Hedef meyve türüne dokun' :
+          mevcut === 'roket' ? '🚀 Aktif! Yine dokun → uçak, veya başka meyveye dokun → patlat' :
+          '✈️ Hedef meyve türüne dokun');
+    eCiz();
+    return;
+  }
   eDragStart = h; eSec = h; sfx.tik(); eCiz();
 }
 function eMove(e) {
@@ -1523,11 +1773,55 @@ function eClick(e) {
   const p = e.changedTouches ? e.changedTouches[0] : e;
   const h = eHucreBul(p.clientX, p.clientY);
   if (!h) return;
+  if (eOzelBekleyen) return; // eDown ele aldı
   if (!eSec) { eSec = h; eCiz(); return; }
   if (eSec.r === h.r && eSec.c === h.c) { eSec = null; eCiz(); return; }
   const fark = Math.abs(eSec.r - h.r) + Math.abs(eSec.c - h.c);
   if (fark === 1) { const bas = eSec; eSec = null; eTakasDene(bas.r, bas.c, h.r, h.c); }
   else { eSec = h; eCiz(); }
+}
+
+// ÖZEL PARÇA GÜÇLERİNİ TETİKLE
+function eOzelTetikle(ozel, hedefTip) {
+  if (hedefTip === null || hedefTip === undefined) return;
+  eKilit = true;
+  const silinecekler = [];
+  if (ozel.tip === 'flas') {
+    // FLAŞ: hedef tip ne ise board'daki tümünü sil
+    for (let r = 0; r < E_SATIR; r++)
+      for (let c = 0; c < E_SUTUN; c++)
+        if (eBoard[r][c] === hedefTip) silinecekler.push({ r, c });
+    toast('✨ FLAŞ! ' + silinecekler.length + ' ' + E_RENK[hedefTip].ad + ' patladı');
+  } else if (ozel.tip === 'roket') {
+    // ROKET: özel parçanın olduğu sıra VE sütunu komple sil
+    for (let c = 0; c < E_SUTUN; c++) silinecekler.push({ r: ozel.r, c });
+    for (let r = 0; r < E_SATIR; r++) silinecekler.push({ r, c: ozel.c });
+    toast('🚀 ROKET! Sıra+sütun');
+  } else if (ozel.tip === 'ucak') {
+    // UÇAK: hedef tipten 5 tanesini havadan vurur (rastgele)
+    const adaylar = [];
+    for (let r = 0; r < E_SATIR; r++)
+      for (let c = 0; c < E_SUTUN; c++)
+        if (eBoard[r][c] === hedefTip) adaylar.push({ r, c });
+    for (let i = adaylar.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); const t=adaylar[i];adaylar[i]=adaylar[j];adaylar[j]=t; }
+    adaylar.slice(0, 5).forEach(p => silinecekler.push(p));
+    toast('✈️ UÇAK! Havadan ' + Math.min(5,adaylar.length) + ' bomba');
+  }
+  // skor + hedeflere işle
+  silinecekler.forEach(({ r, c }) => {
+    if (r < 0 || c < 0 || r >= E_SATIR || c >= E_SUTUN) return;
+    const t = eBoard[r][c];
+    if (t === null || t === undefined) return;
+    const h = eHedefler.find(x => x.tip === t);
+    if (h) h.toplanan++;
+    eBoard[r][c] = null;
+    if (eOzel) eOzel[r][c] = null;
+  });
+  eSkor += silinecekler.length * 15;
+  document.getElementById('e-skor').innerText = eSkor;
+  sfx.kazan();
+  eHedefCiz();
+  setTimeout(() => { eDusur(); eCiz(); setTimeout(() => eZincir(1), 200); }, 300);
 }
 
 function eTakas(r1, c1, r2, c2) {
@@ -1571,12 +1865,45 @@ function eEslesmeBul() {
   return liste;
 }
 
+// Sürekli aynı tipte yatay/dikey grupları döndürür
+function eGruplariBul() {
+  const gruplar = [];
+  for (let r = 0; r < E_SATIR; r++) {
+    let s = 1;
+    for (let c = 1; c <= E_SUTUN; c++) {
+      if (c < E_SUTUN && eBoard[r][c] !== null && eBoard[r][c] === eBoard[r][c-1]) s++;
+      else {
+        if (s >= 3) {
+          const list = [];
+          for (let k = 0; k < s; k++) list.push({ r, c: c-1-k });
+          gruplar.push({ list, uzunluk: s, yatay: true, tip: eBoard[r][c-1] });
+        }
+        s = 1;
+      }
+    }
+  }
+  for (let c = 0; c < E_SUTUN; c++) {
+    let s = 1;
+    for (let r = 1; r <= E_SATIR; r++) {
+      if (r < E_SATIR && eBoard[r][c] !== null && eBoard[r][c] === eBoard[r-1][c]) s++;
+      else {
+        if (s >= 3) {
+          const list = [];
+          for (let k = 0; k < s; k++) list.push({ r: r-1-k, c });
+          gruplar.push({ list, uzunluk: s, yatay: false, tip: eBoard[r-1][c] });
+        }
+        s = 1;
+      }
+    }
+  }
+  return gruplar;
+}
+
 function eZincir(kombo) {
   const eslesme = eEslesmeBul();
   if (eslesme.length === 0) {
     eKilit = false;
     if (eSkor > eBest) { eBest = eSkor; save('e_best', eBest); document.getElementById('e-best').innerText = eBest; }
-    // hedeflere ulaşıldı mı?
     const hepsiTamam = eHedefler.every(h => h.toplanan >= h.gereken);
     if (hepsiTamam) {
       setTimeout(() => {
@@ -1601,6 +1928,18 @@ function eZincir(kombo) {
     if (!eHamleVarMi()) { toast('🔀 Karıştırılıyor...'); setTimeout(eKaristir, 600); }
     return;
   }
+  // ÖZEL PARÇA YARATMA: 4'lü → roket, 5+ → flaş
+  const gruplar = eGruplariBul();
+  const yaratilan = []; // {r,c,tip,parca}
+  gruplar.forEach(g => {
+    if (g.uzunluk >= 5) {
+      const orta = g.list[Math.floor(g.list.length / 2)];
+      yaratilan.push({ r: orta.r, c: orta.c, tip: g.tip, parca: 'flas' });
+    } else if (g.uzunluk === 4) {
+      const orta = g.list[Math.floor(g.list.length / 2)];
+      yaratilan.push({ r: orta.r, c: orta.c, tip: g.tip, parca: 'roket' });
+    }
+  });
   // tür bazında say + hedefe işle
   const sayim = {};
   eslesme.forEach(({ r, c }) => {
@@ -1616,7 +1955,6 @@ function eZincir(kombo) {
   document.getElementById('e-skor').innerText = eSkor;
   sfx.dogru();
   eHedefCiz();
-  // +N baloncuğu (ilk eşleşmenin konumunda)
   const ilk = eslesme[0];
   eBaloncuklar.push({
     x: E_PAD + ilk.c * E_CELL + E_CELL/2,
@@ -1624,7 +1962,23 @@ function eZincir(kombo) {
     n: eslesme.length, life: 1
   });
   if (kombo > 1) toast('🔥 Combo x' + kombo + '!');
-  eslesme.forEach(({ r, c }) => { eBoard[r][c] = null; });
+  if (yaratilan.length) {
+    yaratilan.forEach(y => {
+      if (y.parca === 'flas') toast('✨ FLAŞ parça yaratıldı! Üstüne dokun');
+      else toast('🚀 ROKET parça yaratıldı! Üstüne dokun');
+    });
+  }
+  // önce sil
+  eslesme.forEach(({ r, c }) => {
+    eBoard[r][c] = null;
+    if (eOzel) eOzel[r][c] = null;
+  });
+  // sonra yaratılan özel parçaları yerine koy
+  yaratilan.forEach(y => {
+    eBoard[y.r][y.c] = y.tip;
+    if (!eOzel) eOzel = Array.from({ length: E_SATIR }, () => Array(E_SUTUN).fill(null));
+    eOzel[y.r][y.c] = y.parca;
+  });
   // baloncuk animasyonu
   let adim = 0;
   const balAnim = setInterval(() => {
@@ -1638,10 +1992,19 @@ function eZincir(kombo) {
 
 function eDusur() {
   for (let c = 0; c < E_SUTUN; c++) {
-    const sutun = [];
-    for (let r = E_SATIR - 1; r >= 0; r--) if (eBoard[r][c] !== null) sutun.push(eBoard[r][c]);
+    const sutun = []; // {tip, ozel}
     for (let r = E_SATIR - 1; r >= 0; r--) {
-      eBoard[r][c] = sutun.length ? sutun.shift() : Math.floor(Math.random() * eCesit);
+      if (eBoard[r][c] !== null) sutun.push({ tip: eBoard[r][c], ozel: eOzel ? eOzel[r][c] : null });
+    }
+    for (let r = E_SATIR - 1; r >= 0; r--) {
+      if (sutun.length) {
+        const v = sutun.shift();
+        eBoard[r][c] = v.tip;
+        if (eOzel) eOzel[r][c] = v.ozel;
+      } else {
+        eBoard[r][c] = Math.floor(Math.random() * eCesit);
+        if (eOzel) eOzel[r][c] = null;
+      }
     }
   }
 }
@@ -1731,8 +2094,11 @@ function snAdim() {
   if (snBitti) return;
   snYon = snSonrakiYon;
   const bas = { x: snYilan[0].x + snYon.x, y: snYilan[0].y + snYon.y };
-  // duvar çarpışması
-  if (bas.x < 0 || bas.y < 0 || bas.x >= SN_GRID || bas.y >= SN_GRID) { snOyunBitti(); return; }
+  // duvarlardan geçer (toroidal sarma - ölmez)
+  if (bas.x < 0) bas.x = SN_GRID - 1;
+  if (bas.y < 0) bas.y = SN_GRID - 1;
+  if (bas.x >= SN_GRID) bas.x = 0;
+  if (bas.y >= SN_GRID) bas.y = 0;
   // kendine çarpma
   if (snYilan.some(s => s.x === bas.x && s.y === bas.y)) { snOyunBitti(); return; }
   snYilan.unshift(bas);

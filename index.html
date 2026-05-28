@@ -111,6 +111,10 @@
   /* MEYVE EŞLEŞTİR - canvas 3D */
   #e-board { display: block; margin: 10px auto; touch-action: none; border-radius: 16px; max-width: 380px; width: 94%; background: rgba(255,255,255,.1); }
 
+  /* YILAN */
+  #sn-board { display: block; margin: 10px auto; touch-action: none; border-radius: 14px; max-width: 380px; width: 94%; background: rgba(8,8,22,.6); }
+  #sn-dpad div { display: flex; justify-content: center; gap: 6px; margin: 4px 0; }
+
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,.88); padding: 12px 22px; border-radius: 30px;
     font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100; max-width: 90%; }
@@ -151,8 +155,13 @@
     <strong>Meyve Eşleştir</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">3'lü eşleştir · Hamle limiti</div>
   </div>
+  <div class="card" onclick="showGame('snake')">
+    <span class="menu-icon">🐍</span>
+    <strong>Yılan</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
+  </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 4.0 · 4 oyun · 20 level</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 5.0 · 5 oyun</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -244,6 +253,36 @@
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağınla kaydırarak iki meyveyi takas et · 3+ aynısı patlar</div>
 </div>
 
+<!-- YILAN (SNAKE) -->
+<div id="game-snake" class="screen">
+  <div class="hud">
+    <span>🍎 <span id="sn-skor">0</span></span>
+    <span>Hız <span id="sn-hiz">1</span></span>
+    <span>👑 <span id="sn-best">0</span></span>
+  </div>
+  <canvas id="sn-board" width="360" height="360"></canvas>
+  <div id="sn-gameover" style="display:none; background:rgba(0,0,0,.8); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
+    <div style="font-size:2em">🐍</div>
+    <div style="font-weight:800; font-size:1.3em; margin:8px 0">Oyun Bitti!</div>
+    <div id="sn-gameover-skor" style="margin:8px 0">Skor: 0</div>
+    <button class="btn small" onclick="snakeBaslat()">🔄 Tekrar Oyna</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div id="sn-dpad" style="margin:10px auto; max-width:200px;">
+    <div><button class="btn alt small" style="width:60px" onclick="snYonDegis(0,-1)">⬆️</button></div>
+    <div>
+      <button class="btn alt small" style="width:60px" onclick="snYonDegis(-1,0)">⬅️</button>
+      <button class="btn alt small" style="width:60px" onclick="snYonDegis(0,1)">⬇️</button>
+      <button class="btn alt small" style="width:60px" onclick="snYonDegis(1,0)">➡️</button>
+    </div>
+  </div>
+  <div>
+    <button class="btn alt small" onclick="snakeBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağınla kaydır ya da okları kullan · Duvara/kendine çarpma</div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -325,6 +364,8 @@ function showGame(g) {
   if (g === 'blok') { setDuvar('teknoloji'); requestAnimationFrame(() => blokYeniOyun()); }
   if (g === 'puzzle') { setDuvar('muzik'); requestAnimationFrame(() => puzzleBaslat()); }
   if (g === 'eslestir') { setDuvar('spor'); requestAnimationFrame(() => eslestirBaslat()); }
+  if (g === 'snake') { setDuvar('doga'); requestAnimationFrame(() => snakeBaslat()); }
+  if (g !== 'snake') { clearInterval(window.snTimer); }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -1598,6 +1639,176 @@ function eKaristir() {
 })();
 
 
+/* ============ YILAN (SNAKE) ============ */
+const SN_GRID = 17;            // 17x17 hücre
+let snBoard, snYilan, snYon, snSonrakiYon, snYem, snSkor, snBest = load('sn_best', 0);
+let snHiz, snBitti, snCell, snTouchStart = null;
+
+function snakeBaslat() {
+  document.getElementById('sn-gameover').style.display = 'none';
+  snBoyutla();
+  const orta = Math.floor(SN_GRID / 2);
+  snYilan = [{ x: orta, y: orta }, { x: orta - 1, y: orta }, { x: orta - 2, y: orta }];
+  snYon = { x: 1, y: 0 };
+  snSonrakiYon = { x: 1, y: 0 };
+  snSkor = 0; snHiz = 1; snBitti = false;
+  document.getElementById('sn-skor').innerText = 0;
+  document.getElementById('sn-hiz').innerText = 1;
+  document.getElementById('sn-best').innerText = snBest;
+  snYemKoy();
+  snCiz();
+  clearInterval(window.snTimer);
+  window.snTimer = setInterval(snAdim, snHizMs());
+}
+
+function snHizMs() { return Math.max(70, 200 - snHiz * 12); }
+
+function snBoyutla() {
+  const canvas = document.getElementById('sn-board');
+  const W = Math.min(canvas.clientWidth || 360, 380);
+  canvas.width = W; canvas.height = W;
+  snCell = W / SN_GRID;
+}
+
+function snYemKoy() {
+  let bos;
+  do {
+    bos = { x: Math.floor(Math.random() * SN_GRID), y: Math.floor(Math.random() * SN_GRID) };
+  } while (snYilan.some(s => s.x === bos.x && s.y === bos.y));
+  snYem = bos;
+}
+
+function snYonDegis(dx, dy) {
+  // 180 derece dönüşü engelle
+  if (snYon.x === -dx && snYon.y === -dy) return;
+  if (snYon.x === dx && snYon.y === dy) return;
+  snSonrakiYon = { x: dx, y: dy };
+  sfx.tik();
+}
+
+function snAdim() {
+  if (snBitti) return;
+  snYon = snSonrakiYon;
+  const bas = { x: snYilan[0].x + snYon.x, y: snYilan[0].y + snYon.y };
+  // duvar çarpışması
+  if (bas.x < 0 || bas.y < 0 || bas.x >= SN_GRID || bas.y >= SN_GRID) { snOyunBitti(); return; }
+  // kendine çarpma
+  if (snYilan.some(s => s.x === bas.x && s.y === bas.y)) { snOyunBitti(); return; }
+  snYilan.unshift(bas);
+  // yem yendi mi?
+  if (bas.x === snYem.x && bas.y === snYem.y) {
+    snSkor += 10;
+    document.getElementById('sn-skor').innerText = snSkor;
+    if (snSkor > snBest) { snBest = snSkor; save('sn_best', snBest); document.getElementById('sn-best').innerText = snBest; }
+    sfx.dogru();
+    // her 50 puanda hızlan
+    const yeniHiz = 1 + Math.floor(snSkor / 50);
+    if (yeniHiz > snHiz) {
+      snHiz = yeniHiz;
+      document.getElementById('sn-hiz').innerText = snHiz;
+      clearInterval(window.snTimer);
+      window.snTimer = setInterval(snAdim, snHizMs());
+      toast('⚡ Hız ' + snHiz);
+    }
+    snYemKoy();
+  } else {
+    snYilan.pop(); // yem yoksa kuyruk kısalır (boyut sabit)
+  }
+  snCiz();
+}
+
+function snOyunBitti() {
+  snBitti = true;
+  clearInterval(window.snTimer);
+  sfx.yanlis();
+  document.getElementById('sn-gameover-skor').innerText = 'Skor: ' + snSkor;
+  document.getElementById('sn-gameover').style.display = 'block';
+}
+
+function snCiz() {
+  const canvas = document.getElementById('sn-board');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width;
+  ctx.clearRect(0, 0, W, W);
+  // ızgara arka plan (hafif kareler)
+  for (let x = 0; x < SN_GRID; x++)
+    for (let y = 0; y < SN_GRID; y++) {
+      if ((x + y) % 2 === 0) {
+        ctx.fillStyle = 'rgba(255,255,255,.03)';
+        ctx.fillRect(x * snCell, y * snCell, snCell, snCell);
+      }
+    }
+  // yem (kırmızı elma, parlak)
+  const yx = snYem.x * snCell + snCell / 2, yy = snYem.y * snCell + snCell / 2;
+  const yr = snCell * 0.38;
+  const yg = ctx.createRadialGradient(yx - yr*0.3, yy - yr*0.3, yr*0.1, yx, yy, yr);
+  yg.addColorStop(0, '#ff8a80'); yg.addColorStop(1, '#d50000');
+  ctx.fillStyle = yg;
+  ctx.beginPath(); ctx.arc(yx, yy, yr, 0, 7); ctx.fill();
+  // yılan (3D yuvarlak segmentler, baş daha parlak)
+  snYilan.forEach((s, i) => {
+    const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+    const r = snCell * (i === 0 ? 0.46 : 0.4);
+    const bas = i === 0;
+    const g = ctx.createRadialGradient(cx - r*0.3, cy - r*0.3, r*0.1, cx, cy, r);
+    g.addColorStop(0, bas ? '#aeffa0' : '#7bed9f');
+    g.addColorStop(1, bas ? '#2ec44f' : '#1f9b3a');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    snRoundRect(ctx, cx - r, cy - r, r * 2, r * 2, r * 0.5);
+    ctx.fill();
+    // başta göz
+    if (bas) {
+      ctx.fillStyle = '#fff';
+      const ex = cx + snYon.x * r * 0.3, ey = cy + snYon.y * r * 0.3;
+      ctx.beginPath(); ctx.arc(ex - 3, ey - 3, r * 0.18, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(ex + 3, ey + 3, r * 0.18, 0, 7); ctx.fill();
+    }
+  });
+}
+
+function snRoundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
+
+// PARMAKLA KAYDIRMA kontrolü
+(function snBind() {
+  const canvas = document.getElementById('sn-board');
+  function basla(e) {
+    const p = e.touches ? e.touches[0] : e;
+    snTouchStart = { x: p.clientX, y: p.clientY };
+  }
+  function bitir(e) {
+    if (!snTouchStart) return;
+    const p = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = p.clientX - snTouchStart.x, dy = p.clientY - snTouchStart.y;
+    if (Math.abs(dx) < 18 && Math.abs(dy) < 18) { snTouchStart = null; return; }
+    if (Math.abs(dx) > Math.abs(dy)) snYonDegis(dx > 0 ? 1 : -1, 0);
+    else snYonDegis(0, dy > 0 ? 1 : -1);
+    snTouchStart = null;
+  }
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); basla(e); }, { passive: false });
+  canvas.addEventListener('touchend', e => { e.preventDefault(); bitir(e); }, { passive: false });
+  canvas.addEventListener('mousedown', basla);
+  canvas.addEventListener('mouseup', bitir);
+})();
+
+// klavye ok tuşları (masaüstü)
+window.addEventListener('keydown', e => {
+  if (!document.getElementById('game-snake').classList.contains('active')) return;
+  if (e.key === 'ArrowUp') { snYonDegis(0,-1); e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { snYonDegis(0,1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { snYonDegis(-1,0); e.preventDefault(); }
+  else if (e.key === 'ArrowRight') { snYonDegis(1,0); e.preventDefault(); }
+});
+
+
 /* ============ RESIZE ============ */
 window.addEventListener('resize', () => {
   if (document.getElementById('game-blok').classList.contains('active')) {
@@ -1612,6 +1823,9 @@ window.addEventListener('resize', () => {
   }
   if (document.getElementById('game-eslestir').classList.contains('active') && eBoard) {
     requestAnimationFrame(() => { eBoyutla(); eCiz(); });
+  }
+  if (document.getElementById('game-snake').classList.contains('active') && snYilan) {
+    requestAnimationFrame(() => { snBoyutla(); snCiz(); });
   }
 });
 

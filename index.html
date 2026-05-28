@@ -160,7 +160,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 5.0 · 5 oyun</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 6.0 · 5 oyun · hedefli bölümler</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -231,12 +231,12 @@
 <!-- MEYVE EŞLEŞTİR -->
 <div id="game-eslestir" class="screen">
   <div class="hud">
-    <span>🎯 <span id="e-hamle">25</span></span>
-    <span>Lv <span id="e-level">1</span></span>
-    <span style="font-weight:800"><span id="e-skor">0</span></span>
+    <span>🎯 Hamle: <span id="e-hamle">25</span></span>
+    <span>Bölüm <span id="e-level">1</span></span>
     <span>👑 <span id="e-best">0</span></span>
   </div>
-  <div style="opacity:.85;font-size:.85em;margin-bottom:6px">Hedef: <strong id="e-hedef">500</strong> puan</div>
+  <div id="e-hedefler" style="display:flex; justify-content:center; gap:10px; margin-bottom:6px; flex-wrap:wrap;"></div>
+  <div style="opacity:.7;font-size:.8em;margin-bottom:4px">Skor: <strong id="e-skor">0</strong></div>
   <canvas id="e-board" width="360" height="420"></canvas>
   <div id="e-gameover" style="display:none; background:rgba(0,0,0,.8); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
     <div id="e-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">Bölüm Bitti!</div>
@@ -1342,46 +1342,58 @@ function pRoundRect(ctx, x, y, w, h, r) {
   window.addEventListener('touchend', pUp, { passive: false });
 })();
 
-/* ============ MEYVE EŞLEŞTİR - MATCH-3 (canvas 3D, kaydırma, level) ============ */
+/* ============ MEYVE EŞLEŞTİR - MATCH-3 (hedef bazlı, Farm tarzı) ============ */
 const E_SATIR = 8, E_SUTUN = 7;
-const E_MAX_LEVEL = 20;
-// 7 çeşit meyve, her biri 3D renkli (görseldeki gibi)
+const E_MAX_LEVEL = 50;
+// 6 çeşit meyve + her biri 3D renkli (görseldeki karakterler)
 const E_RENK = [
-  { ana:'#52c41a', acik:'#85e84a', koyu:'#389010' }, // yeşil
-  { ana:'#f5222d', acik:'#ff6168', koyu:'#c20c16' }, // kırmızı (çilek)
-  { ana:'#9b5de5', acik:'#c08bff', koyu:'#6f37b0' }, // mor (soğan)
-  { ana:'#19b3e0', acik:'#5cd6f5', koyu:'#0d82a8' }, // mavi (damla)
-  { ana:'#fadb14', acik:'#fff04d', koyu:'#d4b900' }, // sarı (güneş)
-  { ana:'#fa8c16', acik:'#ffb152', koyu:'#c96a05' }, // turuncu (havuç)
-  { ana:'#ff5fa2', acik:'#ff9ac8', koyu:'#cc3d7d' }  // pembe (ekstra çeşit)
+  { ana:'#52c41a', acik:'#85e84a', koyu:'#389010', ad:'🟢' }, // yeşil elma
+  { ana:'#f5222d', acik:'#ff6168', koyu:'#c20c16', ad:'🍓' }, // çilek
+  { ana:'#9b5de5', acik:'#c08bff', koyu:'#6f37b0', ad:'🧅' }, // mor soğan
+  { ana:'#19b3e0', acik:'#5cd6f5', koyu:'#0d82a8', ad:'💧' }, // mavi damla
+  { ana:'#fa8c16', acik:'#ffb152', koyu:'#c96a05', ad:'🥕' }, // turuncu havuç
+  { ana:'#fadb14', acik:'#fff04d', koyu:'#d4b900', ad:'☀️' }  // sarı güneş
 ];
-let eBoard, eSkor, eHamle, eLevel, eHedef, eBest = load('e_best', 0);
+let eBoard, eSkor, eHamle, eLevel, eBest = load('e_best', 0);
 let eSec = null, eKilit = false, eCesit = 5;
 let E_W, E_CELL, E_PAD;
 let eDragStart = null;
+let eHedefler = [];   // [{tip, gereken, toplanan}]
+let eBaloncuklar = []; // uçan +N bonusları
 
 function eslestirBaslat() {
-  eLevel = 1;
-  eYeniBolum(false);
+  eLevel = load('e_level', 1);
+  eYeniBolum();
 }
 function eslestirSonraki() {
   eLevel++;
-  if (eLevel > E_MAX_LEVEL) { toast('🏆 Tüm leveller bitti!'); eLevel = 1; }
-  eYeniBolum(false);
+  if (eLevel > E_MAX_LEVEL) { toast('🏆 Tüm bölümler bitti!'); eLevel = 1; }
+  save('e_level', eLevel);
+  eYeniBolum();
 }
-function eYeniBolum(skorKoru) {
+function eYeniBolum() {
   document.getElementById('e-gameover').style.display = 'none';
-  // level ilerledikçe: daha çok çeşit (zorluk), daha yüksek hedef, daha az hamle
-  eCesit = Math.min(7, 5 + Math.floor(eLevel / 7));
-  eHamle = Math.max(15, 28 - Math.floor(eLevel / 2));
-  eHedef = 400 + eLevel * 250;
-  if (!skorKoru) eSkor = 0;
-  eSec = null; eKilit = false; eDragStart = null;
-  document.getElementById('e-skor').innerText = eSkor;
+  // bölüme göre zorluk
+  eCesit = Math.min(6, 4 + Math.floor(eLevel / 6));
+  eHamle = Math.max(18, 30 - Math.floor(eLevel / 3));
+  eSkor = 0;
+  eSec = null; eKilit = false; eDragStart = null; eBaloncuklar = [];
+  // hedefler: 2-3 meyve türünden X'er tane topla
+  const hedefSayisi = eLevel < 3 ? 2 : 3;
+  const tipler = [];
+  for (let i = 0; i < eCesit; i++) tipler.push(i);
+  // karıştır
+  for (let i = tipler.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); const t=tipler[i];tipler[i]=tipler[j];tipler[j]=t; }
+  eHedefler = [];
+  for (let i = 0; i < hedefSayisi; i++) {
+    const gereken = 15 + eLevel * 4 + Math.floor(Math.random() * 15);
+    eHedefler.push({ tip: tipler[i], gereken, toplanan: 0 });
+  }
   document.getElementById('e-hamle').innerText = eHamle;
   document.getElementById('e-level').innerText = eLevel;
-  document.getElementById('e-hedef').innerText = eHedef;
   document.getElementById('e-best').innerText = eBest;
+  document.getElementById('e-skor').innerText = eSkor;
+  eHedefCiz();
   eBoyutla();
   let deneme = 0;
   do {
@@ -1390,6 +1402,20 @@ function eYeniBolum(skorKoru) {
     deneme++;
   } while ((eEslesmeBul().length > 0 || !eHamleVarMi()) && deneme < 60);
   eCiz();
+}
+
+// hedef panelini çiz (görseldeki üst hedef paneli gibi)
+function eHedefCiz() {
+  const c = document.getElementById('e-hedefler');
+  c.innerHTML = '';
+  eHedefler.forEach(h => {
+    const tamam = h.toplanan >= h.gereken;
+    const el = document.createElement('div');
+    el.style.cssText = 'background:rgba(0,0,0,.3);border-radius:12px;padding:6px 10px;display:flex;align-items:center;gap:6px;font-weight:700;' + (tamam ? 'outline:2px solid #2ecc71;' : '');
+    el.innerHTML = '<span style="font-size:1.3em">' + E_RENK[h.tip].ad + '</span>' +
+      '<span style="' + (tamam ? 'color:#2ecc71' : '') + '">' + Math.min(h.toplanan, h.gereken) + '/' + h.gereken + (tamam ? ' ✓' : '') + '</span>';
+    c.appendChild(el);
+  });
 }
 
 function eBoyutla() {
@@ -1401,7 +1427,6 @@ function eBoyutla() {
   E_CELL = (E_W - E_PAD * 2) / E_SUTUN;
 }
 
-// 3D meyve çizimi (yuvarlak, parlak, kabartmalı)
 function eMeyveCiz(ctx, cx, cy, rad, renk, olcek) {
   olcek = olcek == null ? 1 : olcek;
   rad *= olcek;
@@ -1412,12 +1437,15 @@ function eMeyveCiz(ctx, cx, cy, rad, renk, olcek) {
   grad.addColorStop(1, renk.koyu);
   ctx.fillStyle = grad;
   ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.fill();
-  // parlama noktası
   ctx.fillStyle = 'rgba(255,255,255,.55)';
   ctx.beginPath(); ctx.ellipse(cx - rad*0.32, cy - rad*0.38, rad*0.28, rad*0.18, -0.5, 0, 7); ctx.fill();
-  // alt gölge halka
-  ctx.strokeStyle = 'rgba(0,0,0,.15)'; ctx.lineWidth = rad*0.1;
-  ctx.beginPath(); ctx.arc(cx, cy, rad*0.92, 0.3, 2.5); ctx.stroke();
+  // küçük gözler (canlı karakter hissi)
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(cx - rad*0.22, cy + rad*0.05, rad*0.16, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + rad*0.22, cy + rad*0.05, rad*0.16, 0, 7); ctx.fill();
+  ctx.fillStyle = '#333';
+  ctx.beginPath(); ctx.arc(cx - rad*0.22, cy + rad*0.07, rad*0.07, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + rad*0.22, cy + rad*0.07, rad*0.07, 0, 7); ctx.fill();
 }
 
 function eCiz() {
@@ -1427,15 +1455,24 @@ function eCiz() {
   for (let r = 0; r < E_SATIR; r++)
     for (let c = 0; c < E_SUTUN; c++) {
       const t = eBoard[r][c];
-      if (t === null) continue;
+      if (t === null || t === undefined) continue;
       const cx = E_PAD + c * E_CELL + E_CELL / 2;
       const cy = E_PAD + r * E_CELL + E_CELL / 2;
       const secili = eSec && eSec.r === r && eSec.c === c;
-      // hücre arka planı
       ctx.fillStyle = secili ? 'rgba(255,228,107,.3)' : 'rgba(255,255,255,.06)';
       eRoundRect(ctx, E_PAD + c*E_CELL + 2, E_PAD + r*E_CELL + 2, E_CELL - 4, E_CELL - 4, 8); ctx.fill();
       eMeyveCiz(ctx, cx, cy, E_CELL * 0.38, E_RENK[t], secili ? 0.85 : 1);
     }
+  // uçan +N baloncukları
+  eBaloncuklar.forEach(b => {
+    ctx.globalAlpha = b.life;
+    ctx.fillStyle = '#fff'; ctx.font = 'bold ' + Math.floor(E_CELL*0.4) + 'px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = 'rgba(0,0,0,.5)'; ctx.lineWidth = 3;
+    ctx.strokeText('+' + b.n, b.x, b.y);
+    ctx.fillText('+' + b.n, b.x, b.y);
+    ctx.globalAlpha = 1;
+  });
 }
 
 function eRoundRect(ctx, x, y, w, h, r) {
@@ -1460,19 +1497,14 @@ function eHucreBul(clientX, clientY) {
   return null;
 }
 
-// PARMAKLA KAYDIRMA: başla
 function eDown(e) {
   if (eKilit) return;
   const p = e.touches ? e.touches[0] : e;
   const h = eHucreBul(p.clientX, p.clientY);
   if (!h) return;
   if (e.cancelable) e.preventDefault();
-  eDragStart = h;
-  eSec = h;
-  sfx.tik();
-  eCiz();
+  eDragStart = h; eSec = h; sfx.tik(); eCiz();
 }
-// kaydırma sırasında komşuya geçilince takas et
 function eMove(e) {
   if (eKilit || !eDragStart) return;
   const p = e.touches ? e.touches[0] : e;
@@ -1481,13 +1513,11 @@ function eMove(e) {
   const fark = Math.abs(h.r - eDragStart.r) + Math.abs(h.c - eDragStart.c);
   if (fark === 1) {
     if (e.cancelable) e.preventDefault();
-    const bas = eDragStart;
-    eDragStart = null; eSec = null;
+    const bas = eDragStart; eDragStart = null; eSec = null;
     eTakasDene(bas.r, bas.c, h.r, h.c);
   }
 }
 function eUp() { eDragStart = null; }
-// dokunmayla da çalışsın (tıkla-tıkla)
 function eClick(e) {
   if (eKilit) return;
   const p = e.changedTouches ? e.changedTouches[0] : e;
@@ -1546,38 +1576,64 @@ function eZincir(kombo) {
   if (eslesme.length === 0) {
     eKilit = false;
     if (eSkor > eBest) { eBest = eSkor; save('e_best', eBest); document.getElementById('e-best').innerText = eBest; }
-    // hedefe ulaşıldı mı?
-    if (eSkor >= eHedef) {
+    // hedeflere ulaşıldı mı?
+    const hepsiTamam = eHedefler.every(h => h.toplanan >= h.gereken);
+    if (hepsiTamam) {
       setTimeout(() => {
         sfx.kazan();
-        document.getElementById('e-gameover-baslik').innerText = '🎉 Level ' + eLevel + ' Tamam!';
-        document.getElementById('e-gameover-skor').innerText = 'Skor: ' + eSkor + ' (Hedef: ' + eHedef + ')';
+        document.getElementById('e-gameover-baslik').innerText = '🎉 Bölüm ' + eLevel + ' Tamam!';
+        document.getElementById('e-gameover-skor').innerText = 'Skor: ' + eSkor;
         document.getElementById('e-devam-btn').style.display = eLevel < E_MAX_LEVEL ? 'block' : 'none';
         document.getElementById('e-gameover').style.display = 'block';
-      }, 200);
+      }, 250);
       return;
     }
-    // hamle bitti mi?
     if (eHamle <= 0) {
       setTimeout(() => {
         sfx.yanlis();
         document.getElementById('e-gameover-baslik').innerText = '😕 Hamle Bitti';
-        document.getElementById('e-gameover-skor').innerText = 'Skor: ' + eSkor + ' / Hedef: ' + eHedef;
+        document.getElementById('e-gameover-skor').innerText = 'Hedefe ulaşamadın';
         document.getElementById('e-devam-btn').style.display = 'none';
         document.getElementById('e-gameover').style.display = 'block';
-      }, 200);
+      }, 250);
       return;
     }
     if (!eHamleVarMi()) { toast('🔀 Karıştırılıyor...'); setTimeout(eKaristir, 600); }
     return;
   }
+  // tür bazında say + hedefe işle
+  const sayim = {};
+  eslesme.forEach(({ r, c }) => {
+    const t = eBoard[r][c];
+    sayim[t] = (sayim[t] || 0) + 1;
+  });
+  Object.keys(sayim).forEach(tip => {
+    const h = eHedefler.find(x => x.tip === parseInt(tip));
+    if (h) h.toplanan += sayim[tip];
+  });
   const puan = eslesme.length * 10 * kombo;
   eSkor += puan;
   document.getElementById('e-skor').innerText = eSkor;
   sfx.dogru();
-  if (kombo > 1) toast('🔥 Combo x' + kombo + '! +' + puan);
+  eHedefCiz();
+  // +N baloncuğu (ilk eşleşmenin konumunda)
+  const ilk = eslesme[0];
+  eBaloncuklar.push({
+    x: E_PAD + ilk.c * E_CELL + E_CELL/2,
+    y: E_PAD + ilk.r * E_CELL + E_CELL/2,
+    n: eslesme.length, life: 1
+  });
+  if (kombo > 1) toast('🔥 Combo x' + kombo + '!');
   eslesme.forEach(({ r, c }) => { eBoard[r][c] = null; });
-  setTimeout(() => { eDusur(); eCiz(); setTimeout(() => eZincir(kombo + 1), 200); }, 200);
+  // baloncuk animasyonu
+  let adim = 0;
+  const balAnim = setInterval(() => {
+    eBaloncuklar.forEach(b => { b.y -= 2; b.life -= 0.08; });
+    eBaloncuklar = eBaloncuklar.filter(b => b.life > 0);
+    eCiz();
+    if (++adim > 12) clearInterval(balAnim);
+  }, 30);
+  setTimeout(() => { eDusur(); eCiz(); setTimeout(() => eZincir(kombo + 1), 200); }, 250);
 }
 
 function eDusur() {
@@ -1593,14 +1649,8 @@ function eDusur() {
 function eHamleVarMi() {
   for (let r = 0; r < E_SATIR; r++)
     for (let c = 0; c < E_SUTUN; c++) {
-      if (c < E_SUTUN - 1) {
-        eTakas(r, c, r, c + 1); const v = eEslesmeBul().length > 0; eTakas(r, c, r, c + 1);
-        if (v) return true;
-      }
-      if (r < E_SATIR - 1) {
-        eTakas(r, c, r + 1, c); const v = eEslesmeBul().length > 0; eTakas(r, c, r + 1, c);
-        if (v) return true;
-      }
+      if (c < E_SUTUN - 1) { eTakas(r,c,r,c+1); const v=eEslesmeBul().length>0; eTakas(r,c,r,c+1); if(v)return true; }
+      if (r < E_SATIR - 1) { eTakas(r,c,r+1,c); const v=eEslesmeBul().length>0; eTakas(r,c,r+1,c); if(v)return true; }
     }
   return false;
 }
@@ -1610,7 +1660,7 @@ function eKaristir() {
   do {
     const duz = [];
     for (let r = 0; r < E_SATIR; r++) for (let c = 0; c < E_SUTUN; c++) duz.push(eBoard[r][c]);
-    for (let i = duz.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = duz[i]; duz[i] = duz[j]; duz[j] = t; }
+    for (let i = duz.length - 1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); const t=duz[i];duz[i]=duz[j];duz[j]=t; }
     let i = 0;
     for (let r = 0; r < E_SATIR; r++) for (let c = 0; c < E_SUTUN; c++) eBoard[r][c] = duz[i++];
     deneme++;

@@ -40,19 +40,26 @@
   .btn {
     display: block; width: 100%; max-width: 320px; margin: 12px auto;
     padding: 16px 24px; border-radius: 16px; border: none;
-    background: linear-gradient(135deg, #e94560, #b3304a);
+    background: linear-gradient(135deg, #ff5d7a 0%, #e94560 50%, #b3304a 100%);
     color: #fff; font-weight: 700; font-size: 1.05em; cursor: pointer;
-    transition: transform .1s; box-shadow: 0 4px 14px rgba(233,69,96,.4);
+    transition: transform .1s, box-shadow .15s;
+    box-shadow: 0 6px 18px rgba(233,69,96,.45), inset 0 1px 0 rgba(255,255,255,.3);
+    text-shadow: 0 1px 2px rgba(0,0,0,.25);
   }
-  .btn:active { transform: scale(.97); }
-  .btn.alt { background: linear-gradient(135deg, #0f3460, #16548a); box-shadow: 0 4px 14px rgba(22,84,138,.4); }
+  .btn:active { transform: scale(.97); box-shadow: 0 2px 8px rgba(233,69,96,.45); }
+  .btn.alt {
+    background: linear-gradient(135deg, #2d5da3 0%, #0f3460 50%, #16548a 100%);
+    box-shadow: 0 6px 18px rgba(22,84,138,.45), inset 0 1px 0 rgba(255,255,255,.25);
+  }
   .btn.small { display: inline-block; width: auto; padding: 10px 20px; font-size: .9em; margin: 6px; }
 
   .card {
-    background: rgba(255,255,255,.08); backdrop-filter: blur(6px);
-    border-radius: 18px; padding: 18px; margin: 12px 0;
-    border: 1px solid rgba(255,255,255,.12); cursor: pointer;
-    transition: transform .12s, background .2s;
+    background: linear-gradient(160deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.06) 100%);
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    border-radius: 20px; padding: 18px; margin: 12px 0;
+    border: 1px solid rgba(255,255,255,.18); cursor: pointer;
+    transition: transform .12s, background .2s, box-shadow .2s;
+    box-shadow: 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
   }
   .card:active { transform: scale(.98); background: rgba(255,255,255,.14); }
   .menu-icon { font-size: 2.4em; display: block; margin-bottom: 4px; }
@@ -72,28 +79,46 @@
 
   /* KELİME AVI - crossword */
   #soru { font-size: 1.05em; min-height: 38px; display: flex; align-items: center; justify-content: center; padding: 6px; font-weight: 600; }
-  #grid-wrap { margin: 8px auto; padding: 10px; border-radius: 16px; width: fit-content;
-    background: linear-gradient(160deg, #3b2a8c, #2a1f63); box-shadow: 0 8px 24px rgba(0,0,0,.4); }
+  #grid-wrap { margin: 8px auto; padding: 12px; border-radius: 18px; width: fit-content;
+    background: linear-gradient(160deg, #4a3a9e 0%, #2a1f63 100%);
+    box-shadow: 0 12px 32px rgba(0,0,0,.55), inset 0 1px 0 rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.12); }
   #grid { display: grid; gap: 4px; }
-  .gc { border-radius: 7px; display: flex; align-items: center; justify-content: center; font-weight: 800; transition: transform .15s; }
+  .gc { border-radius: 8px; display: flex; align-items: center; justify-content: center;
+    font-weight: 800; transition: transform .15s, box-shadow .15s; }
   .gc.empty { background: transparent; }
-  .gc.slot { background: #efe6ff; color: #3b2a8c; box-shadow: inset 0 -3px 0 rgba(120,90,200,.25); }
-  .gc.hint { background: #d9ccf5; color: #6a5aa8; box-shadow: inset 0 -3px 0 rgba(120,90,200,.3); }
-  .gc.fill { background: linear-gradient(160deg,#ffd84d,#f7b500); color: #4a2e00; box-shadow: 0 4px 0 #c98a00; }
-  .gc.active { outline: 3px solid #ffe46b; outline-offset: 1px; }
-  .gc.done { background: linear-gradient(160deg,#5ee06a,#2ec44f); color: #fff; box-shadow: 0 4px 0 #1f9b3a; }
+  .gc.slot { background: linear-gradient(160deg, #f5edff, #d8c8f0); color: #3b2a8c;
+    box-shadow: inset 0 -3px 4px rgba(120,90,200,.25), inset 0 1px 0 rgba(255,255,255,.8), 0 1px 2px rgba(0,0,0,.2); }
+  .gc.hint { background: linear-gradient(160deg, #dcccff, #b9a3e8); color: #5a4a96;
+    box-shadow: inset 0 -3px 4px rgba(120,90,200,.4), inset 0 1px 0 rgba(255,255,255,.5); }
+  .gc.fill { background: linear-gradient(160deg, #ffe57a 0%, #ffd84d 40%, #f7b500 100%); color: #4a2e00;
+    box-shadow: 0 4px 0 #c98a00, 0 6px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.6); }
+  .gc.active { outline: 3px solid #ffe46b; outline-offset: 1px;
+    box-shadow: 0 0 16px rgba(255,228,107,.6), 0 4px 0 #c98a00; }
+  .gc.done { background: linear-gradient(160deg, #88f098 0%, #5ee06a 40%, #2ec44f 100%); color: #fff;
+    box-shadow: 0 4px 0 #1f9b3a, 0 6px 10px rgba(46,196,79,.4), inset 0 1px 0 rgba(255,255,255,.5);
+    text-shadow: 0 1px 2px rgba(0,0,0,.3); }
   .gc.pop { animation: pop .2s; }
   .gc.shake { animation: shake .3s; }
-  @keyframes pop { 0%{transform:scale(.6)} 100%{transform:scale(1)} }
+  @keyframes pop { 0%{transform:scale(.6)} 60%{transform:scale(1.15)} 100%{transform:scale(1)} }
   @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
 
-  #keyboard { margin: 10px auto; max-width: 440px; padding: 8px 4px; background: linear-gradient(160deg,#4a3a9e,#372a7d); border-radius: 14px; }
+  #keyboard { margin: 10px auto; max-width: 440px; padding: 10px 6px;
+    background: linear-gradient(160deg, #5a4ab5 0%, #372a7d 100%);
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.15);
+    border: 1px solid rgba(255,255,255,.08); }
   .kb-row { display: flex; justify-content: center; gap: 4px; margin-bottom: 6px; }
-  .kb-key { min-width: 26px; height: 46px; border-radius: 8px; border: none;
-    background: linear-gradient(160deg,#6a5acd,#5546b5); color: #fff; font-weight: 800;
-    font-size: .95em; cursor: pointer; flex: 1; box-shadow: 0 3px 0 #3d2f8a; }
-  .kb-key:active { transform: translateY(2px); box-shadow: 0 1px 0 #3d2f8a; }
-  .kb-key.sil { flex: 1.4; background: linear-gradient(160deg,#f7b500,#d99500); box-shadow: 0 3px 0 #a86f00; }
+  .kb-key { min-width: 26px; height: 46px; border-radius: 9px; border: none;
+    background: linear-gradient(160deg, #8a7ad8 0%, #6a5acd 45%, #5546b5 100%); color: #fff; font-weight: 800;
+    font-size: .95em; cursor: pointer; flex: 1;
+    box-shadow: 0 3px 0 #3d2f8a, 0 5px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.4);
+    text-shadow: 0 1px 1px rgba(0,0,0,.3); }
+  .kb-key:active { transform: translateY(2px);
+    box-shadow: 0 1px 0 #3d2f8a, 0 2px 4px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.3); }
+  .kb-key.sil { flex: 1.4;
+    background: linear-gradient(160deg, #ffd84d 0%, #f7b500 50%, #d99500 100%);
+    color: #5a3a00; box-shadow: 0 3px 0 #a86f00, 0 5px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.5); }
 
   .joker-bar { display: flex; justify-content: center; gap: 12px; margin: 8px 0; flex-wrap: wrap; }
   .joker { font-size: 1em; cursor: pointer; background: rgba(255,255,255,.14);
@@ -160,7 +185,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 7.0 · 5 oyun · full güncelleme</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 8.0 · 5 oyun · HD görsel</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -304,6 +329,102 @@ function load(key, def) {
   catch (e) { return def; }
 }
 function save(key, val) { try { localStorage.setItem(key, JSON.stringify(val)); } catch (e) {} }
+
+/* ============ HD (yüksek çözünürlük) altyapısı ============ */
+// HD_DPR: ekran piksel yoğunluğu, mobilde 2-3, masaüstünde 1-2.
+// canvas'ı bu kat sayıyla büyütüp aynı boyutta gösterirsek piksel keskinliği artar.
+const HD_DPR = Math.min(window.devicePixelRatio || 1, 3);
+// Canvas'ı HD'ye yükselt. mantıksal w/h'yi alır, gerçek piksel sayısını HD_DPR ile büyütür.
+// Ölçeklemeyi context'e uygular ki tüm çizimler aynı koordinat sistemini kullansın.
+function hdKur(canvas, w, h) {
+  canvas.width = Math.round(w * HD_DPR);
+  canvas.height = Math.round(h * HD_DPR);
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(HD_DPR, 0, 0, HD_DPR, 0, 0);
+  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingQuality = 'high';
+  // mantıksal boyutu canvas üstüne yaz (oyunlar kullansın)
+  canvas._lw = w; canvas._lh = h;
+  return ctx;
+}
+// Hex rengi RGB'ye çevir, parlatma/karartma için
+function hdRenkTon(hex, miktar) {
+  hex = (hex || '#888').replace('#', '').replace(/\s/g, '');
+  if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+  if (hex.length !== 6) hex = '888888';
+  let r = parseInt(hex.substr(0,2), 16) + miktar;
+  let g = parseInt(hex.substr(2,2), 16) + miktar;
+  let b = parseInt(hex.substr(4,2), 16) + miktar;
+  r = Math.max(0, Math.min(255, r));
+  g = Math.max(0, Math.min(255, g));
+  b = Math.max(0, Math.min(255, b));
+  return 'rgb(' + r + ',' + g + ',' + b + ')';
+}
+// HD 3D küre: üst-sol ışık, parlama noktası, alt gölge halkası, derinlik
+function hd3DKure(ctx, cx, cy, r, renk) {
+  // alt gölge (yere düşen)
+  ctx.fillStyle = 'rgba(0,0,0,.28)';
+  ctx.beginPath(); ctx.ellipse(cx, cy + r*0.85, r*0.85, r*0.22, 0, 0, 7); ctx.fill();
+  // ana küre - radyal gradyan
+  const g = ctx.createRadialGradient(cx - r*0.35, cy - r*0.4, r*0.05, cx, cy, r);
+  g.addColorStop(0, hdRenkTon(renk, 70));
+  g.addColorStop(0.35, hdRenkTon(renk, 30));
+  g.addColorStop(0.75, renk);
+  g.addColorStop(1, hdRenkTon(renk, -50));
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+  // kenar koyu halkası (derinlik)
+  ctx.strokeStyle = hdRenkTon(renk, -65);
+  ctx.lineWidth = Math.max(0.6, r * 0.05);
+  ctx.beginPath(); ctx.arc(cx, cy, r * 0.97, 0, 7); ctx.stroke();
+  // parlama (specular)
+  const sg = ctx.createRadialGradient(cx - r*0.38, cy - r*0.42, r*0.02, cx - r*0.38, cy - r*0.42, r*0.4);
+  sg.addColorStop(0, 'rgba(255,255,255,.85)');
+  sg.addColorStop(0.5, 'rgba(255,255,255,.25)');
+  sg.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sg;
+  ctx.beginPath(); ctx.ellipse(cx - r*0.38, cy - r*0.42, r*0.42, r*0.32, -0.5, 0, 7); ctx.fill();
+  // ikinci küçük parlama (cam gibi)
+  ctx.fillStyle = 'rgba(255,255,255,.65)';
+  ctx.beginPath(); ctx.arc(cx + r*0.22, cy + r*0.32, r*0.1, 0, 7); ctx.fill();
+}
+// HD 3D kutu: yuvarlatılmış, üst parlama, alt gölge, kenar koyu hat
+function hd3DKutu(ctx, x, y, w, h, renk) {
+  const r = Math.max(2, Math.min(w, h) * 0.16);
+  // ana yüzey dikey gradyan (üst aydınlık → alt koyu)
+  const g = ctx.createLinearGradient(x, y, x, y + h);
+  g.addColorStop(0, hdRenkTon(renk, 50));
+  g.addColorStop(0.45, renk);
+  g.addColorStop(1, hdRenkTon(renk, -45));
+  ctx.fillStyle = g;
+  hdRoundRect(ctx, x, y, w, h, r); ctx.fill();
+  // kenar koyu hat (derinlik)
+  ctx.strokeStyle = hdRenkTon(renk, -70);
+  ctx.lineWidth = 1.2;
+  hdRoundRect(ctx, x + 0.5, y + 0.5, w - 1, h - 1, r); ctx.stroke();
+  // üst parlama şeridi
+  const sg = ctx.createLinearGradient(x, y, x, y + h * 0.45);
+  sg.addColorStop(0, 'rgba(255,255,255,.55)');
+  sg.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = sg;
+  hdRoundRect(ctx, x + w*0.1, y + h*0.08, w*0.8, h*0.32, r*0.5); ctx.fill();
+  // alt iç gölge
+  ctx.fillStyle = 'rgba(0,0,0,.18)';
+  hdRoundRect(ctx, x + w*0.1, y + h*0.7, w*0.8, h*0.18, r*0.4); ctx.fill();
+}
+function hdRoundRect(ctx, x, y, w, h, r) {
+  if (w < 2 * r) r = w / 2;
+  if (h < 2 * r) r = h / 2;
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
 
 let sesAcik = load('ses', true);
 let audioCtx = null;
@@ -848,9 +969,9 @@ function guncelleHUD() {
 function blokKur() {
   const canvas = document.getElementById('c1');
   const gorunenW = Math.min(canvas.clientWidth || 320, 380);
-  canvas.width = gorunenW;
-  canvas.height = Math.round(gorunenW * 1.6);
-  BK_W = canvas.width; BK_H = canvas.height;
+  const gorunenH = Math.round(gorunenW * 1.6);
+  hdKur(canvas, gorunenW, gorunenH); // HD: yüksek DPI rendering
+  BK_W = gorunenW; BK_H = gorunenH;
   BK_CELL = Math.floor((BK_W - 8) / BK_COLS);
   BK_TOP_Y = 8;
   BK_ALT_Y = BK_H - 30;
@@ -1108,23 +1229,25 @@ function bkLoop() {
   });
   bkBonus.forEach(o => {
     const R = brickRect(o);
-    ctx.save(); ctx.shadowColor = '#fff'; ctx.shadowBlur = 14;
-    ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-    ctx.beginPath(); ctx.arc(R.cx, R.cy, BK_CELL * 0.18, 0, 7); ctx.stroke();
-    ctx.beginPath(); ctx.arc(R.cx, R.cy, BK_CELL * 0.07, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
+    // dış parlama halkası
+    ctx.save();
+    ctx.shadowColor = '#ffe46b'; ctx.shadowBlur = 16;
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(R.cx, R.cy, BK_CELL * 0.22, 0, 7); ctx.stroke();
     ctx.restore();
+    // iç HD küre (altın)
+    hd3DKure(ctx, R.cx, R.cy, BK_CELL * 0.15, '#ffd84d');
   });
   if (bkBalls) bkBalls.forEach(ball => {
     if (!ball.canli) return;
-    ctx.save(); ctx.shadowColor = '#fff'; ctx.shadowBlur = 12;
-    ctx.beginPath(); ctx.arc(ball.x, ball.y, BK_R, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.restore();
+    // top tipine göre renk: normal beyaz, dağıt yeşil/turkuaz, çift kırmızı/turuncu
+    const topRenk = (ball.hasar && ball.hasar > 1) ? '#ff7043' : (bkTopTip === 'dagit' ? '#19d3e0' : '#f4f4f4');
+    hd3DKure(ctx, ball.x, ball.y, BK_R, topRenk);
   });
 
   if (bkState === 'aim') {
-    ctx.save(); ctx.shadowColor = '#fff'; ctx.shadowBlur = 14;
-    ctx.beginPath(); ctx.arc(bkLauncher.x, bkLauncher.y, BK_R + 2, 0, 7); ctx.fillStyle = '#fff'; ctx.fill();
-    ctx.restore();
+    const launcherRenk = bkTopTip === 'dagit' ? '#19d3e0' : bkTopTip === 'cift' ? '#ff7043' : '#f4f4f4';
+    hd3DKure(ctx, bkLauncher.x, bkLauncher.y, BK_R + 2, launcherRenk);
     if (bkAiming && bkAimY < bkLauncher.y) {
       const dx = bkAimX - bkLauncher.x, dy = bkAimY - bkLauncher.y, len = Math.hypot(dx, dy);
       const nx = dx / len, ny = dy / len;
@@ -1152,36 +1275,10 @@ function bkLoop() {
 
 // 3D dolu blok çizimi
 function bkBlokCiz(ctx, x, y, w, h, renk) {
-  const r = Math.max(3, w * 0.16);
-  const grad = ctx.createLinearGradient(x, y, x, y + h);
-  grad.addColorStop(0, bkAydinlat(renk, 40));
-  grad.addColorStop(0.5, renk);
-  grad.addColorStop(1, bkAydinlat(renk, -35));
-  ctx.fillStyle = grad;
-  bkRoundRect(ctx, x, y, w, h, r); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.35)';
-  bkRoundRect(ctx, x + w*0.12, y + h*0.1, w*0.76, h*0.2, r*0.6); ctx.fill();
-  ctx.fillStyle = 'rgba(0,0,0,.16)';
-  bkRoundRect(ctx, x + w*0.1, y + h*0.74, w*0.8, h*0.15, r*0.5); ctx.fill();
+  hd3DKutu(ctx, x, y, w, h, renk);
 }
-function bkAydinlat(hex, miktar) {
-  hex = hex.replace('#','').replace(/\s/g,'');
-  if (hex.length !== 6) hex = '888888';
-  let r = parseInt(hex.substr(0,2),16) + miktar;
-  let g = parseInt(hex.substr(2,2),16) + miktar;
-  let b = parseInt(hex.substr(4,2),16) + miktar;
-  r = Math.max(0,Math.min(255,r)); g = Math.max(0,Math.min(255,g)); b = Math.max(0,Math.min(255,b));
-  return 'rgb('+r+','+g+','+b+')';
-}
-function bkRoundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
+function bkAydinlat(hex, miktar) { return hdRenkTon(hex, miktar); }
+function bkRoundRect(ctx, x, y, w, h, r) { hdRoundRect(ctx, x, y, w, h, r); }
 
 (function bkBind() {
   const canvas = document.getElementById('c1');
@@ -1223,12 +1320,12 @@ function pBoyutla() {
   const board = document.getElementById('p-board');
   const tray = document.getElementById('p-tray');
   P_W = Math.min(board.clientWidth || 360, 380);
-  board.width = P_W; board.height = P_W;
+  hdKur(board, P_W, P_W); // HD board
   P_PAD = Math.round(P_W * 0.03);
   P_GAP = Math.max(2, Math.round(P_W * 0.012));
   P_CELL = (P_W - P_PAD * 2 - P_GAP * (PB - 1)) / PB;
   T_W = P_W; T_H = Math.round(P_W * 0.34);
-  tray.width = T_W; tray.height = T_H;
+  hdKur(tray, T_W, T_H); // HD tepsi
   T_CELL = P_CELL * 0.8;
 }
 
@@ -1262,23 +1359,16 @@ function yeniTepsi() {
 }
 
 function pBlokCiz(ctx, x, y, size, renk, alpha) {
-  const r = Math.max(3, size * 0.18);
   ctx.globalAlpha = alpha == null ? 1 : alpha;
-  const grad = ctx.createLinearGradient(x, y, x, y + size);
-  grad.addColorStop(0, renk.acik); grad.addColorStop(0.5, renk.ana); grad.addColorStop(1, renk.koyu);
-  ctx.fillStyle = grad;
-  pRoundRect(ctx, x, y, size, size, r); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.35)';
-  pRoundRect(ctx, x + size*0.14, y + size*0.12, size*0.72, size*0.22, r*0.6); ctx.fill();
-  ctx.fillStyle = 'rgba(0,0,0,.18)';
-  pRoundRect(ctx, x + size*0.1, y + size*0.74, size*0.8, size*0.16, r*0.5); ctx.fill();
+  // HD 3D kutu (ana renk)
+  hd3DKutu(ctx, x, y, size, size, renk.ana);
   ctx.globalAlpha = 1;
 }
 
 function pBosHucre(ctx, x, y, size) {
   const r = Math.max(3, size * 0.18);
   ctx.fillStyle = 'rgba(255,255,255,.06)';
-  pRoundRect(ctx, x, y, size, size, r); ctx.fill();
+  hdRoundRect(ctx, x, y, size, size, r); ctx.fill();
 }
 
 function pCizTahta() {
@@ -1504,15 +1594,7 @@ function pCizHayalet() {
   }));
 }
 
-function pRoundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.arcTo(x + w, y, x + w, y + h, r);
-  ctx.arcTo(x + w, y + h, x, y + h, r);
-  ctx.arcTo(x, y + h, x, y, r);
-  ctx.arcTo(x, y, x + w, y, r);
-  ctx.closePath();
-}
+function pRoundRect(ctx, x, y, w, h, r) { hdRoundRect(ctx, x, y, w, h, r); }
 
 (function pBind() {
   const tray = document.getElementById('p-tray');
@@ -1605,8 +1687,8 @@ function eHedefCiz() {
 function eBoyutla() {
   const canvas = document.getElementById('e-board');
   E_W = Math.min(canvas.clientWidth || 360, 400);
-  canvas.width = E_W;
-  canvas.height = Math.round(E_W * (E_SATIR / E_SUTUN));
+  const E_H = Math.round(E_W * (E_SATIR / E_SUTUN));
+  hdKur(canvas, E_W, E_H); // HD
   E_PAD = Math.round(E_W * 0.015);
   E_CELL = (E_W - E_PAD * 2) / E_SUTUN;
 }
@@ -1615,27 +1697,26 @@ function eMeyveCiz(ctx, cx, cy, rad, renk, olcek) {
   olcek = olcek == null ? 1 : olcek;
   rad *= olcek;
   if (rad < 1) return;
-  const grad = ctx.createRadialGradient(cx - rad*0.3, cy - rad*0.35, rad*0.1, cx, cy, rad);
-  grad.addColorStop(0, renk.acik);
-  grad.addColorStop(0.6, renk.ana);
-  grad.addColorStop(1, renk.koyu);
-  ctx.fillStyle = grad;
-  ctx.beginPath(); ctx.arc(cx, cy, rad, 0, 7); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.55)';
-  ctx.beginPath(); ctx.ellipse(cx - rad*0.32, cy - rad*0.38, rad*0.28, rad*0.18, -0.5, 0, 7); ctx.fill();
-  // küçük gözler (canlı karakter hissi)
+  // HD 3D küre
+  hd3DKure(ctx, cx, cy, rad, renk.ana);
+  // göz çiftleri (karakter hissi)
   ctx.fillStyle = '#fff';
-  ctx.beginPath(); ctx.arc(cx - rad*0.22, cy + rad*0.05, rad*0.16, 0, 7); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + rad*0.22, cy + rad*0.05, rad*0.16, 0, 7); ctx.fill();
-  ctx.fillStyle = '#333';
-  ctx.beginPath(); ctx.arc(cx - rad*0.22, cy + rad*0.07, rad*0.07, 0, 7); ctx.fill();
-  ctx.beginPath(); ctx.arc(cx + rad*0.22, cy + rad*0.07, rad*0.07, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx - rad*0.22, cy + rad*0.05, rad*0.18, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + rad*0.22, cy + rad*0.05, rad*0.18, 0, 7); ctx.fill();
+  ctx.fillStyle = '#222';
+  ctx.beginPath(); ctx.arc(cx - rad*0.2, cy + rad*0.08, rad*0.09, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + rad*0.24, cy + rad*0.08, rad*0.09, 0, 7); ctx.fill();
+  // gözbebeği parlaması
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(cx - rad*0.22, cy + rad*0.05, rad*0.04, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx + rad*0.22, cy + rad*0.05, rad*0.04, 0, 7); ctx.fill();
 }
 
 function eCiz() {
   const canvas = document.getElementById('e-board');
   const ctx = canvas.getContext('2d');
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  // HD: setTransform ölçeği uygulanmış, mantıksal boyutla temizle
+  ctx.clearRect(0, 0, canvas._lw || canvas.width, canvas._lh || canvas.height);
   for (let r = 0; r < E_SATIR; r++)
     for (let c = 0; c < E_SUTUN; c++) {
       const t = eBoard[r][c];
@@ -2070,8 +2151,9 @@ function snHizMs() { return Math.max(50, 180 - snHiz * 6); }
 function snBoyutla() {
   const canvas = document.getElementById('sn-board');
   const W = Math.min(canvas.clientWidth || 360, 380);
-  canvas.width = W; canvas.height = W;
+  hdKur(canvas, W, W); // HD
   snCell = W / SN_GRID;
+  canvas._lw = W; canvas._lh = W; // mantıksal boyut snCiz için
 }
 
 function snYemKoy() {
@@ -2131,7 +2213,7 @@ function snOyunBitti() {
 function snCiz() {
   const canvas = document.getElementById('sn-board');
   const ctx = canvas.getContext('2d');
-  const W = canvas.width;
+  const W = canvas._lw || canvas.width;
   // DOKULU ZEMİN: koyu toprak + hafif benekli doku
   const zg = ctx.createLinearGradient(0, 0, 0, W);
   zg.addColorStop(0, '#4a3b28');
@@ -2151,16 +2233,21 @@ function snCiz() {
   ctx.fillRect(0, 0, snCell * 0.5, W);
   ctx.fillRect(W - snCell * 0.5, 0, snCell * 0.5, W);
 
-  // YEM: fare/böcek tarzı (kırmızımsı, parlak)
+  // YEM: HD küre (parlak kırmızı elma) + kuyruk
   const yx = snYem.x * snCell + snCell / 2, yy = snYem.y * snCell + snCell / 2;
-  const yr = snCell * 0.42;
-  const yg = ctx.createRadialGradient(yx - yr*0.3, yy - yr*0.3, yr*0.1, yx, yy, yr);
-  yg.addColorStop(0, '#fff0f0'); yg.addColorStop(0.5, '#ff5a5a'); yg.addColorStop(1, '#c41818');
-  ctx.fillStyle = yg;
-  ctx.beginPath(); ctx.ellipse(yx, yy, yr, yr * 0.8, 0, 0, 7); ctx.fill();
+  const yr = snCell * 0.4;
+  hd3DKure(ctx, yx, yy, yr, '#e84545');
   // kuyruk
-  ctx.strokeStyle = '#c41818'; ctx.lineWidth = yr * 0.18;
-  ctx.beginPath(); ctx.moveTo(yx + yr*0.7, yy); ctx.quadraticCurveTo(yx + yr*1.3, yy - yr*0.2, yx + yr*1.5, yy + yr*0.3); ctx.stroke();
+  ctx.strokeStyle = '#7a3a1a'; ctx.lineWidth = yr * 0.18;
+  ctx.beginPath();
+  ctx.moveTo(yx, yy - yr*0.8);
+  ctx.quadraticCurveTo(yx + yr*0.5, yy - yr*1.2, yx + yr*0.8, yy - yr*0.8);
+  ctx.stroke();
+  // yaprak (yeşil)
+  ctx.fillStyle = '#2ecc71';
+  ctx.beginPath();
+  ctx.ellipse(yx + yr*0.5, yy - yr*1.1, yr*0.25, yr*0.15, -0.6, 0, 7);
+  ctx.fill();
 
   // YILAN: kalın, çizgili desenli (turuncu-amber tonları, görseldekinden farklı renk)
   const govdeAna = '#e8821e', govdeAcik = '#ffc04d', cizgi = '#fff3c4';
@@ -2195,14 +2282,11 @@ function snCiz() {
       ctx.stroke();
     });
   }
-  // BAŞ (yuvarlak, gözlü, dil)
+  // BAŞ (HD 3D küre, gözlü, dilli)
   const bas = snYilan[0];
   const bx = bas.x * snCell + snCell / 2, by = bas.y * snCell + snCell / 2;
   const br = snCell * 0.5;
-  const bg = ctx.createRadialGradient(bx - br*0.3, by - br*0.3, br*0.1, bx, by, br);
-  bg.addColorStop(0, govdeAcik); bg.addColorStop(1, govdeAna);
-  ctx.fillStyle = bg;
-  ctx.beginPath(); ctx.arc(bx, by, br, 0, 7); ctx.fill();
+  hd3DKure(ctx, bx, by, br, govdeAna);
   // gözler
   ctx.fillStyle = '#fff';
   const gx = bx + snYon.x * br * 0.25, gy = by + snYon.y * br * 0.25;

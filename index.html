@@ -185,7 +185,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 8.0 · 5 oyun · HD görsel</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 9.0 · 5 oyun · tüm düzeltmeler</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -223,7 +223,16 @@
     <span>Skor: <span id="blok-skor">0</span></span>
     <span>Top: <span id="blok-topsayi">1</span></span>
   </div>
-  <canvas id="c1" width="320" height="540"></canvas>
+  <div style="position:relative; display:inline-block; max-width:100%;">
+    <canvas id="c1" width="320" height="540"></canvas>
+    <div id="blok-gameover" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.88); border-radius:16px; padding:18px; min-width:240px; z-index:10;">
+      <div id="blok-gameover-baslik" style="font-size:1.8em; margin:4px 0">💀</div>
+      <div style="font-weight:800; font-size:1.2em; margin:6px 0">Oyun Bitti!</div>
+      <div id="blok-gameover-skor" style="margin:8px 0">Skor: 0</div>
+      <button class="btn small" onclick="blokYeniOyun()">🔄 Tekrar Oyna</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
   <div style="margin-top:6px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap">
     <button class="btn small" id="bk-tip-normal" onclick="bkTipSec('normal')" style="padding:8px 12px">⚪ Normal</button>
     <button class="btn alt small" id="bk-tip-dagit" onclick="bkTipSec('dagit')" style="padding:8px 12px">💥 Dağıtıcı</button>
@@ -310,7 +319,7 @@
     <button class="btn alt small" onclick="snakeBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Ekrana dokun → yön değiştir · Duvardan geçer · Sadece kendine çarpınca ölür</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağınla istediğin yöne kaydır · Duvardan geçer · Sadece kendine çarpınca ölür</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -337,14 +346,23 @@ const HD_DPR = Math.min(window.devicePixelRatio || 1, 3);
 // Canvas'ı HD'ye yükselt. mantıksal w/h'yi alır, gerçek piksel sayısını HD_DPR ile büyütür.
 // Ölçeklemeyi context'e uygular ki tüm çizimler aynı koordinat sistemini kullansın.
 function hdKur(canvas, w, h) {
-  canvas.width = Math.round(w * HD_DPR);
-  canvas.height = Math.round(h * HD_DPR);
+  // Geçersiz boyut korunması
+  if (!canvas || !w || !h || isNaN(w) || isNaN(h)) {
+    if (canvas) return canvas.getContext('2d');
+    return null;
+  }
+  const dpr = HD_DPR || 1;
+  canvas.width = Math.round(w * dpr);
+  canvas.height = Math.round(h * dpr);
   canvas.style.width = w + 'px';
   canvas.style.height = h + 'px';
   const ctx = canvas.getContext('2d');
-  ctx.setTransform(HD_DPR, 0, 0, HD_DPR, 0, 0);
-  ctx.imageSmoothingEnabled = true;
-  ctx.imageSmoothingQuality = 'high';
+  if (!ctx) return null;
+  try { ctx.setTransform(dpr, 0, 0, dpr, 0, 0); } catch (e) {}
+  try {
+    if ('imageSmoothingEnabled' in ctx) ctx.imageSmoothingEnabled = true;
+    if ('imageSmoothingQuality' in ctx) ctx.imageSmoothingQuality = 'high';
+  } catch (e) {}
   // mantıksal boyutu canvas üstüne yaz (oyunlar kullansın)
   canvas._lw = w; canvas._lh = h;
   return ctx;
@@ -364,46 +382,57 @@ function hdRenkTon(hex, miktar) {
 }
 // HD 3D küre: üst-sol ışık, parlama noktası, alt gölge halkası, derinlik
 function hd3DKure(ctx, cx, cy, r, renk) {
-  // alt gölge (yere düşen)
-  ctx.fillStyle = 'rgba(0,0,0,.28)';
-  ctx.beginPath(); ctx.ellipse(cx, cy + r*0.85, r*0.85, r*0.22, 0, 0, 7); ctx.fill();
-  // ana küre - radyal gradyan
-  const g = ctx.createRadialGradient(cx - r*0.35, cy - r*0.4, r*0.05, cx, cy, r);
-  g.addColorStop(0, hdRenkTon(renk, 70));
-  g.addColorStop(0.35, hdRenkTon(renk, 30));
-  g.addColorStop(0.75, renk);
-  g.addColorStop(1, hdRenkTon(renk, -50));
-  ctx.fillStyle = g;
-  ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
-  // kenar koyu halkası (derinlik)
-  ctx.strokeStyle = hdRenkTon(renk, -65);
-  ctx.lineWidth = Math.max(0.6, r * 0.05);
-  ctx.beginPath(); ctx.arc(cx, cy, r * 0.97, 0, 7); ctx.stroke();
-  // parlama (specular)
-  const sg = ctx.createRadialGradient(cx - r*0.38, cy - r*0.42, r*0.02, cx - r*0.38, cy - r*0.42, r*0.4);
-  sg.addColorStop(0, 'rgba(255,255,255,.85)');
-  sg.addColorStop(0.5, 'rgba(255,255,255,.25)');
-  sg.addColorStop(1, 'rgba(255,255,255,0)');
-  ctx.fillStyle = sg;
-  ctx.beginPath(); ctx.ellipse(cx - r*0.38, cy - r*0.42, r*0.42, r*0.32, -0.5, 0, 7); ctx.fill();
-  // ikinci küçük parlama (cam gibi)
-  ctx.fillStyle = 'rgba(255,255,255,.65)';
-  ctx.beginPath(); ctx.arc(cx + r*0.22, cy + r*0.32, r*0.1, 0, 7); ctx.fill();
+  if (!ctx || !isFinite(cx) || !isFinite(cy) || !isFinite(r) || r <= 0) return;
+  renk = renk || '#888';
+  try {
+    // alt gölge (yere düşen)
+    ctx.fillStyle = 'rgba(0,0,0,.28)';
+    ctx.beginPath(); ctx.ellipse(cx, cy + r*0.85, r*0.85, r*0.22, 0, 0, 7); ctx.fill();
+    // ana küre - radyal gradyan
+    const g = ctx.createRadialGradient(cx - r*0.35, cy - r*0.4, r*0.05, cx, cy, r);
+    g.addColorStop(0, hdRenkTon(renk, 70));
+    g.addColorStop(0.35, hdRenkTon(renk, 30));
+    g.addColorStop(0.75, renk);
+    g.addColorStop(1, hdRenkTon(renk, -50));
+    ctx.fillStyle = g;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+    // kenar koyu halkası (derinlik)
+    ctx.strokeStyle = hdRenkTon(renk, -65);
+    ctx.lineWidth = Math.max(0.6, r * 0.05);
+    ctx.beginPath(); ctx.arc(cx, cy, r * 0.97, 0, 7); ctx.stroke();
+    // parlama (specular)
+    const sg = ctx.createRadialGradient(cx - r*0.38, cy - r*0.42, r*0.02, cx - r*0.38, cy - r*0.42, r*0.4);
+    sg.addColorStop(0, 'rgba(255,255,255,.85)');
+    sg.addColorStop(0.5, 'rgba(255,255,255,.25)');
+    sg.addColorStop(1, 'rgba(255,255,255,0)');
+    ctx.fillStyle = sg;
+    ctx.beginPath(); ctx.ellipse(cx - r*0.38, cy - r*0.42, r*0.42, r*0.32, -0.5, 0, 7); ctx.fill();
+    // ikinci küçük parlama (cam gibi)
+    ctx.fillStyle = 'rgba(255,255,255,.65)';
+    ctx.beginPath(); ctx.arc(cx + r*0.22, cy + r*0.32, r*0.1, 0, 7); ctx.fill();
+  } catch (e) {
+    // hata olursa basit daire çiz
+    ctx.fillStyle = renk;
+    ctx.beginPath(); ctx.arc(cx, cy, r, 0, 7); ctx.fill();
+  }
 }
 // HD 3D kutu: yuvarlatılmış, üst parlama, alt gölge, kenar koyu hat
 function hd3DKutu(ctx, x, y, w, h, renk) {
-  const r = Math.max(2, Math.min(w, h) * 0.16);
-  // ana yüzey dikey gradyan (üst aydınlık → alt koyu)
-  const g = ctx.createLinearGradient(x, y, x, y + h);
-  g.addColorStop(0, hdRenkTon(renk, 50));
-  g.addColorStop(0.45, renk);
-  g.addColorStop(1, hdRenkTon(renk, -45));
-  ctx.fillStyle = g;
-  hdRoundRect(ctx, x, y, w, h, r); ctx.fill();
-  // kenar koyu hat (derinlik)
-  ctx.strokeStyle = hdRenkTon(renk, -70);
-  ctx.lineWidth = 1.2;
-  hdRoundRect(ctx, x + 0.5, y + 0.5, w - 1, h - 1, r); ctx.stroke();
+  if (!ctx || !isFinite(x) || !isFinite(y) || !isFinite(w) || !isFinite(h) || w <= 0 || h <= 0) return;
+  renk = renk || '#888';
+  try {
+    const r = Math.max(2, Math.min(w, h) * 0.16);
+    // ana yüzey dikey gradyan (üst aydınlık → alt koyu)
+    const g = ctx.createLinearGradient(x, y, x, y + h);
+    g.addColorStop(0, hdRenkTon(renk, 50));
+    g.addColorStop(0.45, renk);
+    g.addColorStop(1, hdRenkTon(renk, -45));
+    ctx.fillStyle = g;
+    hdRoundRect(ctx, x, y, w, h, r); ctx.fill();
+    // kenar koyu hat (derinlik)
+    ctx.strokeStyle = hdRenkTon(renk, -70);
+    ctx.lineWidth = 1.2;
+    hdRoundRect(ctx, x + 0.5, y + 0.5, w - 1, h - 1, r); ctx.stroke();
   // üst parlama şeridi
   const sg = ctx.createLinearGradient(x, y, x, y + h * 0.45);
   sg.addColorStop(0, 'rgba(255,255,255,.55)');
@@ -413,6 +442,11 @@ function hd3DKutu(ctx, x, y, w, h, renk) {
   // alt iç gölge
   ctx.fillStyle = 'rgba(0,0,0,.18)';
   hdRoundRect(ctx, x + w*0.1, y + h*0.7, w*0.8, h*0.18, r*0.4); ctx.fill();
+  } catch (e) {
+    // hata olursa basit kutu çiz
+    ctx.fillStyle = renk;
+    ctx.fillRect(x, y, w, h);
+  }
 }
 function hdRoundRect(ctx, x, y, w, h, r) {
   if (w < 2 * r) r = w / 2;
@@ -850,6 +884,7 @@ let bkBalls, bkBricks, bkBonus, bkState, bkTopSayi, bkSkor, bkTur, bkLevel;
 let bkTopTip = 'normal'; // normal | dagit | cift
 let bkFlas = false; // sıra flaş etkisi devam ediyor mu
 let bkFlasTimer = null;
+let bkGercekAtilan = 0; // gerçek ekranda kaç top var (dağıtıcı 3 katı)
 let bkLauncher, bkAiming, bkAimX, bkAimY, bkAtisYon, bkAtilan, bkDonenSayi, bkIlkDusenX, bkFireTimer;
 let bkParticles, bkEkstra, bkDuraklat, bkBuTurTop;
 const BK_COLS = 7;
@@ -913,6 +948,7 @@ function bkLevelRenk(hp, palet) {
 function bkAktifPalet() { return BK_PALET[(bkLevel - 1) % BK_PALET.length]; }
 
 function blokYeniOyun() {
+  document.getElementById('blok-gameover').style.display = 'none';
   bkTopSayi = 1; bkSkor = 0; bkTur = 1; bkLevel = 1;
   bkBricks = []; bkBonus = []; bkParticles = [];
   bkEkstra = 3; bkDuraklat = false;
@@ -921,6 +957,7 @@ function blokYeniOyun() {
   bkState = 'aim';
   bkLauncher = { x: BK_W / 2, y: BK_ALT_Y - 6 };
   guncelleButonlar();
+  guncelleHUD();
   bkLoop();
 }
 
@@ -931,10 +968,9 @@ function bkLevelKur() {
   document.getElementById('bg-b').style.opacity = '0';
   document.getElementById('bg-a').style.opacity = '1';
   aktifBg = 'a';
-  // ekranı dolduran başlangıç blokları (üst üste sütunlar)
+  // makul başlangıç: 1 dolu satır, sonra her tur 1 satır iner
   bkBricks = []; bkBonus = [];
-  const baslangicSatir = 4 + Math.min(bkLevel, 4); // level arttıkça daha çok dolu satır
-  for (let s = 0; s < baslangicSatir; s++) yeniSatirEkle();
+  yeniSatirEkle();
 }
 
 function blokDuraklat() {
@@ -1051,6 +1087,7 @@ function bkAtisBaslat() {
   bkBalls = [];
   bkAtilan = 0; bkDonenSayi = 0; bkIlkDusenX = null;
   bkBuTurTop = bkTopSayi;
+  bkGercekAtilan = 0; // gerçekten ekranda kaç top var (dağıtıcı 3 katı)
   const hiz = Math.max(7, BK_W * 0.022);
   // Top tipi etkisi: dagit -> her topun yanına 2 top eklenir (sağa-sola yayılır)
   //                  cift -> her top 2 vuruşluk (hasar=2)
@@ -1059,12 +1096,14 @@ function bkAtisBaslat() {
     const dx = bkAtisYon.x * hiz, dy = bkAtisYon.y * hiz;
     const hasar = bkTopTip === 'cift' ? 2 : 1;
     bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx, dy, canli: true, hasar });
+    bkGercekAtilan++;
     if (bkTopTip === 'dagit') {
       // sapma açıları (+/- 12 derece)
       const aci = 0.21;
       const cosA = Math.cos(aci), sinA = Math.sin(aci);
       bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx: dx*cosA - dy*sinA, dy: dx*sinA + dy*cosA, canli: true, hasar });
       bkBalls.push({ x: bkLauncher.x, y: bkLauncher.y, dx: dx*cosA + dy*sinA, dy: -dx*sinA + dy*cosA, canli: true, hasar });
+      bkGercekAtilan += 2;
     }
     bkAtilan++;
     sfx.carp();
@@ -1109,7 +1148,9 @@ function bkTurBitir() {
   if (bkBricks.every(b => b.hp <= 0)) {
     if (bkLevel >= BK_MAX_LEVEL) {
       bkState = 'win'; sfx.kazan();
-      toast('🏆 Tüm 20 level bitti! Skor: ' + bkSkor);
+      document.getElementById('blok-gameover-baslik').innerText = '🏆';
+      document.getElementById('blok-gameover-skor').innerText = 'Tüm 20 level bitti! Skor: ' + bkSkor;
+      document.getElementById('blok-gameover').style.display = 'block';
       return;
     }
     bkLevel++; bkTur = 1; bkSkor += 100;
@@ -1125,7 +1166,9 @@ function bkTurBitir() {
   const sonRow = Math.floor((BK_ALT_Y - BK_TOP_Y) / BK_CELL);
   if (bkBricks.some(b => b.hp > 0 && b.row >= sonRow)) {
     bkState = 'over'; sfx.yanlis();
-    toast('💀 Oyun bitti! Skor: ' + bkSkor);
+    document.getElementById('blok-gameover-baslik').innerText = '💀';
+    document.getElementById('blok-gameover-skor').innerText = 'Skor: ' + bkSkor + ' · Level ' + bkLevel;
+    document.getElementById('blok-gameover').style.display = 'block';
     return;
   }
   bkState = 'aim';
@@ -1183,7 +1226,7 @@ function bkLoop() {
       }
     });
     bkBonus = bkBonus.filter(o => !o.alindi);
-    if (bkAtilan >= bkBuTurTop && bkDonenSayi >= bkBuTurTop) bkTurBitir();
+    if (bkAtilan >= bkBuTurTop && bkDonenSayi >= bkGercekAtilan) bkTurBitir();
   }
 
   bkParticles.forEach(p => { p.x += p.dx; p.y += p.dy; p.life -= 0.05; });
@@ -1374,21 +1417,58 @@ function pBosHucre(ctx, x, y, size) {
 function pCizTahta() {
   const ctx = document.getElementById('p-board').getContext('2d');
   ctx.clearRect(0, 0, P_W, P_W);
-  ctx.fillStyle = 'rgba(20,24,60,.55)';
-  pRoundRect(ctx, 0, 0, P_W, P_W, 14); ctx.fill();
+  // Süslü arka plan: gradyan + parıltı + iç çerçeve
+  const bg = ctx.createLinearGradient(0, 0, 0, P_W);
+  bg.addColorStop(0, '#3a1c71');
+  bg.addColorStop(0.5, '#2b0f5c');
+  bg.addColorStop(1, '#1a0941');
+  ctx.fillStyle = bg;
+  pRoundRect(ctx, 0, 0, P_W, P_W, 16); ctx.fill();
+  // İç parıltı kenarı
+  ctx.strokeStyle = 'rgba(255,255,255,.15)'; ctx.lineWidth = 2;
+  pRoundRect(ctx, 3, 3, P_W - 6, P_W - 6, 14); ctx.stroke();
+  // Köşelerde dekoratif yıldız parıltıları
+  const yild = [
+    {x: P_W*0.08, y: P_W*0.08}, {x: P_W*0.92, y: P_W*0.08},
+    {x: P_W*0.08, y: P_W*0.92}, {x: P_W*0.92, y: P_W*0.92}
+  ];
+  ctx.fillStyle = 'rgba(255,228,107,.4)';
+  yild.forEach(y => {
+    ctx.beginPath(); ctx.arc(y.x, y.y, 2, 0, 7); ctx.fill();
+  });
+  // Hücreler
   for (let r = 0; r < PB; r++)
     for (let c = 0; c < PB; c++) {
       const x = P_PAD + c * (P_CELL + P_GAP), y = P_PAD + r * (P_CELL + P_GAP);
       if (pBoard[r][c]) pBlokCiz(ctx, x, y, P_CELL, pBoard[r][c]);
       else pBosHucre(ctx, x, y, P_CELL);
     }
+  // Sürükleme önizlemesi - hayalet
   if (pDrag) {
     const pos = pHedef();
     if (pos && pYerlesirMi(pDrag.piece, pos.r, pos.c)) {
+      // Yerleşeceği yerin satır/sütununu vurgula (temizlenecek mi göster)
+      const denemeBoard = pBoard.map(row => row.slice());
+      pDrag.piece.g.forEach((row, dr) => row.forEach((v, dc) => {
+        if (v) denemeBoard[pos.r + dr][pos.c + dc] = pDrag.piece.renk;
+      }));
+      const temizSatir = [], temizSutun = [];
+      for (let r = 0; r < PB; r++) if (denemeBoard[r].every(c => c)) temizSatir.push(r);
+      for (let c = 0; c < PB; c++) if (denemeBoard.every(row => row[c])) temizSutun.push(c);
+      // Temizlenecek satır/sütunları yeşil halo
+      temizSatir.forEach(r => {
+        ctx.fillStyle = 'rgba(46,196,79,.25)';
+        ctx.fillRect(P_PAD - 2, P_PAD + r * (P_CELL + P_GAP) - 2, P_W - 2*(P_PAD-2), P_CELL + 4);
+      });
+      temizSutun.forEach(c => {
+        ctx.fillStyle = 'rgba(46,196,79,.25)';
+        ctx.fillRect(P_PAD + c * (P_CELL + P_GAP) - 2, P_PAD - 2, P_CELL + 4, P_W - 2*(P_PAD-2));
+      });
+      // Parça hayaleti
       pDrag.piece.g.forEach((row, dr) => row.forEach((v, dc) => {
         if (v) {
           const x = P_PAD + (pos.c + dc) * (P_CELL + P_GAP), y = P_PAD + (pos.r + dr) * (P_CELL + P_GAP);
-          pBlokCiz(ctx, x, y, P_CELL, pDrag.piece.renk, 0.45);
+          pBlokCiz(ctx, x, y, P_CELL, pDrag.piece.renk, 0.55);
         }
       }));
     }
@@ -1398,7 +1478,23 @@ function pCizTahta() {
 function pCizTepsi() {
   const ctx = document.getElementById('p-tray').getContext('2d');
   ctx.clearRect(0, 0, T_W, T_H);
+  // Süslü tepsi arka planı
+  const bg = ctx.createLinearGradient(0, 0, 0, T_H);
+  bg.addColorStop(0, 'rgba(40,20,80,.7)');
+  bg.addColorStop(1, 'rgba(20,10,60,.7)');
+  ctx.fillStyle = bg;
+  pRoundRect(ctx, 2, 2, T_W - 4, T_H - 4, 12); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1.5;
+  pRoundRect(ctx, 2, 2, T_W - 4, T_H - 4, 12); ctx.stroke();
+  // Bölme çizgileri
   const slotW = T_W / 3;
+  ctx.strokeStyle = 'rgba(255,255,255,.1)'; ctx.lineWidth = 1;
+  for (let i = 1; i < 3; i++) {
+    ctx.beginPath();
+    ctx.moveTo(i * slotW, T_H * 0.15);
+    ctx.lineTo(i * slotW, T_H * 0.85);
+    ctx.stroke();
+  }
   pTepsi.forEach((p, i) => {
     if (!p || (pDrag && pDrag.gi === i)) return;
     const gw = p.g[0].length, gh = p.g.length;
@@ -1801,39 +1897,47 @@ function eDown(e) {
   const h = eHucreBul(p.clientX, p.clientY);
   if (!h) return;
   if (e.cancelable) e.preventDefault();
-  // ÖZEL PARÇA bekleme modunda mı?
+  // Özel parça aktif bekleme modu: ikinci dokunulan hücredeki MEYVE TÜRÜ hedef
   if (eOzelBekleyen) {
     const hedefTip = eBoard[h.r][h.c];
-    eOzelTetikle(eOzelBekleyen, hedefTip);
+    const bekleyen = eOzelBekleyen;
     eOzelBekleyen = null; eSec = null;
-    return;
-  }
-  // Bu hücrede özel parça var mı? Aktive et
-  if (eOzel && eOzel[h.r][h.c]) {
-    const mevcut = eOzel[h.r][h.c];
-    // ROKETİN ÜSTÜNE TIKLAYINCA UÇAĞA YÜKSELT
-    if (mevcut === 'roket' && (!eOzelBekleyen || eOzelBekleyen.r !== h.r || eOzelBekleyen.c !== h.c)) {
-      // ilk tık: roket aktif; ikinci tıkı bekle ya da uçağa yükselt seçeneği ver
-      // basit yaklaşım: roket aktif olmuşken aynı hücreye tekrar dokunulursa uçağa dönsün
-      // Aşağıdaki "aynı hücreye iki kez basma" mantığını kullanıyoruz:
-    }
-    if (eOzelBekleyen && eOzelBekleyen.r === h.r && eOzelBekleyen.c === h.c && mevcut === 'roket') {
-      // ikinci dokunuş = uçağa yükselt
+    // Roketi uçağa yükseltme: aynı hücreye tekrar dokunulduysa
+    if (bekleyen.tip === 'roket' && bekleyen.r === h.r && bekleyen.c === h.c) {
       eOzel[h.r][h.c] = 'ucak';
       eOzelBekleyen = { r: h.r, c: h.c, tip: 'ucak' };
       sfx.guc();
-      toast('✈️ Roket uçağa yükseldi! Hedef meyveye dokun');
+      toast('✈️ Uçağa yükseldi! Hedef meyveye dokun');
       eCiz();
       return;
     }
+    eOzelTetikle(bekleyen, hedefTip);
+    return;
+  }
+  // Bu hücrede özel parça var mı? Aktive et
+  if (eOzel && eOzel[h.r] && eOzel[h.r][h.c]) {
+    const mevcut = eOzel[h.r][h.c];
     eOzelBekleyen = { r: h.r, c: h.c, tip: mevcut };
     eSec = h; sfx.guc();
-    toast(mevcut === 'flas' ? '✨ Hedef meyve türüne dokun' :
-          mevcut === 'roket' ? '🚀 Aktif! Yine dokun → uçak, veya başka meyveye dokun → patlat' :
-          '✈️ Hedef meyve türüne dokun');
+    toast(mevcut === 'flas' ? '✨ Hedef meyveye dokun → tümü patlar' :
+          mevcut === 'roket' ? '🚀 Tekrar dokun → uçak · veya başka meyveye dokun' :
+          '✈️ Hedef meyveye dokun → havadan bomba');
     eCiz();
     return;
   }
+  // İKİNCİ DOKUNUŞ: zaten bir meyve seçiliyse ve komşusuna dokunulduysa takas et
+  if (eSec && (eSec.r !== h.r || eSec.c !== h.c)) {
+    const fark = Math.abs(eSec.r - h.r) + Math.abs(eSec.c - h.c);
+    if (fark === 1) {
+      const bas = eSec; eSec = null;
+      eTakasDene(bas.r, bas.c, h.r, h.c);
+      return;
+    }
+    // komşu değilse yeni seçim
+    eSec = h; eDragStart = h; sfx.tik(); eCiz();
+    return;
+  }
+  // İLK DOKUNUŞ: seçim + sürükleme başlat
   eDragStart = h; eSec = h; sfx.tik(); eCiz();
 }
 function eMove(e) {
@@ -1848,7 +1952,16 @@ function eMove(e) {
     eTakasDene(bas.r, bas.c, h.r, h.c);
   }
 }
-function eUp() { eDragStart = null; }
+function eUp(e) {
+  // Eğer kaydırma yapılmadıysa (eDragStart hala set) - tıklama gibi davran
+  if (eDragStart) {
+    const h = eDragStart;
+    eDragStart = null;
+    // İlk dokunulan hücreyi seçili tut, ikinci dokunuşta takas için
+    // (eDown'da zaten eSec set edildi, burada bir şey yapmıyoruz)
+  }
+  eDragStart = null;
+}
 function eClick(e) {
   if (eKilit) return;
   const p = e.changedTouches ? e.changedTouches[0] : e;
@@ -2114,10 +2227,10 @@ function eKaristir() {
 
 (function eBind() {
   const canvas = document.getElementById('e-board');
+  // Sadece mouse ve touch event'leri - click event touch sonrası tetiklenip karışıklık yaratıyordu
   canvas.addEventListener('mousedown', eDown);
   canvas.addEventListener('mousemove', eMove);
   window.addEventListener('mouseup', eUp);
-  canvas.addEventListener('click', eClick);
   canvas.addEventListener('touchstart', e => { e.preventDefault(); eDown(e); }, { passive: false });
   canvas.addEventListener('touchmove', e => { e.preventDefault(); eMove(e); }, { passive: false });
   canvas.addEventListener('touchend', e => { eUp(); }, { passive: false });
@@ -2214,93 +2327,163 @@ function snCiz() {
   const canvas = document.getElementById('sn-board');
   const ctx = canvas.getContext('2d');
   const W = canvas._lw || canvas.width;
-  // DOKULU ZEMİN: koyu toprak + hafif benekli doku
-  const zg = ctx.createLinearGradient(0, 0, 0, W);
-  zg.addColorStop(0, '#4a3b28');
-  zg.addColorStop(1, '#3a2e1f');
+
+  // ZEMİN: zengin çim teması - radyal aydınlatma
+  const zg = ctx.createRadialGradient(W/2, W/2, W*0.1, W/2, W/2, W*0.7);
+  zg.addColorStop(0, '#4caf50');
+  zg.addColorStop(0.5, '#388e3c');
+  zg.addColorStop(1, '#1b5e20');
   ctx.fillStyle = zg;
   ctx.fillRect(0, 0, W, W);
-  // toprak benek dokusu
-  ctx.fillStyle = 'rgba(255,255,255,.03)';
-  for (let i = 0; i < 60; i++) {
-    const rx = (i * 53 % W), ry = (i * 97 % W);
-    ctx.beginPath(); ctx.arc(rx, ry, 2 + (i % 3), 0, 7); ctx.fill();
-  }
-  // kenar çim şeridi
-  ctx.fillStyle = '#3e7d32';
-  ctx.fillRect(0, 0, W, snCell * 0.5);
-  ctx.fillRect(0, W - snCell * 0.5, W, snCell * 0.5);
-  ctx.fillRect(0, 0, snCell * 0.5, W);
-  ctx.fillRect(W - snCell * 0.5, 0, snCell * 0.5, W);
 
-  // YEM: HD küre (parlak kırmızı elma) + kuyruk
+  // Izgara çizgileri (hafif)
+  ctx.strokeStyle = 'rgba(255,255,255,.04)';
+  ctx.lineWidth = 1;
+  for (let i = 1; i < SN_GRID; i++) {
+    ctx.beginPath(); ctx.moveTo(i * snCell, 0); ctx.lineTo(i * snCell, W); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0, i * snCell); ctx.lineTo(W, i * snCell); ctx.stroke();
+  }
+  // Çim dokusu - rastgele yeşil tonlu noktalar
+  for (let i = 0; i < 80; i++) {
+    const rx = (i * 53.7 % W), ry = (i * 97.3 % W);
+    ctx.fillStyle = i % 3 === 0 ? 'rgba(255,255,255,.06)' : 'rgba(0,0,0,.08)';
+    ctx.beginPath(); ctx.arc(rx, ry, 1.5 + (i % 3), 0, 7); ctx.fill();
+  }
+  // Çim çiçekleri (rastgele sarı/beyaz noktalar)
+  ctx.fillStyle = '#fff59d';
+  for (let i = 0; i < 12; i++) {
+    const rx = (i * 73.1 + 30) % W, ry = (i * 113.7 + 50) % W;
+    ctx.beginPath(); ctx.arc(rx, ry, 2, 0, 7); ctx.fill();
+  }
+
+  // Çerçeve (ahşap kenarlık)
+  ctx.strokeStyle = '#5d4037'; ctx.lineWidth = 4;
+  ctx.strokeRect(2, 2, W - 4, W - 4);
+  ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = 1;
+  ctx.strokeRect(4, 4, W - 8, W - 8);
+
+  // YEM: HD parlak elma + yaprak + parıltı halkası
   const yx = snYem.x * snCell + snCell / 2, yy = snYem.y * snCell + snCell / 2;
-  const yr = snCell * 0.4;
-  hd3DKure(ctx, yx, yy, yr, '#e84545');
-  // kuyruk
-  ctx.strokeStyle = '#7a3a1a'; ctx.lineWidth = yr * 0.18;
+  const yr = snCell * 0.42;
+  // Parıltı halkası (yem etrafında nabız)
+  const nabiz = 0.7 + 0.3 * Math.sin(Date.now() / 200);
+  ctx.strokeStyle = 'rgba(255,235,59,' + (0.4 * nabiz) + ')';
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(yx, yy, yr * 1.4 * nabiz, 0, 7); ctx.stroke();
+  // Elma
+  hd3DKure(ctx, yx, yy, yr, '#e53935');
+  // Sap
+  ctx.strokeStyle = '#5d4037'; ctx.lineWidth = yr * 0.18;
   ctx.beginPath();
-  ctx.moveTo(yx, yy - yr*0.8);
-  ctx.quadraticCurveTo(yx + yr*0.5, yy - yr*1.2, yx + yr*0.8, yy - yr*0.8);
+  ctx.moveTo(yx - yr*0.1, yy - yr*0.85);
+  ctx.quadraticCurveTo(yx + yr*0.3, yy - yr*1.15, yx + yr*0.5, yy - yr*0.85);
   ctx.stroke();
-  // yaprak (yeşil)
-  ctx.fillStyle = '#2ecc71';
+  // Yaprak
+  ctx.fillStyle = '#43a047';
   ctx.beginPath();
-  ctx.ellipse(yx + yr*0.5, yy - yr*1.1, yr*0.25, yr*0.15, -0.6, 0, 7);
+  ctx.ellipse(yx + yr*0.55, yy - yr*1.0, yr*0.32, yr*0.16, -0.5, 0, 7);
   ctx.fill();
+  ctx.strokeStyle = '#2e7d32'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(yx + yr*0.25, yy - yr*0.9);
+  ctx.lineTo(yx + yr*0.85, yy - yr*1.05);
+  ctx.stroke();
 
-  // YILAN: kalın, çizgili desenli (turuncu-amber tonları, görseldekinden farklı renk)
-  const govdeAna = '#e8821e', govdeAcik = '#ffc04d', cizgi = '#fff3c4';
-  // önce kalın sürekli gövde çiz (segmentleri birleştiren)
-  if (snYilan.length > 1) {
+  // YILAN GÖVDESİ - parlak yeşil-amber gradyan, çok katmanlı 3D
+  if (snYilan.length > 0) {
+    // Gölge altı (yere düşen)
+    ctx.save();
+    ctx.translate(2, 3);
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
-    ctx.strokeStyle = govdeAna;
-    ctx.lineWidth = snCell * 0.82;
+    ctx.strokeStyle = 'rgba(0,0,0,.35)';
+    ctx.lineWidth = snCell * 0.85;
     ctx.beginPath();
     snYilan.forEach((s, i) => {
       const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
       if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
     });
+    if (snYilan.length === 1) ctx.lineTo(snYilan[0].x*snCell+snCell/2+0.1, snYilan[0].y*snCell+snCell/2);
     ctx.stroke();
-    // üst parlama şeridi (3D his)
-    ctx.strokeStyle = govdeAcik;
-    ctx.lineWidth = snCell * 0.4;
-    ctx.beginPath();
-    snYilan.forEach((s, i) => {
-      const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2 - snCell * 0.12;
-      if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
-    });
-    ctx.stroke();
-    // çapraz çizgi desenleri (her segmentte)
-    ctx.strokeStyle = cizgi; ctx.lineWidth = snCell * 0.14;
-    snYilan.forEach((s, i) => {
-      if (i % 1 !== 0) return;
-      const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+    ctx.restore();
+
+    if (snYilan.length > 1) {
+      ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+      // Ana gövde - koyu yeşil taban
+      ctx.strokeStyle = '#1b5e20';
+      ctx.lineWidth = snCell * 0.85;
       ctx.beginPath();
-      ctx.moveTo(cx - snCell*0.22, cy - snCell*0.28);
-      ctx.lineTo(cx + snCell*0.22, cy + snCell*0.28);
+      snYilan.forEach((s, i) => {
+        const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+        if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+      });
       ctx.stroke();
-    });
+      // Ana renk
+      ctx.strokeStyle = '#43a047';
+      ctx.lineWidth = snCell * 0.72;
+      ctx.beginPath();
+      snYilan.forEach((s, i) => {
+        const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+        if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+      });
+      ctx.stroke();
+      // Üst parlama şeridi
+      ctx.strokeStyle = '#a5d6a7';
+      ctx.lineWidth = snCell * 0.35;
+      ctx.beginPath();
+      snYilan.forEach((s, i) => {
+        const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2 - snCell * 0.15;
+        if (i === 0) ctx.moveTo(cx, cy); else ctx.lineTo(cx, cy);
+      });
+      ctx.stroke();
+      // Pul desenleri (her segmentte)
+      ctx.fillStyle = '#2e7d32';
+      snYilan.forEach((s, i) => {
+        if (i === 0) return; // baş hariç
+        const cx = s.x * snCell + snCell / 2, cy = s.y * snCell + snCell / 2;
+        ctx.beginPath();
+        ctx.arc(cx, cy + snCell*0.15, snCell*0.12, 0, 7);
+        ctx.fill();
+      });
+    }
   }
-  // BAŞ (HD 3D küre, gözlü, dilli)
+
+  // BAŞ - parlak HD küre + büyük gözler + dil
   const bas = snYilan[0];
   const bx = bas.x * snCell + snCell / 2, by = bas.y * snCell + snCell / 2;
-  const br = snCell * 0.5;
-  hd3DKure(ctx, bx, by, br, govdeAna);
-  // gözler
-  ctx.fillStyle = '#fff';
-  const gx = bx + snYon.x * br * 0.25, gy = by + snYon.y * br * 0.25;
+  const br = snCell * 0.55;
+  hd3DKure(ctx, bx, by, br, '#66bb6a');
+
+  // Gözler
+  const gx = bx + snYon.x * br * 0.3, gy = by + snYon.y * br * 0.3;
   const dik = { x: -snYon.y, y: snYon.x };
-  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4, gy + dik.y*br*0.4, br*0.26, 0, 7); ctx.fill();
-  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4, gy - dik.y*br*0.4, br*0.26, 0, 7); ctx.fill();
+  // Beyaz göz arka planı
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4, gy + dik.y*br*0.4, br*0.3, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4, gy - dik.y*br*0.4, br*0.3, 0, 7); ctx.fill();
+  // Siyah göz bebeği (yön takip eder)
   ctx.fillStyle = '#222';
-  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4 + snYon.x*br*0.1, gy + dik.y*br*0.4 + snYon.y*br*0.1, br*0.13, 0, 7); ctx.fill();
-  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4 + snYon.x*br*0.1, gy - dik.y*br*0.4 + snYon.y*br*0.1, br*0.13, 0, 7); ctx.fill();
-  // dil
-  ctx.strokeStyle = '#ff3b3b'; ctx.lineWidth = br*0.12;
+  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4 + snYon.x*br*0.1, gy + dik.y*br*0.4 + snYon.y*br*0.1, br*0.16, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4 + snYon.x*br*0.1, gy - dik.y*br*0.4 + snYon.y*br*0.1, br*0.16, 0, 7); ctx.fill();
+  // Gözbebeği parlaması
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(gx + dik.x*br*0.4 + snYon.x*br*0.13, gy + dik.y*br*0.4 + snYon.y*br*0.13, br*0.06, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(gx - dik.x*br*0.4 + snYon.x*br*0.13, gy - dik.y*br*0.4 + snYon.y*br*0.13, br*0.06, 0, 7); ctx.fill();
+
+  // Çatallı dil (animasyonlu)
+  const dilUz = br * (1.3 + 0.2 * Math.sin(Date.now() / 150));
+  ctx.strokeStyle = '#e53935'; ctx.lineWidth = br * 0.14;
+  ctx.lineCap = 'round';
   ctx.beginPath();
-  ctx.moveTo(bx + snYon.x*br, by + snYon.y*br);
-  ctx.lineTo(bx + snYon.x*br*1.5, by + snYon.y*br*1.5);
+  ctx.moveTo(bx + snYon.x * br * 0.9, by + snYon.y * br * 0.9);
+  ctx.lineTo(bx + snYon.x * dilUz, by + snYon.y * dilUz);
+  ctx.stroke();
+  // Dil çatalı
+  ctx.lineWidth = br * 0.1;
+  ctx.beginPath();
+  ctx.moveTo(bx + snYon.x * dilUz, by + snYon.y * dilUz);
+  ctx.lineTo(bx + snYon.x * dilUz * 1.15 + dik.x * br * 0.12, by + snYon.y * dilUz * 1.15 + dik.y * br * 0.12);
+  ctx.moveTo(bx + snYon.x * dilUz, by + snYon.y * dilUz);
+  ctx.lineTo(bx + snYon.x * dilUz * 1.15 - dik.x * br * 0.12, by + snYon.y * dilUz * 1.15 - dik.y * br * 0.12);
   ctx.stroke();
 }
 
@@ -2317,26 +2500,46 @@ function snRoundRect(ctx, x, y, w, h, r) {
 // PARMAKLA KAYDIRMA kontrolü
 (function snBind() {
   const canvas = document.getElementById('sn-board');
-  // Ekranda dokunulan nokta, yılanın başına göre hangi yöndeyse o yöne dön
-  function dokun(e) {
+  let baslangic = null;
+  // Parmak kaydırma kontrolü - hangi yöne kaydırırsan o yöne git
+  function baslat(e) {
     if (!snYilan || snBitti) return;
+    const p = e.touches ? e.touches[0] : e;
+    baslangic = { x: p.clientX, y: p.clientY };
+  }
+  function bitir(e) {
+    if (!baslangic || !snYilan || snBitti) return;
     if (e.cancelable) e.preventDefault();
-    const p = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e);
-    const rect = canvas.getBoundingClientRect();
-    const scale = canvas.width / rect.width;
-    const tx = (p.clientX - rect.left) * scale;
-    const ty = (p.clientY - rect.top) * scale;
-    // yılanın başının piksel konumu
-    const bas = snYilan[0];
-    const bx = bas.x * snCell + snCell / 2;
-    const by = bas.y * snCell + snCell / 2;
-    const dx = tx - bx, dy = ty - by;
-    // hangi eksende fark daha büyükse o yöne dön
+    const p = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = p.clientX - baslangic.x;
+    const dy = p.clientY - baslangic.y;
+    const uz = Math.hypot(dx, dy);
+    // Çok kısa kaydırma sayılmaz - yön değişmesin
+    if (uz < 15) { baslangic = null; return; }
     if (Math.abs(dx) > Math.abs(dy)) snYonDegis(dx > 0 ? 1 : -1, 0);
     else snYonDegis(0, dy > 0 ? 1 : -1);
+    baslangic = null;
   }
-  canvas.addEventListener('touchstart', dokun, { passive: false });
-  canvas.addEventListener('mousedown', dokun);
+  // Anlık takip de olsun: parmak hareket ederken anında yön değiştir
+  function hareket(e) {
+    if (!baslangic || !snYilan || snBitti) return;
+    if (e.cancelable) e.preventDefault();
+    const p = e.touches ? e.touches[0] : e;
+    const dx = p.clientX - baslangic.x;
+    const dy = p.clientY - baslangic.y;
+    const uz = Math.hypot(dx, dy);
+    if (uz < 25) return; // eşik
+    if (Math.abs(dx) > Math.abs(dy)) snYonDegis(dx > 0 ? 1 : -1, 0);
+    else snYonDegis(0, dy > 0 ? 1 : -1);
+    // referans noktasını güncelle ki sonraki kaydırma da işe yarasın
+    baslangic = { x: p.clientX, y: p.clientY };
+  }
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); baslat(e); }, { passive: false });
+  canvas.addEventListener('touchmove', e => { e.preventDefault(); hareket(e); }, { passive: false });
+  canvas.addEventListener('touchend', bitir, { passive: false });
+  canvas.addEventListener('mousedown', baslat);
+  canvas.addEventListener('mousemove', e => { if (baslangic) hareket(e); });
+  canvas.addEventListener('mouseup', bitir);
 })();
 
 // klavye ok tuşları (masaüstü)

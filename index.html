@@ -185,7 +185,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 9.0 · 5 oyun · tüm düzeltmeler</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 9.1 · HD koordinat düzeltmesi</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -1076,7 +1076,10 @@ function bkAimEnd() {
 }
 function bkAimGuncelle(e) {
   const canvas = document.getElementById('c1');
-  const rect = canvas.getBoundingClientRect(), scale = canvas.width / rect.width;
+  const rect = canvas.getBoundingClientRect();
+  // HD canvas'ta canvas.width DPR ile çarpılı - mantıksal boyutu kullan
+  const lw = canvas._lw || canvas.width;
+  const scale = lw / rect.width;
   const p = e.touches ? e.touches[0] : e;
   bkAimX = (p.clientX - rect.left) * scale;
   bkAimY = (p.clientY - rect.top) * scale;
@@ -1878,7 +1881,9 @@ function eRoundRect(ctx, x, y, w, h, r) {
 function eHucreBul(clientX, clientY) {
   const canvas = document.getElementById('e-board');
   const rect = canvas.getBoundingClientRect();
-  const scale = canvas.width / rect.width;
+  // HD canvas'ta canvas.width DPR ile çarpılı - mantıksal boyutu kullan
+  const lw = canvas._lw || canvas.width;
+  const scale = lw / rect.width;
   const x = (clientX - rect.left) * scale;
   const y = (clientY - rect.top) * scale;
   const c = Math.floor((x - E_PAD) / E_CELL);
@@ -1891,18 +1896,26 @@ function eHucreBul(clientX, clientY) {
 // İkinci dokunmadaki meyve türüne göre güç patlar
 let eOzelBekleyen = null; // {r,c,tip} - hangi özel parça aktive bekliyor
 
+// Match-3 input - basit ve sağlam akış:
+// 1. Dokunma başı: hücre seçilir (eSec)
+// 2. Parmak komşu hücreye gelince: takas dene
+// 3. Parmak kalkınca: hiçbir şey, eSec korunur (ikinci dokunuş için)
+// 4. İkinci dokunuş komşuysa: takas. Değilse: yeni seçim.
+
 function eDown(e) {
   if (eKilit) return;
   const p = e.touches ? e.touches[0] : e;
   const h = eHucreBul(p.clientX, p.clientY);
   if (!h) return;
   if (e.cancelable) e.preventDefault();
-  // Özel parça aktif bekleme modu: ikinci dokunulan hücredeki MEYVE TÜRÜ hedef
+
+  // Özel parça aktivasyonu bekliyorsa
   if (eOzelBekleyen) {
     const hedefTip = eBoard[h.r][h.c];
     const bekleyen = eOzelBekleyen;
-    eOzelBekleyen = null; eSec = null;
-    // Roketi uçağa yükseltme: aynı hücreye tekrar dokunulduysa
+    eOzelBekleyen = null;
+    eSec = null;
+    // Roket aynı hücreye tekrar tıklanırsa uçağa yükselt
     if (bekleyen.tip === 'roket' && bekleyen.r === h.r && bekleyen.c === h.c) {
       eOzel[h.r][h.c] = 'ucak';
       eOzelBekleyen = { r: h.r, c: h.c, tip: 'ucak' };
@@ -1914,52 +1927,73 @@ function eDown(e) {
     eOzelTetikle(bekleyen, hedefTip);
     return;
   }
-  // Bu hücrede özel parça var mı? Aktive et
+
+  // Özel parçaya dokunulduysa: aktif et
   if (eOzel && eOzel[h.r] && eOzel[h.r][h.c]) {
     const mevcut = eOzel[h.r][h.c];
     eOzelBekleyen = { r: h.r, c: h.c, tip: mevcut };
-    eSec = h; sfx.guc();
+    eSec = h;
+    sfx.guc();
     toast(mevcut === 'flas' ? '✨ Hedef meyveye dokun → tümü patlar' :
           mevcut === 'roket' ? '🚀 Tekrar dokun → uçak · veya başka meyveye dokun' :
           '✈️ Hedef meyveye dokun → havadan bomba');
     eCiz();
     return;
   }
-  // İKİNCİ DOKUNUŞ: zaten bir meyve seçiliyse ve komşusuna dokunulduysa takas et
-  if (eSec && (eSec.r !== h.r || eSec.c !== h.c)) {
+
+  // Zaten bir hücre seçiliyse: takas dene
+  if (eSec) {
+    if (eSec.r === h.r && eSec.c === h.c) {
+      // aynı hücreye tıklandı - seçimi kaldır
+      eSec = null;
+      eDragStart = null;
+      eCiz();
+      return;
+    }
     const fark = Math.abs(eSec.r - h.r) + Math.abs(eSec.c - h.c);
     if (fark === 1) {
-      const bas = eSec; eSec = null;
+      // komşu hücre - takas et
+      const bas = eSec;
+      eSec = null;
+      eDragStart = null;
       eTakasDene(bas.r, bas.c, h.r, h.c);
       return;
     }
-    // komşu değilse yeni seçim
-    eSec = h; eDragStart = h; sfx.tik(); eCiz();
+    // uzak hücre - yeni seçim
+    eSec = h;
+    eDragStart = h;
+    sfx.tik();
+    eCiz();
     return;
   }
-  // İLK DOKUNUŞ: seçim + sürükleme başlat
-  eDragStart = h; eSec = h; sfx.tik(); eCiz();
+
+  // İlk seçim
+  eSec = h;
+  eDragStart = h;
+  sfx.tik();
+  eCiz();
 }
+
 function eMove(e) {
+  // Sürükleme ile takas: parmak başlangıç hücreden komşuya kayarsa takas
   if (eKilit || !eDragStart) return;
   const p = e.touches ? e.touches[0] : e;
   const h = eHucreBul(p.clientX, p.clientY);
   if (!h) return;
+  if (h.r === eDragStart.r && h.c === eDragStart.c) return; // aynı hücre, hareket yok
   const fark = Math.abs(h.r - eDragStart.r) + Math.abs(h.c - eDragStart.c);
   if (fark === 1) {
     if (e.cancelable) e.preventDefault();
-    const bas = eDragStart; eDragStart = null; eSec = null;
+    const bas = eDragStart;
+    eDragStart = null;
+    eSec = null;
     eTakasDene(bas.r, bas.c, h.r, h.c);
   }
 }
+
 function eUp(e) {
-  // Eğer kaydırma yapılmadıysa (eDragStart hala set) - tıklama gibi davran
-  if (eDragStart) {
-    const h = eDragStart;
-    eDragStart = null;
-    // İlk dokunulan hücreyi seçili tut, ikinci dokunuşta takas için
-    // (eDown'da zaten eSec set edildi, burada bir şey yapmıyoruz)
-  }
+  // Parmak kalkar - sadece sürükleme başlangıcını sıfırla
+  // eSec'i sıfırlama! Kullanıcı ikinci dokunuş için seçimini korumak ister
   eDragStart = null;
 }
 function eClick(e) {

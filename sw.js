@@ -1,5 +1,5 @@
 /* Service Worker - HER ZAMAN GÜNCEL HTML + çevrimdışı destek */
-const CACHE = 'oyun-portali-final-1';
+const CACHE = 'oyun-portali-final-8';
 const DOSYALAR = [
   './',
   './index.html',

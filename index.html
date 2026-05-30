@@ -165,6 +165,13 @@
                 inset 0 0 0 2px rgba(100,180,220,.25),
                 0 0 24px rgba(25,211,224,.15); }
 
+  /* REFLEX MASTER */
+  #rfx-board { display: block; margin: 10px auto; touch-action: none; border-radius: 14px; max-width: 380px; width: 94%;
+    background: radial-gradient(ellipse at center, #2d1b69 0%, #11052c 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2),
+                inset 0 0 0 2px rgba(155,93,229,.3),
+                0 0 24px rgba(155,93,229,.2); }
+
   /* HAFIZA EŞLEŞTİR */
   #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
     border-radius: 18px;
@@ -548,6 +555,41 @@
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağını ekranda sürükle → alt raket takip eder · İlk 7 sayıya ulaşan kazanır</div>
+</div>
+
+<!-- REFLEX MASTER -->
+<div id="game-reflex" class="screen">
+  <div class="hud">
+    <span>👑 <span id="rfx-best">0</span></span>
+    <span style="font-size:1.4em;font-weight:800"><span id="rfx-skor">0</span></span>
+    <span>⏱️ <span id="rfx-sure">60</span>s</span>
+  </div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:4px">
+    Bölüm <strong id="rfx-bolum">1</strong> · Vuruş: <strong id="rfx-vurus">0</strong> · Isabet: <strong id="rfx-isabet">100</strong>%
+  </div>
+  <canvas id="rfx-board" width="360" height="480"></canvas>
+  <div id="rfx-baslangic" style="text-align:center; margin:10px auto; max-width:300px;">
+    <div style="background:rgba(0,0,0,.75); border-radius:14px; padding:16px;">
+      <div style="font-size:1.2em; margin-bottom:8px">🎯 Hazır mısın?</div>
+      <div style="opacity:.85; font-size:.9em; margin-bottom:10px">
+        🟢 Yeşil hedef: +10 puan<br>
+        🔴 Kırmızı bomba: -15 puan, dokunma!<br>
+        ⭐ Sarı yıldız: +30 puan, hızlı!
+      </div>
+      <button class="btn small" onclick="rfxBaslat()">▶️ Başla</button>
+    </div>
+  </div>
+  <div id="rfx-gameover" style="display:none; background:rgba(0,0,0,.88); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
+    <div id="rfx-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">⏰ Süre Bitti!</div>
+    <div id="rfx-gameover-detay" style="margin:8px 0">─</div>
+    <button class="btn small" onclick="rfxBaslat()">🔄 Tekrar</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div>
+    <button class="btn alt small" onclick="rfxBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Yeşil hedeflere ve sarı yıldızlara dokun · Kırmızı bombadan kaç · 60 saniye</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -1091,10 +1133,16 @@ function showGame(g) {
   if (g === 'tetris') { setDuvar('teknoloji'); requestAnimationFrame(() => trBaslat()); }
   if (g === 'memory') { setDuvar('muzik'); requestAnimationFrame(() => memBaslat()); }
   if (g === 'pong') { setDuvar('teknoloji'); requestAnimationFrame(() => pongBaslat()); }
+  if (g === 'reflex') { setDuvar('teknoloji'); requestAnimationFrame(() => rfxHazirla()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }
   if (g !== 'pong') { cancelAnimationFrame(window.pongAnim); }
+  if (g !== 'reflex') { 
+    cancelAnimationFrame(window.rfxAnim);
+    clearInterval(window.rfxSureTimer);
+    clearInterval(window.rfxUretTimer);
+  }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -4583,6 +4631,385 @@ window.addEventListener('keydown', e => {
 });
 
 
+/* ============ REFLEX MASTER ============ */
+let RFX_W, RFX_H;
+let rfxHedefler = []; // [{x, y, r, tip, dogum, omur, can}]
+let rfxSkor, rfxKalanSure, rfxBolum;
+let rfxVurusSayi, rfxDokunmaSayi; // isabet oranı için
+let rfxBitti, rfxAktif;
+let rfxBest = load('rfx_best', 0);
+let rfxPartikuller = [];
+const RFX_SURE = 60; // saniye
+
+// Hedef tipi konfigürasyonu
+const RFX_TIPLER = {
+  'yesil': { renk: '#52c41a', puan: 10, omur: 1500, agirlik: 60 },
+  'kirmizi': { renk: '#e94560', puan: -15, omur: 1800, agirlik: 25 },
+  'sari':   { renk: '#fadb14', puan: 30, omur: 900, agirlik: 15 }
+};
+
+function rfxHazirla() {
+  document.getElementById('rfx-gameover').style.display = 'none';
+  document.getElementById('rfx-baslangic').style.display = 'block';
+  rfxBoyutla();
+  rfxHedefler = [];
+  rfxPartikuller = [];
+  rfxAktif = false;
+  rfxBitti = false;
+  rfxSkor = 0;
+  rfxKalanSure = RFX_SURE;
+  rfxBolum = 1;
+  rfxVurusSayi = 0;
+  rfxDokunmaSayi = 0;
+  rfxHUDGuncelle();
+  rfxCiz();
+}
+
+function rfxBaslat() {
+  document.getElementById('rfx-baslangic').style.display = 'none';
+  document.getElementById('rfx-gameover').style.display = 'none';
+  rfxBoyutla();
+  rfxHedefler = [];
+  rfxPartikuller = [];
+  rfxSkor = 0;
+  rfxKalanSure = RFX_SURE;
+  rfxBolum = 1;
+  rfxVurusSayi = 0;
+  rfxDokunmaSayi = 0;
+  rfxAktif = true;
+  rfxBitti = false;
+  rfxHUDGuncelle();
+  // Süre sayacı
+  clearInterval(window.rfxSureTimer);
+  window.rfxSureTimer = setInterval(() => {
+    rfxKalanSure--;
+    document.getElementById('rfx-sure').innerText = rfxKalanSure;
+    // Her 10 saniyede bir bölüm atla
+    const yeniBolum = Math.floor((RFX_SURE - rfxKalanSure) / 10) + 1;
+    if (yeniBolum > rfxBolum) {
+      rfxBolum = yeniBolum;
+      document.getElementById('rfx-bolum').innerText = rfxBolum;
+      toast('⚡ Hızlanıyor!');
+    }
+    if (rfxKalanSure <= 0) rfxBitir();
+  }, 1000);
+  // Hedef üretici
+  clearInterval(window.rfxUretTimer);
+  window.rfxUretTimer = setInterval(rfxHedefUret, rfxUretAraligi());
+  // Çizim döngüsü
+  cancelAnimationFrame(window.rfxAnim);
+  rfxLoop();
+}
+
+function rfxBoyutla() {
+  const canvas = document.getElementById('rfx-board');
+  const w = Math.min(canvas.clientWidth || 360, 380);
+  const h = Math.round(w * 1.3);
+  hdKur(canvas, w, h);
+  RFX_W = w;
+  RFX_H = h;
+}
+
+function rfxUretAraligi() {
+  // Bölüm 1: 900ms, Bölüm 6: 350ms (giderek hızlanır)
+  return Math.max(350, 900 - (rfxBolum - 1) * 110);
+}
+
+function rfxHedefBoyut() {
+  // Bölüm 1: 32px, Bölüm 6: 22px (giderek küçülür)
+  return Math.max(22, 32 - (rfxBolum - 1) * 2);
+}
+
+function rfxHedefOmur() {
+  // Bölüm 1: 1500ms, Bölüm 6: 900ms (giderek hızlı kaybolur)
+  return Math.max(700, 1700 - (rfxBolum - 1) * 180);
+}
+
+// Ağırlıklı rastgele tip seçimi
+function rfxRastgeleTip() {
+  const toplamAgirlik = Object.values(RFX_TIPLER).reduce((s, t) => s + t.agirlik, 0);
+  let r = Math.random() * toplamAgirlik;
+  for (const tip in RFX_TIPLER) {
+    r -= RFX_TIPLER[tip].agirlik;
+    if (r <= 0) return tip;
+  }
+  return 'yesil';
+}
+
+function rfxHedefUret() {
+  if (!rfxAktif || rfxBitti) return;
+  const r = rfxHedefBoyut();
+  const x = r + 10 + Math.random() * (RFX_W - 2 * r - 20);
+  const y = r + 10 + Math.random() * (RFX_H - 2 * r - 20);
+  const tip = rfxRastgeleTip();
+  // Yakın bir hedef varsa üretme (üst üste binmesin)
+  for (const h of rfxHedefler) {
+    const dx = h.x - x, dy = h.y - y;
+    if (Math.hypot(dx, dy) < (h.r + r) * 1.2) return;
+  }
+  rfxHedefler.push({
+    x, y, r,
+    tip,
+    dogum: Date.now(),
+    omur: RFX_TIPLER[tip].omur * (rfxHedefOmur() / 1500), // bölüm zorluğuna göre
+    can: true,
+    puls: Math.random() * Math.PI
+  });
+  // Süreyi takip et: süresi dolmuş hedefler için yeni timer
+  setTimeout(() => {
+    // Eğer hâlâ canlıysa yok say
+    rfxHedefler = rfxHedefler.filter(h => h.can);
+  }, RFX_TIPLER[tip].omur * (rfxHedefOmur() / 1500) + 100);
+  // Hızlanma: timer aralığı bölüme göre güncellensin
+  if (window.rfxSonAralik !== rfxUretAraligi()) {
+    window.rfxSonAralik = rfxUretAraligi();
+    clearInterval(window.rfxUretTimer);
+    window.rfxUretTimer = setInterval(rfxHedefUret, window.rfxSonAralik);
+  }
+}
+
+function rfxHUDGuncelle() {
+  document.getElementById('rfx-skor').innerText = rfxSkor;
+  document.getElementById('rfx-best').innerText = rfxBest;
+  document.getElementById('rfx-sure').innerText = rfxKalanSure;
+  document.getElementById('rfx-bolum').innerText = rfxBolum;
+  document.getElementById('rfx-vurus').innerText = rfxVurusSayi;
+  const isabet = rfxDokunmaSayi === 0 ? 100 : Math.round((rfxVurusSayi / rfxDokunmaSayi) * 100);
+  document.getElementById('rfx-isabet').innerText = isabet;
+}
+
+function rfxLoop() {
+  // Süresi dolmuş hedefleri can=false yap (görsel solar)
+  const simdi = Date.now();
+  rfxHedefler.forEach(h => {
+    if (simdi - h.dogum > h.omur) h.can = false;
+  });
+  // Tamamen ölmüş partikülleri kaldır
+  rfxPartikuller.forEach(p => {
+    p.x += p.dx;
+    p.y += p.dy;
+    p.dy += 0.2;
+    p.life -= 0.04;
+  });
+  rfxPartikuller = rfxPartikuller.filter(p => p.life > 0);
+  // Hedefleri tamamen kaybolduktan sonra temizle
+  rfxHedefler = rfxHedefler.filter(h => simdi - h.dogum < h.omur + 300);
+  rfxCiz();
+  if (!rfxBitti) window.rfxAnim = requestAnimationFrame(rfxLoop);
+}
+
+function rfxCiz() {
+  const canvas = document.getElementById('rfx-board');
+  const ctx = canvas.getContext('2d');
+  const lw = canvas._lw || RFX_W;
+  const lh = canvas._lh || RFX_H;
+  ctx.clearRect(0, 0, lw, lh);
+  // Arka plan yıldız parıltıları
+  ctx.fillStyle = 'rgba(255,255,255,.3)';
+  for (let i = 0; i < 25; i++) {
+    const sx = (i * 47.3) % lw;
+    const sy = (i * 89.7) % lh;
+    const par = 0.5 + Math.sin(Date.now() / 500 + i) * 0.5;
+    ctx.globalAlpha = par * 0.4;
+    ctx.beginPath();
+    ctx.arc(sx, sy, 1.2, 0, 7);
+    ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+  // Hedefler
+  const simdi = Date.now();
+  rfxHedefler.forEach(h => {
+    const yas = (simdi - h.dogum) / h.omur; // 0-1+
+    if (yas > 1.3) return;
+    let olcek = 1;
+    if (yas < 0.15) {
+      // Giriş animasyonu (büyüyerek belirir)
+      olcek = yas / 0.15;
+    } else if (yas > 0.85 && h.can) {
+      // Solma uyarısı (titreşim)
+      olcek = 1 + Math.sin(simdi / 50) * 0.08;
+    } else if (!h.can) {
+      // Vurulmuş - yok oluyor
+      olcek = Math.max(0, 1 - (yas - 0.85) * 5);
+    }
+    if (olcek <= 0) return;
+    const r = h.r * olcek;
+    // Solma şeffaflığı
+    ctx.globalAlpha = h.can ? 1 : Math.max(0, 1 - (yas - 0.85) * 4);
+    // Tip bazlı çizim
+    if (h.tip === 'yesil') {
+      // Glow halkası
+      const halka = 1 + Math.sin(simdi / 200 + h.puls) * 0.15;
+      ctx.strokeStyle = 'rgba(82,196,26,.5)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, r * 1.3 * halka, 0, 7);
+      ctx.stroke();
+      hd3DKure(ctx, h.x, h.y, r, '#52c41a');
+      // İç çapraz
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = 2.5;
+      const k = r * 0.4;
+      ctx.beginPath();
+      ctx.moveTo(h.x - k, h.y); ctx.lineTo(h.x + k, h.y);
+      ctx.moveTo(h.x, h.y - k); ctx.lineTo(h.x, h.y + k);
+      ctx.stroke();
+    } else if (h.tip === 'kirmizi') {
+      // Bomba - kırmızı + ünlem
+      ctx.strokeStyle = 'rgba(233,69,96,.6)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, r * 1.4, 0, 7);
+      ctx.stroke();
+      hd3DKure(ctx, h.x, h.y, r, '#e94560');
+      // Üst fitil
+      ctx.strokeStyle = '#333';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(h.x, h.y - r);
+      ctx.lineTo(h.x + r * 0.3, h.y - r * 1.4);
+      ctx.stroke();
+      // Fitil ucunda parlama
+      const parlak = 0.5 + Math.sin(simdi / 80) * 0.5;
+      ctx.fillStyle = 'rgba(250,140,60,' + parlak + ')';
+      ctx.beginPath();
+      ctx.arc(h.x + r * 0.3, h.y - r * 1.4, 3, 0, 7);
+      ctx.fill();
+      // Ünlem
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold ' + Math.floor(r * 0.8) + 'px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('!', h.x, h.y);
+    } else if (h.tip === 'sari') {
+      // Sarı yıldız - 5 köşeli
+      const halka = 1 + Math.sin(simdi / 150 + h.puls) * 0.2;
+      ctx.strokeStyle = 'rgba(250,219,20,.7)';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.arc(h.x, h.y, r * 1.5 * halka, 0, 7);
+      ctx.stroke();
+      // Yıldız çizimi
+      ctx.fillStyle = '#fadb14';
+      ctx.strokeStyle = '#a37e08';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let i = 0; i < 10; i++) {
+        const aci = (i / 10) * Math.PI * 2 - Math.PI / 2;
+        const yari = i % 2 === 0 ? r : r * 0.45;
+        const px = h.x + Math.cos(aci) * yari;
+        const py = h.y + Math.sin(aci) * yari;
+        if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.closePath();
+      ctx.fill();
+      ctx.stroke();
+      // İç parlama
+      ctx.fillStyle = 'rgba(255,255,255,.5)';
+      ctx.beginPath();
+      ctx.arc(h.x - r * 0.2, h.y - r * 0.2, r * 0.15, 0, 7);
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+  });
+  // Partiküller
+  rfxPartikuller.forEach(p => {
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.renk;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.boyut, 0, 7);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+}
+
+function rfxPatlama(x, y, renk, adet) {
+  for (let i = 0; i < adet; i++) {
+    rfxPartikuller.push({
+      x, y,
+      dx: (Math.random() - 0.5) * 7,
+      dy: (Math.random() - 0.5) * 7 - 1,
+      life: 1,
+      renk,
+      boyut: 2 + Math.random() * 3
+    });
+  }
+}
+
+function rfxDokun(e) {
+  if (!rfxAktif || rfxBitti) return;
+  const p = e.touches ? e.touches[0] : (e.changedTouches ? e.changedTouches[0] : e);
+  if (!p) return;
+  if (e.cancelable) e.preventDefault();
+  const canvas = document.getElementById('rfx-board');
+  const rect = canvas.getBoundingClientRect();
+  const lw = canvas._lw || canvas.width;
+  const scale = lw / rect.width;
+  const x = (p.clientX - rect.left) * scale;
+  const y = (p.clientY - rect.top) * scale;
+  rfxDokunmaSayi++;
+  // En yakın canlı hedefe bak
+  let vuruldu = null;
+  for (const h of rfxHedefler) {
+    if (!h.can) continue;
+    const dx = h.x - x, dy = h.y - y;
+    if (Math.hypot(dx, dy) <= h.r * 1.15) { // küçük tolerans
+      vuruldu = h;
+      break;
+    }
+  }
+  if (vuruldu) {
+    const cfg = RFX_TIPLER[vuruldu.tip];
+    rfxSkor += cfg.puan;
+    if (rfxSkor < 0) rfxSkor = 0;
+    vuruldu.can = false;
+    vuruldu.dogum = Date.now() - vuruldu.omur * 0.86; // anında soluyacak
+    if (cfg.puan > 0) {
+      rfxVurusSayi++;
+      sfx.dogru();
+      rfxPatlama(vuruldu.x, vuruldu.y, cfg.renk, vuruldu.tip === 'sari' ? 18 : 10);
+      if (vuruldu.tip === 'sari') toast('⭐ +30!');
+    } else {
+      // bomba vurdu
+      sfx.yanlis();
+      rfxPatlama(vuruldu.x, vuruldu.y, '#fa8c16', 14);
+      toast('💥 -15!');
+    }
+  } else {
+    // Boş ekrana dokundu - hafif penaltı
+    rfxSkor = Math.max(0, rfxSkor - 2);
+    sfx.tik();
+  }
+  rfxHUDGuncelle();
+}
+
+function rfxBitir() {
+  rfxBitti = true;
+  rfxAktif = false;
+  clearInterval(window.rfxSureTimer);
+  clearInterval(window.rfxUretTimer);
+  cancelAnimationFrame(window.rfxAnim);
+  if (rfxSkor > rfxBest) {
+    rfxBest = rfxSkor;
+    save('rfx_best', rfxBest);
+    document.getElementById('rfx-best').innerText = rfxBest;
+  }
+  const isabet = rfxDokunmaSayi === 0 ? 0 : Math.round((rfxVurusSayi / rfxDokunmaSayi) * 100);
+  document.getElementById('rfx-gameover-detay').innerHTML =
+    'Skor: <strong>' + rfxSkor + '</strong>' +
+    '<br>Vuruş: <strong>' + rfxVurusSayi + '</strong> · İsabet: <strong>' + isabet + '%</strong>' +
+    (rfxSkor === rfxBest ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('rfx-gameover').style.display = 'block';
+  sfx.kazan();
+}
+
+(function rfxBind() {
+  const canvas = document.getElementById('rfx-board');
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); rfxDokun(e); }, { passive: false });
+  canvas.addEventListener('mousedown', rfxDokun);
+})();
+
+
 /* ============ RESIZE ============ */
 window.addEventListener('resize', () => {
   if (document.getElementById('game-blok').classList.contains('active')) {
@@ -4612,6 +5039,9 @@ window.addEventListener('resize', () => {
   }
   if (document.getElementById('game-pong').classList.contains('active') && pongRaketSen) {
     requestAnimationFrame(() => { pongBoyutla(); pongCiz(); });
+  }
+  if (document.getElementById('game-reflex').classList.contains('active')) {
+    requestAnimationFrame(() => { rfxBoyutla(); rfxCiz(); });
   }
 });
 

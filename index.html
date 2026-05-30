@@ -34,6 +34,14 @@
     opacity: .85; }
 
   .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
+  /* Yatay modda canvas'lar daha geniş yer kaplayabilsin */
+  @media (orientation: landscape) {
+    .screen { max-width: 720px; padding: 10px; }
+    /* Yatay modda canvas'lar yer kazanmalı */
+    #ks-board { max-width: 640px; }
+    #uz-board, #bk-board, #pong-board, #rfx-board { max-width: 460px; }
+    #tr-board { max-width: 360px; }
+  }
   .active { display: block; animation: fade .3s ease; }
   @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
 
@@ -186,6 +194,13 @@
                 inset 0 0 0 2px rgba(100,180,220,.4),
                 0 0 24px rgba(60,140,180,.25); }
 
+  /* ENGEL ATLA */
+  #ks-board { display: block; margin: 10px auto; touch-action: none; border-radius: 14px; max-width: 420px; width: 96%;
+    background: linear-gradient(180deg, #ff9966 0%, #ff7e5f 30%, #c47554 60%, #6a4030 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.3),
+                inset 0 0 0 2px rgba(255,150,100,.4),
+                0 0 24px rgba(255,140,90,.2); }
+
   /* HAFIZA EŞLEŞTİR */
   #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
     border-radius: 18px;
@@ -312,8 +327,13 @@
     <strong>Balık Tut</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Oltayı sal · Balıkları yakala · Hedef tutturun</div>
   </div>
+  <div class="card" onclick="showGame('kosucu')">
+    <span class="menu-icon">🏃</span>
+    <strong>Engel Atla</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
+  </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 17.0 · 13 oyun · Balık Tut eklendi</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 18.1 · 14 oyun · Yatay mod desteği</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -709,6 +729,52 @@
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Balığa dokun → kanca o yöne gider · Yakalanan balık otomatik çekilir</div>
+</div>
+
+<!-- ENGEL ATLA (KOŞUCU) -->
+<div id="game-kosucu" class="screen">
+  <div class="hud">
+    <span>👑 <span id="ks-best">0</span></span>
+    <span style="font-size:1.3em;font-weight:800">🏃 <span id="ks-mesafe">0</span>m</span>
+    <span>🪙 <span id="ks-para">0</span></span>
+  </div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:4px">
+    Hız: <strong id="ks-hiz">x1.0</strong> · Skor: <strong id="ks-skor">0</strong>
+  </div>
+  <div style="position:relative; display:inline-block; max-width:100%; width:100%;">
+    <canvas id="ks-board" width="360" height="280"></canvas>
+    <div id="ks-baslangic" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; max-width:300px; width:92%;">
+      <div style="background:rgba(0,0,0,.85); border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.6);">
+        <div style="font-size:1.3em; margin-bottom:10px">🏃 Hazır mısın?</div>
+        <div style="opacity:.9; font-size:.82em; margin-bottom:14px; line-height:1.55; text-align:left">
+          ⬆️ YUKARI kaydır / ⬆️ butonu → zıpla<br>
+          ⬇️ AŞAĞI kaydır / ⬇️ butonu → eğil<br>
+          🪨 Kayalar: zıpla<br>
+          🦅 Kuşlar: eğil<br>
+          🪵 Engel: zıpla<br>
+          🪙 Altın para: +5 puan<br>
+          💎 Mücevher: +25 puan
+        </div>
+        <button class="btn small" style="margin:0; padding:12px 28px; font-size:1.05em" onclick="ksBaslat()">▶️ KOŞ!</button>
+      </div>
+    </div>
+    <div id="ks-gameover" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.9); border-radius:16px; padding:18px; max-width:280px; width:90%; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,.6);">
+      <div style="font-weight:800; font-size:1.3em; margin:8px 0">💥 Çarptın!</div>
+      <div id="ks-gameover-detay" style="margin:8px 0">─</div>
+      <button class="btn small" onclick="ksBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div style="margin-top:8px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+    <button class="btn small" onclick="ksZipla()" style="padding:14px 22px;font-size:1.2em">⬆️ ZIPLA</button>
+    <button class="btn alt small" onclick="ksEgil()" style="padding:14px 22px;font-size:1.2em">⬇️ EĞİL</button>
+  </div>
+  <div style="margin-top:6px">
+    <button class="btn alt small" onclick="ksDuraklat()" id="ks-duraklat-btn">⏸️ Durdur</button>
+    <button class="btn alt small" onclick="ksBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Yukarı kaydır → zıpla · Aşağı kaydır → eğil · Sonsuz mesafe</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -1255,6 +1321,7 @@ function showGame(g) {
   if (g === 'reflex') { setDuvar('teknoloji'); requestAnimationFrame(() => rfxHazirla()); }
   if (g === 'uzay') { setDuvar('teknoloji'); requestAnimationFrame(() => uzHazirla()); }
   if (g === 'balik') { setDuvar('doga'); requestAnimationFrame(() => bkBalikHazirla()); }
+  if (g === 'kosucu') { setDuvar('doga'); requestAnimationFrame(() => ksHazirla()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }
@@ -1269,6 +1336,7 @@ function showGame(g) {
     cancelAnimationFrame(window.bkBalikAnim);
     clearInterval(window.bkBalikSureTimer);
   }
+  if (g !== 'kosucu') { cancelAnimationFrame(window.ksAnim); }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -6834,8 +6902,744 @@ function bkBalikKopekCiz(ctx, r) {
 })();
 
 
-/* ============ RESIZE ============ */
-window.addEventListener('resize', () => {
+/* ============ ENGEL ATLA (KOŞUCU) ============ */
+let KS_W, KS_H;
+let ksKarakter;       // { x, y, vy, durum, w, h, kosFaz, egiliyor }
+// durum: 'kosuyor' | 'ziplama' | 'egildi'
+let ksEngeller = [];  // [{ x, y, tip, w, h, ... }]
+let ksToplananlar = []; // para/mücevher
+let ksArkaPlan = { tepe1: 0, tepe2: 0, bulut: [] }; // paralaks
+let ksZeminCizgiler = []; // koşma hissi için
+let ksPartikuller = [];
+let ksMesafe, ksPara, ksSkor;
+let ksHizCarpan;
+let ksAktif, ksBitti, ksDuraklatildi;
+let ksBest = load('ks_best', 0);
+let ksGecmisFrame = 0;
+let ksTouch = null;
+let KS_ZEMIN_Y;       // zemin çizgisi y konumu
+
+const KS_ENGEL_TIPLERI = {
+  'kaya':   { w: 0.07, h: 0.18, ozellik: 'zipla', renk: '#5a3a1a' },     // alttaki engel - zıpla
+  'engel':  { w: 0.09, h: 0.22, ozellik: 'zipla', renk: '#8a6a3a' },     // büyük tahta - zıpla
+  'kus':    { w: 0.08, h: 0.06, ozellik: 'egil',  renk: '#2a2a4a' },     // havada uçuyor - eğil
+  'para':   { w: 0.045, h: 0.045, ozellik: 'topla', puan: 5,  renk: '#fadb14' },
+  'mucevher': { w: 0.055, h: 0.055, ozellik: 'topla', puan: 25, renk: '#19d3e0' }
+};
+
+function ksHazirla() {
+  document.getElementById('ks-gameover').style.display = 'none';
+  document.getElementById('ks-baslangic').style.display = 'block';
+  requestAnimationFrame(() => {
+    ksBoyutla();
+    ksEngeller = [];
+    ksToplananlar = [];
+    ksPartikuller = [];
+    ksAktif = false;
+    ksBitti = false;
+    ksDuraklatildi = false;
+    ksMesafe = 0;
+    ksPara = 0;
+    ksSkor = 0;
+    ksHizCarpan = 1.0;
+    ksBulutlariBaslat();
+    ksHUDGuncelle();
+    ksCiz();
+  });
+}
+
+function ksBaslat() {
+  document.getElementById('ks-baslangic').style.display = 'none';
+  document.getElementById('ks-gameover').style.display = 'none';
+  ksBoyutla();
+  ksEngeller = [];
+  ksToplananlar = [];
+  ksPartikuller = [];
+  ksMesafe = 0;
+  ksPara = 0;
+  ksSkor = 0;
+  ksHizCarpan = 1.0;
+  ksAktif = true;
+  ksBitti = false;
+  ksDuraklatildi = false;
+  ksBulutlariBaslat();
+  // Karakter konumu: solun 20%'sinde, zemin üstünde
+  const kw = KS_W * 0.08;
+  const kh = kw * 1.6;
+  ksKarakter = {
+    x: KS_W * 0.18,
+    y: KS_ZEMIN_Y - kh / 2,
+    vy: 0,
+    durum: 'kosuyor',
+    w: kw,
+    h: kh,
+    kosFaz: 0,
+    egiliyor: false,
+    egilZaman: 0
+  };
+  ksGecmisFrame = 0;
+  ksHUDGuncelle();
+  document.getElementById('ks-duraklat-btn').innerText = '⏸️ Durdur';
+  cancelAnimationFrame(window.ksAnim);
+  ksLoop();
+}
+
+function ksBoyutla() {
+  const canvas = document.getElementById('ks-board');
+  let w = canvas.clientWidth;
+  if (!w || w < 50) {
+    const ekran = document.getElementById('game-kosucu');
+    if (ekran && ekran.clientWidth > 50) w = Math.min(420, ekran.clientWidth - 24);
+    else w = Math.min(420, (window.innerWidth || 400) - 30);
+  }
+  w = Math.min(w, 420);
+  const h = Math.round(w * 0.62); // yatay format, side-scroll
+  hdKur(canvas, w, h);
+  KS_W = w;
+  KS_H = h;
+  KS_ZEMIN_Y = h * 0.82;
+}
+
+function ksBulutlariBaslat() {
+  ksArkaPlan.bulut = [];
+  for (let i = 0; i < 5; i++) {
+    ksArkaPlan.bulut.push({
+      x: Math.random() * KS_W,
+      y: KS_H * (0.1 + Math.random() * 0.2),
+      r: KS_W * (0.04 + Math.random() * 0.03),
+      hiz: 0.3 + Math.random() * 0.5
+    });
+  }
+  ksZeminCizgiler = [];
+  for (let i = 0; i < 12; i++) {
+    ksZeminCizgiler.push({
+      x: Math.random() * KS_W,
+      y: KS_ZEMIN_Y + 5 + Math.random() * 20
+    });
+  }
+}
+
+function ksHUDGuncelle() {
+  document.getElementById('ks-mesafe').innerText = Math.floor(ksMesafe);
+  document.getElementById('ks-best').innerText = ksBest;
+  document.getElementById('ks-para').innerText = ksPara;
+  document.getElementById('ks-skor').innerText = ksSkor;
+  document.getElementById('ks-hiz').innerText = 'x' + ksHizCarpan.toFixed(1);
+}
+
+function ksDuraklat() {
+  if (ksBitti || !ksAktif) return;
+  ksDuraklatildi = !ksDuraklatildi;
+  document.getElementById('ks-duraklat-btn').innerText = ksDuraklatildi ? '▶️ Devam' : '⏸️ Durdur';
+}
+
+function ksZipla() {
+  if (!ksAktif || ksBitti || ksDuraklatildi || !ksKarakter) return;
+  // Sadece zeminde veya eğildiyken zıplayabilir
+  if (ksKarakter.durum === 'kosuyor' || ksKarakter.durum === 'egildi') {
+    // Eğildiyse önce dik dur
+    if (ksKarakter.durum === 'egildi') {
+      ksKarakter.durum = 'kosuyor';
+      ksKarakter.egiliyor = false;
+      ksKarakter.h = ksKarakter.w * 1.6; // dik boyut geri
+      ksKarakter.y = KS_ZEMIN_Y - ksKarakter.h / 2;
+    }
+    ksKarakter.vy = -KS_W * 0.025; // yukarı ivme
+    ksKarakter.durum = 'ziplama';
+    sfx.tik();
+  }
+}
+
+function ksEgil() {
+  if (!ksAktif || ksBitti || ksDuraklatildi || !ksKarakter) return;
+  if (ksKarakter.durum === 'kosuyor') {
+    ksKarakter.durum = 'egildi';
+    ksKarakter.egiliyor = true;
+    ksKarakter.h = ksKarakter.w * 0.9; // yarı boy
+    ksKarakter.y = KS_ZEMIN_Y - ksKarakter.h / 2;
+    ksKarakter.egilZaman = 50; // ~0.8 saniye eğilik kal
+    sfx.tik();
+  }
+}
+
+function ksEngelUret() {
+  // Olasılıkla tipi belirle
+  const r = Math.random();
+  let tip;
+  if      (r < 0.30) tip = 'kaya';
+  else if (r < 0.45) tip = 'engel';
+  else if (r < 0.60) tip = 'kus';
+  else if (r < 0.92) tip = 'para';
+  else               tip = 'mucevher';
+  const cfg = KS_ENGEL_TIPLERI[tip];
+  const w = KS_W * cfg.w;
+  const h = KS_H * cfg.h;
+  let y;
+  if (tip === 'kus') {
+    // Hava engeli - eğmek lazım, başın üst hizasında
+    y = KS_ZEMIN_Y - KS_H * 0.18 - h / 2;
+  } else if (tip === 'para' || tip === 'mucevher') {
+    // Toplanabilir - bazen yerde, bazen havada (zıplayarak alınır)
+    if (Math.random() < 0.5) {
+      y = KS_ZEMIN_Y - h / 2 - 4;
+    } else {
+      y = KS_ZEMIN_Y - KS_W * 0.18 - h / 2; // hava
+    }
+  } else {
+    // Yer engeli
+    y = KS_ZEMIN_Y - h / 2;
+  }
+  ksEngeller.push({
+    x: KS_W + w,
+    y,
+    tip,
+    w, h,
+    donme: 0,
+    toplandi: false
+  });
+}
+
+function ksCarpisma(a, b) {
+  // Dikdörtgen-dikdörtgen, hafif tolerans
+  const tol = 0.85;
+  return Math.abs(a.x - b.x) < (a.w + b.w) / 2 * tol &&
+         Math.abs(a.y - b.y) < (a.h + b.h) / 2 * tol;
+}
+
+function ksAdim() {
+  if (ksBitti || ksDuraklatildi) return;
+  ksGecmisFrame++;
+  // Hız çarpan zamanla artar
+  ksHizCarpan = Math.min(3.0, 1.0 + ksGecmisFrame / 500 * 0.1);
+  ksMesafe += ksHizCarpan * 0.4;
+  // Engel üret - periyodik
+  const uretAraligi = Math.max(40, 80 - Math.floor(ksHizCarpan * 12));
+  if (ksGecmisFrame % uretAraligi === 0) ksEngelUret();
+  // Karakteri güncelle
+  if (ksKarakter.durum === 'ziplama') {
+    ksKarakter.vy += KS_W * 0.0015; // yerçekimi
+    ksKarakter.y += ksKarakter.vy;
+    // Zemine indi mi
+    if (ksKarakter.y >= KS_ZEMIN_Y - ksKarakter.h / 2) {
+      ksKarakter.y = KS_ZEMIN_Y - ksKarakter.h / 2;
+      ksKarakter.vy = 0;
+      ksKarakter.durum = 'kosuyor';
+    }
+  } else if (ksKarakter.durum === 'egildi') {
+    ksKarakter.egilZaman--;
+    if (ksKarakter.egilZaman <= 0) {
+      // Otomatik kalk
+      ksKarakter.durum = 'kosuyor';
+      ksKarakter.egiliyor = false;
+      ksKarakter.h = ksKarakter.w * 1.6;
+      ksKarakter.y = KS_ZEMIN_Y - ksKarakter.h / 2;
+    }
+  }
+  ksKarakter.kosFaz += 0.3;
+  // Engelleri hareket ettir
+  const engelHiz = KS_W * 0.008 * ksHizCarpan;
+  ksEngeller.forEach(e => {
+    e.x -= engelHiz;
+    if (e.tip === 'para' || e.tip === 'mucevher') e.donme += 0.05;
+  });
+  // Çarpışma kontrol
+  ksEngeller.forEach(e => {
+    if (e.toplandi) return;
+    if (ksCarpisma(ksKarakter, e)) {
+      const cfg = KS_ENGEL_TIPLERI[e.tip];
+      if (cfg.ozellik === 'topla') {
+        // Para/mücevher topla
+        e.toplandi = true;
+        if (e.tip === 'para') {
+          ksPara++;
+          ksSkor += cfg.puan;
+        } else {
+          ksSkor += cfg.puan;
+          toast('💎 +' + cfg.puan + '!');
+        }
+        sfx.dogru();
+        ksPatlama(e.x, e.y, cfg.renk, 8);
+      } else {
+        // Engel - oyun bitti (ama eğildiyse veya zıpladıysa kuşa çarpmaz)
+        ksBitir();
+        return;
+      }
+    }
+  });
+  ksEngeller = ksEngeller.filter(e => !e.toplandi && e.x > -e.w - 20);
+  // Skoru mesafe + para ile artır
+  if (ksGecmisFrame % 5 === 0) {
+    ksSkor = Math.floor(ksMesafe) + ksPara * 5;
+  }
+  if (ksSkor > ksBest) {
+    ksBest = ksSkor;
+    save('ks_best', ksBest);
+  }
+  // Arka plan paralaks
+  ksArkaPlan.tepe1 = (ksArkaPlan.tepe1 + 0.3 * ksHizCarpan) % (KS_W * 0.5);
+  ksArkaPlan.tepe2 = (ksArkaPlan.tepe2 + 0.7 * ksHizCarpan) % (KS_W * 0.4);
+  // Bulutlar
+  ksArkaPlan.bulut.forEach(b => {
+    b.x -= b.hiz * ksHizCarpan;
+    if (b.x < -b.r * 2) {
+      b.x = KS_W + b.r * 2;
+      b.y = KS_H * (0.1 + Math.random() * 0.2);
+    }
+  });
+  // Zemin çizgileri (hız hissi)
+  ksZeminCizgiler.forEach(c => {
+    c.x -= engelHiz;
+    if (c.x < 0) {
+      c.x = KS_W + Math.random() * 40;
+      c.y = KS_ZEMIN_Y + 5 + Math.random() * 20;
+    }
+  });
+  // Partiküller
+  ksPartikuller.forEach(p => {
+    p.x += p.dx; p.y += p.dy; p.dy += 0.2; p.life -= 0.04;
+  });
+  ksPartikuller = ksPartikuller.filter(p => p.life > 0);
+  if (ksGecmisFrame % 6 === 0) ksHUDGuncelle();
+}
+
+function ksPatlama(x, y, renk, adet) {
+  for (let i = 0; i < adet; i++) {
+    ksPartikuller.push({
+      x, y,
+      dx: (Math.random() - 0.5) * 5,
+      dy: -Math.random() * 4,
+      life: 1,
+      renk,
+      boyut: 2 + Math.random() * 2
+    });
+  }
+}
+
+function ksCiz() {
+  const canvas = document.getElementById('ks-board');
+  const ctx = canvas.getContext('2d');
+  const lw = canvas._lw || KS_W, lh = canvas._lh || KS_H;
+  ctx.clearRect(0, 0, lw, lh);
+  // Uzaktaki tepeler (paralaks - yavaş)
+  ctx.fillStyle = '#a0653a';
+  for (let i = 0; i < 4; i++) {
+    const cx = ((i * KS_W * 0.4) - ksArkaPlan.tepe1) + KS_W * 0.2;
+    ctx.beginPath();
+    ctx.moveTo(cx - KS_W * 0.25, KS_ZEMIN_Y);
+    ctx.lineTo(cx, KS_ZEMIN_Y - KS_H * 0.3);
+    ctx.lineTo(cx + KS_W * 0.25, KS_ZEMIN_Y);
+    ctx.closePath();
+    ctx.fill();
+  }
+  // Orta tepeler (paralaks - orta)
+  ctx.fillStyle = '#7a4a2a';
+  for (let i = 0; i < 5; i++) {
+    const cx = ((i * KS_W * 0.3) - ksArkaPlan.tepe2) + KS_W * 0.1;
+    ctx.beginPath();
+    ctx.moveTo(cx - KS_W * 0.2, KS_ZEMIN_Y);
+    ctx.lineTo(cx, KS_ZEMIN_Y - KS_H * 0.2);
+    ctx.lineTo(cx + KS_W * 0.2, KS_ZEMIN_Y);
+    ctx.closePath();
+    ctx.fill();
+  }
+  // Bulutlar
+  ctx.fillStyle = 'rgba(255,255,255,.85)';
+  ksArkaPlan.bulut.forEach(b => {
+    ctx.beginPath();
+    ctx.arc(b.x, b.y, b.r, 0, 7);
+    ctx.arc(b.x + b.r * 0.7, b.y, b.r * 0.8, 0, 7);
+    ctx.arc(b.x - b.r * 0.7, b.y, b.r * 0.85, 0, 7);
+    ctx.fill();
+  });
+  // Zemin (kahverengi - kum)
+  const zg = ctx.createLinearGradient(0, KS_ZEMIN_Y, 0, KS_H);
+  zg.addColorStop(0, '#5a3010');
+  zg.addColorStop(1, '#2a1808');
+  ctx.fillStyle = zg;
+  ctx.fillRect(0, KS_ZEMIN_Y, KS_W, KS_H - KS_ZEMIN_Y);
+  // Zemin üst çizgi
+  ctx.strokeStyle = '#3a1c08';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(0, KS_ZEMIN_Y);
+  ctx.lineTo(KS_W, KS_ZEMIN_Y);
+  ctx.stroke();
+  // Zemin çizgileri (koşma hissi)
+  ctx.strokeStyle = 'rgba(255,255,255,.2)';
+  ctx.lineWidth = 1.5;
+  ksZeminCizgiler.forEach(c => {
+    ctx.beginPath();
+    ctx.moveTo(c.x, c.y);
+    ctx.lineTo(c.x + 12, c.y);
+    ctx.stroke();
+  });
+  // Engelleri çiz
+  ksEngeller.forEach(e => {
+    if (e.x > KS_W + 20 || e.x < -20) return;
+    if (e.tip === 'kaya') ksKayaCiz(ctx, e);
+    else if (e.tip === 'engel') ksEngelCiz(ctx, e);
+    else if (e.tip === 'kus') ksKusCiz(ctx, e);
+    else if (e.tip === 'para') ksParaCiz(ctx, e);
+    else if (e.tip === 'mucevher') ksMucevherCiz(ctx, e);
+  });
+  // Karakter
+  if (ksKarakter) ksKarakterCiz(ctx, ksKarakter);
+  // Partiküller
+  ksPartikuller.forEach(p => {
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.renk;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.boyut, 0, 7);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  // Duraklat
+  if (ksDuraklatildi && !ksBitti) {
+    ctx.fillStyle = 'rgba(0,0,0,.7)';
+    ctx.fillRect(0, 0, lw, lh);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + Math.floor(KS_W * 0.08) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⏸️ DURAKLATIDI', lw / 2, lh / 2);
+  }
+}
+
+// Karakter çizimi - basit insanımsı, koşma animasyonu
+function ksKarakterCiz(ctx, k) {
+  ctx.save();
+  ctx.translate(k.x, k.y);
+  const w = k.w, h = k.h;
+  // Gövde
+  const gradGov = ctx.createLinearGradient(0, -h/2, 0, h/2);
+  gradGov.addColorStop(0, '#19d3e0');
+  gradGov.addColorStop(1, '#0f8ea0');
+  ctx.fillStyle = gradGov;
+  if (k.durum === 'egildi') {
+    // Eğildi - yatay oval (gövde + baş yakın)
+    ctx.beginPath();
+    ctx.ellipse(0, h * 0.1, w * 0.55, h * 0.35, 0, 0, 7);
+    ctx.fill();
+    // Baş (öne uzanmış)
+    ctx.fillStyle = '#f5d0a0';
+    ctx.beginPath();
+    ctx.arc(w * 0.5, h * 0.1, h * 0.25, 0, 7);
+    ctx.fill();
+    // Saç (siyah)
+    ctx.fillStyle = '#2a1a08';
+    ctx.beginPath();
+    ctx.arc(w * 0.5, h * 0.05, h * 0.18, Math.PI, 0);
+    ctx.fill();
+    // Göz
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(w * 0.62, h * 0.1, h * 0.04, 0, 7);
+    ctx.fill();
+  } else {
+    // Dik (koşma veya zıplama)
+    // Gövde
+    ctx.beginPath();
+    ctx.ellipse(0, h * 0.1, w * 0.4, h * 0.35, 0, 0, 7);
+    ctx.fill();
+    // Baş
+    ctx.fillStyle = '#f5d0a0';
+    ctx.beginPath();
+    ctx.arc(0, -h * 0.35, h * 0.18, 0, 7);
+    ctx.fill();
+    // Saç
+    ctx.fillStyle = '#2a1a08';
+    ctx.beginPath();
+    ctx.arc(0, -h * 0.42, h * 0.18, Math.PI, 0);
+    ctx.fill();
+    // Yüz çizgileri (basit)
+    ctx.fillStyle = '#000';
+    ctx.beginPath();
+    ctx.arc(h * 0.06, -h * 0.35, h * 0.025, 0, 7);
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(-h * 0.04, -h * 0.35, h * 0.025, 0, 7);
+    ctx.fill();
+    // Ağız
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.arc(h * 0.01, -h * 0.28, h * 0.04, 0, Math.PI);
+    ctx.stroke();
+    // Kollar (koşma animasyonu - faz)
+    const kolFaz = k.durum === 'ziplama' ? -0.8 : Math.sin(k.kosFaz) * 0.7;
+    ctx.strokeStyle = '#19d3e0';
+    ctx.lineWidth = w * 0.18;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.0);
+    ctx.lineTo(w * 0.3 * Math.cos(kolFaz), h * 0.0 + w * 0.3 * Math.sin(kolFaz));
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, h * 0.0);
+    ctx.lineTo(w * 0.3 * Math.cos(kolFaz + Math.PI), h * 0.0 + w * 0.3 * Math.sin(kolFaz + Math.PI));
+    ctx.stroke();
+    // Bacaklar
+    ctx.strokeStyle = '#1a4a8a';
+    ctx.lineWidth = w * 0.2;
+    if (k.durum === 'ziplama') {
+      // Zıplarken bacaklar bükük
+      ctx.beginPath();
+      ctx.moveTo(-w * 0.1, h * 0.4);
+      ctx.lineTo(-w * 0.2, h * 0.3);
+      ctx.lineTo(-w * 0.05, h * 0.5);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(w * 0.1, h * 0.4);
+      ctx.lineTo(w * 0.2, h * 0.3);
+      ctx.lineTo(w * 0.05, h * 0.5);
+      ctx.stroke();
+    } else {
+      // Koşma - bacaklar açı değiştirir
+      const bacFaz = Math.sin(k.kosFaz) * 0.5;
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.4);
+      ctx.lineTo(w * 0.25 * Math.cos(bacFaz + Math.PI/2), h * 0.4 + w * 0.25 * Math.sin(bacFaz + Math.PI/2));
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(0, h * 0.4);
+      ctx.lineTo(w * 0.25 * Math.cos(-bacFaz + Math.PI/2), h * 0.4 + w * 0.25 * Math.sin(-bacFaz + Math.PI/2));
+      ctx.stroke();
+    }
+  }
+  ctx.restore();
+}
+
+function ksKayaCiz(ctx, e) {
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  // Düzensiz kaya
+  const grad = ctx.createRadialGradient(-e.w * 0.2, -e.h * 0.3, e.w * 0.1, 0, 0, e.w * 0.7);
+  grad.addColorStop(0, '#8a6a3a');
+  grad.addColorStop(0.6, '#5a3a1a');
+  grad.addColorStop(1, '#2a1808');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(-e.w * 0.5, e.h * 0.5);
+  ctx.lineTo(-e.w * 0.4, -e.h * 0.3);
+  ctx.lineTo(-e.w * 0.1, -e.h * 0.5);
+  ctx.lineTo(e.w * 0.3, -e.h * 0.4);
+  ctx.lineTo(e.w * 0.5, e.h * 0.2);
+  ctx.lineTo(e.w * 0.4, e.h * 0.5);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#1a1008';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  // Çatlak
+  ctx.strokeStyle = 'rgba(0,0,0,.45)';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(-e.w * 0.2, -e.h * 0.2);
+  ctx.lineTo(0, e.h * 0.1);
+  ctx.lineTo(e.w * 0.2, -e.h * 0.1);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function ksEngelCiz(ctx, e) {
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  // Tahta yığını / kütük
+  hd3DKutu(ctx, -e.w / 2, -e.h / 2, e.w, e.h, '#8a6a3a');
+  // Tahta çizgileri
+  ctx.strokeStyle = 'rgba(0,0,0,.4)';
+  ctx.lineWidth = 1;
+  for (let i = -1; i <= 1; i++) {
+    ctx.beginPath();
+    ctx.moveTo(-e.w / 2, i * e.h * 0.25);
+    ctx.lineTo(e.w / 2, i * e.h * 0.25);
+    ctx.stroke();
+  }
+  // Üst tehlike işareti (kırmızı X)
+  ctx.strokeStyle = '#e94560';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(-e.w * 0.2, -e.h * 0.35);
+  ctx.lineTo(e.w * 0.2, -e.h * 0.15);
+  ctx.moveTo(e.w * 0.2, -e.h * 0.35);
+  ctx.lineTo(-e.w * 0.2, -e.h * 0.15);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function ksKusCiz(ctx, e) {
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  // Sol yönde uçan kuş (V şekli + gövde)
+  const kanatFaz = Math.sin(ksGecmisFrame / 4);
+  ctx.fillStyle = '#2a2a4a';
+  // Gövde
+  ctx.beginPath();
+  ctx.ellipse(0, 0, e.w * 0.35, e.h * 0.5, 0, 0, 7);
+  ctx.fill();
+  // Sol kanat
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(-e.w * 0.55, -e.h * 0.3 + kanatFaz * e.h * 0.3);
+  ctx.lineTo(-e.w * 0.25, e.h * 0.15);
+  ctx.closePath();
+  ctx.fill();
+  // Sağ kanat
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(e.w * 0.55, -e.h * 0.3 + kanatFaz * e.h * 0.3);
+  ctx.lineTo(e.w * 0.25, e.h * 0.15);
+  ctx.closePath();
+  ctx.fill();
+  // Göz (kırmızı kötü)
+  ctx.fillStyle = '#e94560';
+  ctx.beginPath();
+  ctx.arc(-e.w * 0.18, -e.h * 0.1, e.h * 0.1, 0, 7);
+  ctx.fill();
+  // Gaga (sarı)
+  ctx.fillStyle = '#fadb14';
+  ctx.beginPath();
+  ctx.moveTo(-e.w * 0.32, 0);
+  ctx.lineTo(-e.w * 0.5, e.h * 0.1);
+  ctx.lineTo(-e.w * 0.32, e.h * 0.1);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function ksParaCiz(ctx, e) {
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  // Dönen para efekti - oval (donme'ye göre)
+  const olcek = Math.abs(Math.cos(e.donme));
+  // Glow halkası
+  ctx.strokeStyle = 'rgba(250,219,20,.6)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(0, 0, e.w * 0.6, 0, 7);
+  ctx.stroke();
+  // Altın para (HD küre)
+  const grad = ctx.createRadialGradient(-e.w * 0.15, -e.h * 0.15, e.w * 0.05, 0, 0, e.w * 0.5);
+  grad.addColorStop(0, '#fff2a0');
+  grad.addColorStop(0.5, '#fadb14');
+  grad.addColorStop(1, '#a37e08');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, e.w * 0.5 * olcek, e.h * 0.5, 0, 0, 7);
+  ctx.fill();
+  ctx.strokeStyle = '#a37e08';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  // $ işareti
+  if (olcek > 0.4) {
+    ctx.fillStyle = '#a37e08';
+    ctx.font = 'bold ' + Math.floor(e.w * 0.6) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('$', 0, 0);
+  }
+  ctx.restore();
+}
+
+function ksMucevherCiz(ctx, e) {
+  ctx.save();
+  ctx.translate(e.x, e.y);
+  ctx.rotate(e.donme);
+  // Parıltı halkası
+  const par = 0.5 + 0.5 * Math.sin(ksGecmisFrame / 6);
+  ctx.strokeStyle = 'rgba(25,211,224,' + par * 0.8 + ')';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(0, 0, e.w * 0.8, 0, 7);
+  ctx.stroke();
+  // Elmas
+  const gradEl = ctx.createLinearGradient(0, -e.w * 0.5, 0, e.w * 0.5);
+  gradEl.addColorStop(0, '#a5e8ff');
+  gradEl.addColorStop(0.5, '#19d3e0');
+  gradEl.addColorStop(1, '#0f8ea0');
+  ctx.fillStyle = gradEl;
+  ctx.beginPath();
+  ctx.moveTo(0, -e.w * 0.5);
+  ctx.lineTo(e.w * 0.4, -e.w * 0.15);
+  ctx.lineTo(e.w * 0.25, e.w * 0.5);
+  ctx.lineTo(-e.w * 0.25, e.w * 0.5);
+  ctx.lineTo(-e.w * 0.4, -e.w * 0.15);
+  ctx.closePath();
+  ctx.fill();
+  // İç parlama
+  ctx.fillStyle = 'rgba(255,255,255,.7)';
+  ctx.beginPath();
+  ctx.moveTo(-e.w * 0.08, -e.w * 0.35);
+  ctx.lineTo(e.w * 0.08, -e.w * 0.35);
+  ctx.lineTo(0, -e.w * 0.15);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+function ksLoop() {
+  ksAdim();
+  ksCiz();
+  if (!ksBitti) window.ksAnim = requestAnimationFrame(ksLoop);
+}
+
+function ksBitir() {
+  ksBitti = true;
+  ksAktif = false;
+  cancelAnimationFrame(window.ksAnim);
+  sfx.yanlis();
+  document.getElementById('ks-gameover-detay').innerHTML =
+    'Mesafe: <strong>' + Math.floor(ksMesafe) + '</strong>m' +
+    '<br>Para: <strong>' + ksPara + '</strong>' +
+    '<br>Skor: <strong>' + ksSkor + '</strong>' +
+    (ksSkor === ksBest && ksSkor > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('ks-gameover').style.display = 'block';
+}
+
+// Parmak kontrolü - yukarı/aşağı kaydır
+(function ksBind() {
+  const canvas = document.getElementById('ks-board');
+  function dokunBasla(e) {
+    if (!ksAktif || ksBitti || ksDuraklatildi) return;
+    const p = e.touches ? e.touches[0] : e;
+    ksTouch = { x: p.clientX, y: p.clientY };
+  }
+  function dokunBitir(e) {
+    if (!ksTouch || !ksAktif || ksBitti || ksDuraklatildi) return;
+    if (e.cancelable) e.preventDefault();
+    const p = e.changedTouches ? e.changedTouches[0] : e;
+    const dy = p.clientY - ksTouch.y;
+    const dx = p.clientX - ksTouch.x;
+    ksTouch = null;
+    if (Math.abs(dy) > Math.abs(dx) && Math.abs(dy) > 20) {
+      if (dy < 0) ksZipla();
+      else ksEgil();
+    } else if (Math.abs(dx) < 10 && Math.abs(dy) < 10) {
+      // Kısa dokun = zıpla
+      ksZipla();
+    }
+  }
+  canvas.addEventListener('touchstart', e => { e.preventDefault(); dokunBasla(e); }, { passive: false });
+  canvas.addEventListener('touchend', dokunBitir, { passive: false });
+  canvas.addEventListener('mousedown', dokunBasla);
+  canvas.addEventListener('mouseup', dokunBitir);
+})();
+
+// Klavye
+window.addEventListener('keydown', e => {
+  if (!document.getElementById('game-kosucu').classList.contains('active')) return;
+  if (e.key === 'ArrowUp' || e.key === ' ') { ksZipla(); e.preventDefault(); }
+  else if (e.key === 'ArrowDown') { ksEgil(); e.preventDefault(); }
+  else if (e.key === 'p' || e.key === 'P') { ksDuraklat(); e.preventDefault(); }
+});
+
+
+/* ============ RESIZE / ORIENTATION ============ */
+function ekranYenidenBoyutla() {
+  // Hayvan motoru (her ekranda kullanılan arka plan canvas'ı)
+  if (typeof hayvanCanvasBoyutla === 'function') {
+    try { hayvanCanvasBoyutla(); } catch (e) {}
+  }
   if (document.getElementById('game-blok').classList.contains('active')) {
     cancelAnimationFrame(window.blokAnim);
     requestAnimationFrame(() => blokYeniOyun());
@@ -6861,6 +7665,9 @@ window.addEventListener('resize', () => {
   if (document.getElementById('game-tetris').classList.contains('active') && trBoard) {
     requestAnimationFrame(() => { trBoyutla(); trCiz(); });
   }
+  if (document.getElementById('game-memory').classList.contains('active')) {
+    // Memory CSS grid kullandığı için ekstra çizim gerekmez, browser kendi yapar
+  }
   if (document.getElementById('game-pong').classList.contains('active') && pongRaketSen) {
     requestAnimationFrame(() => { pongBoyutla(); pongCiz(); });
   }
@@ -6873,6 +7680,46 @@ window.addEventListener('resize', () => {
   if (document.getElementById('game-balik').classList.contains('active')) {
     requestAnimationFrame(() => { bkBalikBoyutla(); bkBalikCiz(); });
   }
+  if (document.getElementById('game-kosucu').classList.contains('active')) {
+    requestAnimationFrame(() => { ksBoyutla(); ksCiz(); });
+  }
+}
+
+// Debounce - art arda tetiklenmeyi engelle
+let _resizeTimer = null;
+function tetiklemeBoyutla() {
+  if (_resizeTimer) clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(ekranYenidenBoyutla, 60);
+}
+
+window.addEventListener('resize', tetiklemeBoyutla);
+window.addEventListener('orientationchange', () => {
+  // Android'de orientationchange sonrası boyut hemen güncellenmez
+  // Birden fazla noktada tetikle - garanti olsun
+  ekranYenidenBoyutla();
+  setTimeout(ekranYenidenBoyutla, 100);
+  setTimeout(ekranYenidenBoyutla, 300);
+  setTimeout(ekranYenidenBoyutla, 600);
+});
+// matchMedia ile orientation değişikliğini dinle (en güvenilir yöntem)
+if (window.matchMedia) {
+  const portraitQuery = window.matchMedia('(orientation: portrait)');
+  if (portraitQuery.addEventListener) {
+    portraitQuery.addEventListener('change', () => {
+      setTimeout(ekranYenidenBoyutla, 80);
+      setTimeout(ekranYenidenBoyutla, 250);
+    });
+  } else if (portraitQuery.addListener) {
+    // Eski Safari için
+    portraitQuery.addListener(() => {
+      setTimeout(ekranYenidenBoyutla, 80);
+      setTimeout(ekranYenidenBoyutla, 250);
+    });
+  }
+}
+// Sayfa görünür hale geldiğinde (uygulama arka plandan dönünce) bir kez güncelle
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) setTimeout(ekranYenidenBoyutla, 80);
 });
 
 /* ============ PWA ============ */

@@ -36,33 +36,42 @@
     opacity: .85; }
 
   .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
-  /* Yatay modda canvas'lar daha geniş yer kaplayabilsin */
+  /* Yatay modda canvas'lar tam ekran kullansın */
   @media (orientation: landscape) {
-    .screen { max-width: 760px; padding: 8px 12px; }
-    .topbar { padding: 4px 12px; }
-    .hud { font-size: 0.85em; padding: 4px 8px; gap: 6px; }
-    .card { padding: 12px; margin: 6px; }
-    .menu-icon { font-size: 1.4em; }
-    h1, h2 { font-size: 1.1em; margin: 6px 0; }
-    /* Yatay modda canvas'lar yer kazanmalı */
-    #ks-board { max-width: 680px; }
-    #uz-board, #bk-board { max-width: 440px; }
-    #pong-board, #rfx-board { max-width: 460px; }
-    #tr-board { max-width: 280px; }
-    /* Yatayda menü kartlarını grid yap (2 sütun) */
-    #menu { max-width: 720px; }
-    #menu > .card { display: inline-block; width: 46%; vertical-align: top; }
+    body { overflow: hidden; }
+    .screen { max-width: 100vw; padding: 4px 8px; height: 100vh; height: 100dvh;
+              display: none; flex-direction: column; }
+    .screen.active { display: flex !important; }
+    .topbar { padding: 2px 8px; }
+    .hud { font-size: 0.8em; padding: 3px 8px; gap: 4px; margin-bottom: 3px; }
+    .card { padding: 12px; margin: 6px; border-radius: 22px; }
+    .menu-icon { font-size: 1.3em; }
+    h1, h2 { font-size: 1em; margin: 4px 0; }
+    /* Yatayda canvas'lar tam alanı kullansın */
+    canvas { max-width: 100% !important; max-height: 100% !important;
+             width: auto !important; height: auto !important; }
+    #ks-board, #uz-board, #bk-board, #pong-board, #rfx-board, #tr-board,
+    #blok-board, #p-board, #p-tepsi, #e-board, #sn-board, #bl-board, #i48-board {
+      max-width: none !important; max-height: 100% !important;
+    }
+    /* Menü kartları 3 sütunlu grid - yatay sığsın */
+    #menu { max-width: 100vw; padding: 10px; overflow-y: auto; }
+    #menu > .card { display: inline-block; width: 30%; vertical-align: top;
+                    margin: 4px; padding: 10px; }
+    #menu > .card .menu-icon { font-size: 1.6em; }
+    /* Oyun kontrol popup yatayda biraz daha kompakt */
+    .oyun-kontrol { padding: 4px; margin: 4px auto; }
+    .oyun-kontrol .btn, .oyun-kontrol .btn.alt, .oyun-kontrol .btn.small {
+      padding: 6px 10px; font-size: .8em;
+    }
   }
-  /* Yatay modda kısa yükseklik (telefon yatay) için daha kompakt */
+  /* Yatay + kısa yükseklik (telefon yan) için ekstra kompakt */
   @media (orientation: landscape) and (max-height: 500px) {
-    .screen { padding: 4px 8px; }
-    .hud { font-size: 0.78em; padding: 3px 6px; }
-    .btn, .btn.alt { padding: 6px 10px; font-size: .9em; margin: 3px; }
-    .btn.small { padding: 5px 8px; font-size: .85em; }
-    /* Canvas'ları yüksekliğe göre sınırla */
-    #uz-board, #bk-board { max-height: 60vh; }
-    #ks-board { max-height: 50vh; max-width: 580px; }
-    #pong-board, #rfx-board { max-height: 65vh; }
+    .screen { padding: 2px 6px; }
+    .hud { font-size: 0.75em; padding: 2px 6px; }
+    .btn, .btn.alt { padding: 5px 9px; font-size: .85em; margin: 2px; }
+    .btn.small { padding: 4px 7px; font-size: .8em; }
+    h1, h2 { font-size: .9em; margin: 2px 0; }
   }
   .active { display: block; animation: fade .3s ease; }
   @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
@@ -89,13 +98,38 @@
   .card {
     background: linear-gradient(160deg, rgba(255,255,255,.13) 0%, rgba(255,255,255,.06) 100%);
     backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
-    border-radius: 20px; padding: 18px; margin: 12px 0;
+    border-radius: 28px; padding: 18px; margin: 12px 0;
     border: 1px solid rgba(255,255,255,.18); cursor: pointer;
     transition: transform .12s, background .2s, box-shadow .2s;
     box-shadow: 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
   }
   .card:active { transform: scale(.98); background: rgba(255,255,255,.14); }
   .menu-icon { font-size: 2.4em; display: block; margin-bottom: 4px; }
+
+  /* OYUN KONTROL POPUP - Başlat/Yeniden/Menü düğmeleri tek bir balonda */
+  .oyun-kontrol {
+    display: inline-flex; align-items: center; justify-content: center;
+    gap: 4px; flex-wrap: wrap;
+    background: linear-gradient(160deg, rgba(40,30,90,.85) 0%, rgba(20,15,60,.85) 100%);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 32px;
+    padding: 6px;
+    margin: 10px auto 6px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.15);
+  }
+  .oyun-kontrol .btn,
+  .oyun-kontrol .btn.alt,
+  .oyun-kontrol .btn.small {
+    margin: 0; border-radius: 26px; padding: 8px 14px; font-size: .85em;
+    box-shadow: 0 2px 8px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  .oyun-kontrol .btn:active,
+  .oyun-kontrol .btn.alt:active,
+  .oyun-kontrol .btn.small:active { transform: scale(.95); }
+
+  /* Yuvarlak butonlar genel */
+  .btn, .btn.alt, .btn.small { border-radius: 26px; }
 
   .hud {
     display: flex; justify-content: space-between; align-items: center;
@@ -355,7 +389,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 18.2 · Yatay mod düzeltildi</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 19.0 · Yatay tam ekran + popup kontrol</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -403,7 +437,7 @@
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
-  <div style="margin-top:6px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap">
+  <div class="oyun-kontrol">
     <button class="btn small" id="bk-tip-normal" onclick="bkTipSec('normal')" style="padding:8px 12px">⚪ Normal</button>
     <button class="btn alt small" id="bk-tip-dagit" onclick="bkTipSec('dagit')" style="padding:8px 12px">💥 Dağıtıcı</button>
     <button class="btn alt small" id="bk-tip-cift" onclick="bkTipSec('cift')" style="padding:8px 12px">2️⃣ Çift Yıkıcı</button>
@@ -412,7 +446,7 @@
     <button class="btn alt small" id="blok-stop-btn" onclick="blokDuraklat()">⏸️ Durdur</button>
     <button class="btn small" onclick="blokEkstraAtis()">⚡ Ekstra (<span id="blok-ekstra">3</span>)</button>
   </div>
-  <div style="margin-top:6px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="blokYeniOyun()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -437,7 +471,7 @@
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
   <canvas id="p-tray" width="360" height="120"></canvas>
-  <div>
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="puzzleGeriAl()">↩️ Geri Al</button>
     <button class="btn small" onclick="puzzleOdulKullan()">💣 Bomba Kullan</button>
     <button class="btn alt small" onclick="puzzleBaslat()">🔄 Yeniden</button>
@@ -463,7 +497,7 @@
     <button class="btn alt small" onclick="eslestirBaslat()">🔄 Tekrar</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div>
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="eslestirBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -485,7 +519,7 @@
     <button class="btn small" onclick="snakeBaslat()">🔄 Tekrar Oyna</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div>
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="snakeBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -510,7 +544,7 @@
     <button class="btn alt small" onclick="balonBaslat()">🔄 Tekrar</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div>
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="balonBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -532,7 +566,7 @@
     <button class="btn small" onclick="i048Baslat()">🔄 Tekrar</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div>
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="i048GeriAl()">↩️ Geri Al</button>
     <button class="btn alt small" onclick="i048Baslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
@@ -555,13 +589,13 @@
     <button class="btn small" onclick="trBaslat()">🔄 Tekrar Oyna</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="margin-top:8px;display:flex;justify-content:center;gap:6px;flex-wrap:wrap">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="trHareket(-1)" style="padding:14px 18px;font-size:1.2em">◀️</button>
     <button class="btn alt small" onclick="trDondur()" style="padding:14px 18px;font-size:1.2em">🔄</button>
     <button class="btn alt small" onclick="trHareket(1)" style="padding:14px 18px;font-size:1.2em">▶️</button>
     <button class="btn small" onclick="trHizliDus()" style="padding:14px 18px;font-size:1.2em">⬇️ DROP</button>
   </div>
-  <div style="margin-top:6px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="trDuraklat()" id="tr-duraklat-btn">⏸️ Durdur</button>
     <button class="btn alt small" onclick="trBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
@@ -585,7 +619,7 @@
     <button class="btn alt small" onclick="memBaslat()">🔄 Tekrar</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="margin-top:8px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="memBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -603,7 +637,7 @@
     </span>
     <span>Zorluk: <span id="pong-zorluk">Orta</span></span>
   </div>
-  <div style="display:flex;justify-content:center;gap:6px;margin-bottom:6px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="pongZorluk('kolay')" style="padding:6px 12px">😊 Kolay</button>
     <button class="btn small" onclick="pongZorluk('orta')" style="padding:6px 12px">🎯 Orta</button>
     <button class="btn alt small" onclick="pongZorluk('zor')" style="padding:6px 12px">🔥 Zor</button>
@@ -615,7 +649,7 @@
     <button class="btn small" onclick="pongBaslat()">🔄 Tekrar</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div>
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="pongDuraklat()" id="pong-duraklat-btn">⏸️ Durdur</button>
     <button class="btn alt small" onclick="pongBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
@@ -655,7 +689,7 @@
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
-  <div style="margin-top:8px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="rfxBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -678,7 +712,7 @@
       <div style="background:rgba(0,0,0,.85); border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.6);">
         <div style="font-size:1.3em; margin-bottom:10px">🚀 Görev Hazır</div>
         <div style="opacity:.9; font-size:.82em; margin-bottom:14px; line-height:1.55; text-align:left">
-          🔫 ATEŞ tut → otomatik ateş et<br>
+          🔫 Otomatik ateş eder<br>
           ☄️ Küçük göktaşı: +5 (1 atış)<br>
           🌑 Kaya: +15 (3 atış, parçalanır)<br>
           🛸 UFO: +50 (5 atış, en zor!)<br>
@@ -696,18 +730,12 @@
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
-  <div style="margin-top:8px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
-    <button class="btn alt small" onclick="uzDuraklat()" id="uz-duraklat-btn" style="padding:8px 14px">⏸️ Durdur</button>
-    <button class="btn small" id="uz-ates-btn"
-      ontouchstart="uzAtesBasla(event)" ontouchend="uzAtesBitir(event)"
-      onmousedown="uzAtesBasla(event)" onmouseup="uzAtesBitir(event)" onmouseleave="uzAtesBitir(event)"
-      style="padding:14px 24px;font-size:1.1em">🔫 ATEŞ</button>
-    <button class="btn alt small" onclick="uzHazirla()" style="padding:8px 14px">🔄 Yeniden</button>
-  </div>
-  <div style="margin-top:6px">
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="uzDuraklat()" id="uz-duraklat-btn">⏸️ Durdur</button>
+    <button class="btn alt small" onclick="uzHazirla()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağı ekranda sürükle → gemi takip eder · 🔫 ATEŞ tut → mermiler fırlat</div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağı ekranda sürükle → gemi takip eder · Otomatik ateş eder</div>
 </div>
 
 <!-- BALIK TUT -->
@@ -746,7 +774,7 @@
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
-  <div style="margin-top:8px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="bkBalikBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
@@ -787,11 +815,11 @@
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
-  <div style="margin-top:8px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+  <div class="oyun-kontrol">
     <button class="btn small" onclick="ksZipla()" style="padding:14px 22px;font-size:1.2em">⬆️ ZIPLA</button>
     <button class="btn alt small" onclick="ksEgil()" style="padding:14px 22px;font-size:1.2em">⬇️ EĞİL</button>
   </div>
-  <div style="margin-top:6px">
+  <div class="oyun-kontrol">
     <button class="btn alt small" onclick="ksDuraklat()" id="ks-duraklat-btn">⏸️ Durdur</button>
     <button class="btn alt small" onclick="ksBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
@@ -5312,7 +5340,7 @@ function uzBaslat() {
   uzAktif = true;
   uzBitti = false;
   uzDuraklatildi = false;
-  uzAtesAktif = false;
+  uzAtesAktif = true;  // Otomatik ateş - oyun süresince sürekli devam
   const gemiBoy = UZ_W * 0.13;
   uzGemi = {
     x: UZ_W / 2,

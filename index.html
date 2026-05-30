@@ -172,6 +172,13 @@
                 inset 0 0 0 2px rgba(155,93,229,.3),
                 0 0 24px rgba(155,93,229,.2); }
 
+  /* UZAY KAÇIŞ */
+  #uz-board { display: block; margin: 10px auto; touch-action: none; border-radius: 14px; max-width: 380px; width: 94%;
+    background: linear-gradient(180deg, #000428 0%, #001138 50%, #002558 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.7), inset 0 1px 0 rgba(255,255,255,.15),
+                inset 0 0 0 2px rgba(80,140,220,.25),
+                0 0 32px rgba(60,120,200,.2); }
+
   /* HAFIZA EŞLEŞTİR */
   #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
     border-radius: 18px;
@@ -288,8 +295,13 @@
     <strong>Reflex Master</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
   </div>
+  <div class="card" onclick="showGame('uzay')">
+    <span class="menu-icon">🚀</span>
+    <strong>Uzay Kaçış</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Asteroitlerden kaç · Yıldız topla · Sonsuz mesafe</div>
+  </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 15.0 · 11 oyun · Reflex Master eklendi</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 16.1 · Uzay atış + yeni düşmanlar</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -565,31 +577,83 @@
     <span>⏱️ <span id="rfx-sure">60</span>s</span>
   </div>
   <div style="opacity:.85;font-size:.85em;margin-bottom:4px">
-    Bölüm <strong id="rfx-bolum">1</strong> · Vuruş: <strong id="rfx-vurus">0</strong> · Isabet: <strong id="rfx-isabet">100</strong>%
+    Bölüm <strong id="rfx-bolum">1</strong> · Vuruş: <strong id="rfx-vurus">0</strong> · İsabet: <strong id="rfx-isabet">100</strong>%
   </div>
-  <canvas id="rfx-board" width="360" height="480"></canvas>
-  <div id="rfx-baslangic" style="text-align:center; margin:10px auto; max-width:300px;">
-    <div style="background:rgba(0,0,0,.75); border-radius:14px; padding:16px;">
-      <div style="font-size:1.2em; margin-bottom:8px">🎯 Hazır mısın?</div>
-      <div style="opacity:.85; font-size:.9em; margin-bottom:10px">
-        🟢 Yeşil hedef: +10 puan<br>
-        🔴 Kırmızı bomba: -15 puan, dokunma!<br>
-        ⭐ Sarı yıldız: +30 puan, hızlı!
+  <div style="position:relative; display:inline-block; max-width:100%; width:100%;">
+    <canvas id="rfx-board" width="360" height="480"></canvas>
+    <!-- Başlangıç overlay: canvas üstüne yerleştirilmiş -->
+    <div id="rfx-baslangic" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; max-width:280px; width:90%;">
+      <div style="background:rgba(0,0,0,.85); border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.6);">
+        <div style="font-size:1.3em; margin-bottom:10px">🎯 Hazır mısın?</div>
+        <div style="opacity:.9; font-size:.85em; margin-bottom:14px; line-height:1.5">
+          🟢 Yeşil: +10 puan<br>
+          ⭐ Sarı yıldız: +30, hızlı!<br>
+          🔴 Kırmızı bomba: -15, dokunma!
+        </div>
+        <button class="btn small" style="margin:0; padding:12px 28px; font-size:1.05em" onclick="rfxBaslat()">▶️ BAŞLA</button>
       </div>
-      <button class="btn small" onclick="rfxBaslat()">▶️ Başla</button>
+    </div>
+    <!-- Gameover overlay: canvas üstüne -->
+    <div id="rfx-gameover" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.9); border-radius:16px; padding:18px; max-width:280px; width:90%; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,.6);">
+      <div id="rfx-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">⏰ Süre Bitti!</div>
+      <div id="rfx-gameover-detay" style="margin:8px 0">─</div>
+      <button class="btn small" onclick="rfxBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
-  <div id="rfx-gameover" style="display:none; background:rgba(0,0,0,.88); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
-    <div id="rfx-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">⏰ Süre Bitti!</div>
-    <div id="rfx-gameover-detay" style="margin:8px 0">─</div>
-    <button class="btn small" onclick="rfxBaslat()">🔄 Tekrar</button>
-    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
-  </div>
-  <div>
+  <div style="margin-top:8px">
     <button class="btn alt small" onclick="rfxBaslat()">🔄 Yeniden</button>
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Yeşil hedeflere ve sarı yıldızlara dokun · Kırmızı bombadan kaç · 60 saniye</div>
+</div>
+
+<!-- UZAY KAÇIŞ -->
+<div id="game-uzay" class="screen">
+  <div class="hud">
+    <span>👑 <span id="uz-best">0</span></span>
+    <span style="font-size:1.3em;font-weight:800">⭐ <span id="uz-skor">0</span></span>
+    <span>🛡️ <span id="uz-can">3</span></span>
+  </div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:4px">
+    Mesafe: <strong id="uz-mesafe">0</strong>m · 🔫 <strong id="uz-silah">Tek</strong> · Hız: <strong id="uz-hiz">x1.0</strong>
+  </div>
+  <div style="position:relative; display:inline-block; max-width:100%; width:100%;">
+    <canvas id="uz-board" width="360" height="540"></canvas>
+    <div id="uz-baslangic" style="position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; max-width:300px; width:92%;">
+      <div style="background:rgba(0,0,0,.85); border-radius:14px; padding:16px; box-shadow:0 8px 24px rgba(0,0,0,.6);">
+        <div style="font-size:1.3em; margin-bottom:10px">🚀 Görev Hazır</div>
+        <div style="opacity:.9; font-size:.82em; margin-bottom:14px; line-height:1.55; text-align:left">
+          🔫 ATEŞ tut → otomatik ateş et<br>
+          ☄️ Küçük göktaşı: +5 (1 atış)<br>
+          🌑 Kaya: +15 (3 atış, parçalanır)<br>
+          🛸 UFO: +50 (5 atış, en zor!)<br>
+          ⭐ Yıldız: +5 · 💎 Mücevher: +20<br>
+          🎁 Kutu → silah yükselt (Çift / Üçlü / Lazer)<br>
+          ❤️ Kalp → can ekle
+        </div>
+        <button class="btn small" style="margin:0; padding:12px 28px; font-size:1.05em" onclick="uzBaslat()">▶️ KALK!</button>
+      </div>
+    </div>
+    <div id="uz-gameover" style="display:none; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); background:rgba(0,0,0,.9); border-radius:16px; padding:18px; max-width:280px; width:90%; text-align:center; box-shadow:0 8px 24px rgba(0,0,0,.6);">
+      <div style="font-weight:800; font-size:1.3em; margin:8px 0">💥 Geminiz İmha Oldu!</div>
+      <div id="uz-gameover-detay" style="margin:8px 0">─</div>
+      <button class="btn small" onclick="uzBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div style="margin-top:8px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap">
+    <button class="btn alt small" onclick="uzDuraklat()" id="uz-duraklat-btn" style="padding:8px 14px">⏸️ Durdur</button>
+    <button class="btn small" id="uz-ates-btn"
+      ontouchstart="uzAtesBasla(event)" ontouchend="uzAtesBitir(event)"
+      onmousedown="uzAtesBasla(event)" onmouseup="uzAtesBitir(event)" onmouseleave="uzAtesBitir(event)"
+      style="padding:14px 24px;font-size:1.1em">🔫 ATEŞ</button>
+    <button class="btn alt small" onclick="uzHazirla()" style="padding:8px 14px">🔄 Yeniden</button>
+  </div>
+  <div style="margin-top:6px">
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağı ekranda sürükle → gemi takip eder · 🔫 ATEŞ tut → mermiler fırlat</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -1134,6 +1198,7 @@ function showGame(g) {
   if (g === 'memory') { setDuvar('muzik'); requestAnimationFrame(() => memBaslat()); }
   if (g === 'pong') { setDuvar('teknoloji'); requestAnimationFrame(() => pongBaslat()); }
   if (g === 'reflex') { setDuvar('teknoloji'); requestAnimationFrame(() => rfxHazirla()); }
+  if (g === 'uzay') { setDuvar('teknoloji'); requestAnimationFrame(() => uzHazirla()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }
@@ -1143,6 +1208,7 @@ function showGame(g) {
     clearInterval(window.rfxSureTimer);
     clearInterval(window.rfxUretTimer);
   }
+  if (g !== 'uzay') { cancelAnimationFrame(window.uzAnim); }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -4651,18 +4717,21 @@ const RFX_TIPLER = {
 function rfxHazirla() {
   document.getElementById('rfx-gameover').style.display = 'none';
   document.getElementById('rfx-baslangic').style.display = 'block';
-  rfxBoyutla();
-  rfxHedefler = [];
-  rfxPartikuller = [];
-  rfxAktif = false;
-  rfxBitti = false;
-  rfxSkor = 0;
-  rfxKalanSure = RFX_SURE;
-  rfxBolum = 1;
-  rfxVurusSayi = 0;
-  rfxDokunmaSayi = 0;
-  rfxHUDGuncelle();
-  rfxCiz();
+  // Boyutlamayı bir sonraki frame'e ertele - ekran active olduktan sonra render edilsin
+  requestAnimationFrame(() => {
+    rfxBoyutla();
+    rfxHedefler = [];
+    rfxPartikuller = [];
+    rfxAktif = false;
+    rfxBitti = false;
+    rfxSkor = 0;
+    rfxKalanSure = RFX_SURE;
+    rfxBolum = 1;
+    rfxVurusSayi = 0;
+    rfxDokunmaSayi = 0;
+    rfxHUDGuncelle();
+    rfxCiz();
+  });
 }
 
 function rfxBaslat() {
@@ -4703,7 +4772,14 @@ function rfxBaslat() {
 
 function rfxBoyutla() {
   const canvas = document.getElementById('rfx-board');
-  const w = Math.min(canvas.clientWidth || 360, 380);
+  let w = canvas.clientWidth;
+  // Ekran daha yeni active olduysa clientWidth 0 dönebilir; parent'a veya pencereye bak
+  if (!w || w < 50) {
+    const ekran = document.getElementById('game-reflex');
+    if (ekran && ekran.clientWidth > 50) w = Math.min(380, ekran.clientWidth - 32);
+    else w = Math.min(380, (window.innerWidth || 360) - 40);
+  }
+  w = Math.min(w, 380);
   const h = Math.round(w * 1.3);
   hdKur(canvas, w, h);
   RFX_W = w;
@@ -5010,6 +5086,894 @@ function rfxBitir() {
 })();
 
 
+/* ============ UZAY KAÇIŞ ============ */
+let UZ_W, UZ_H;
+let uzGemi;          // { x, y, w, h, kalkanZaman, silah, atesGec }
+let uzNesneler = []; // [{ x, y, dy, tip, r, can, donme, donmeHizi, ... }]
+let uzMermiler = []; // [{ x, y, dy, r, hasar, renk }]
+let uzYildizArka = [];
+let uzPartikuller = [];
+let uzSkor, uzMesafe, uzToplanan, uzCan;
+let uzHizCarpan;
+let uzAktif, uzBitti, uzDuraklatildi;
+let uzAtesAktif = false; // ATEŞ butonu basılı mı
+let uzBest = load('uz_best', 0);
+let uzTouch = null;
+let uzGecmisFrame = 0;
+
+// Silah tipleri - oyuncu ilerledikçe kutularla yükseltir
+// 'silah' alanı geminin mevcut silahı
+const UZ_SILAHLAR = {
+  'tek':   { ad: 'Tek',   atesAraligi: 16, mermiSay: 1, mermiHiz: 12, hasar: 1, renk: '#19d3e0' },
+  'cift':  { ad: 'Çift',  atesAraligi: 14, mermiSay: 2, mermiHiz: 12, hasar: 1, renk: '#52c41a' },
+  'uclu':  { ad: 'Üçlü',  atesAraligi: 12, mermiSay: 3, mermiHiz: 13, hasar: 1, renk: '#fadb14' },
+  'lazer': { ad: 'Lazer', atesAraligi: 8,  mermiSay: 1, mermiHiz: 18, hasar: 3, renk: '#ff6bd1', kalin: true }
+};
+
+// Nesne tipi konfigürasyonu
+// can = kaç atış kaldıracak. Toplama tipi 'topla' veya 'vur'
+const UZ_NESNE_TIPLERI = {
+  'goktasi':  { puan: 5,  can: 1, ozellik: 'vur',   boyut: [0.045, 0.06], hiz: [3.0, 4.5] },
+  'kaya':     { puan: 15, can: 3, ozellik: 'vur',   boyut: [0.085, 0.105], hiz: [2.0, 3.0] },
+  'ufo':      { puan: 50, can: 5, ozellik: 'vur',   boyut: [0.08, 0.09],  hiz: [2.5, 3.5] },
+  'yildiz':   { puan: 5,  can: 1, ozellik: 'topla', boyut: [0.04, 0.045], hiz: [2.5, 4.0] },
+  'mucevher': { puan: 20, can: 1, ozellik: 'topla', boyut: [0.05, 0.06],  hiz: [2.5, 4.0] },
+  'kutu':     { puan: 0,  can: 1, ozellik: 'guc',   boyut: [0.055, 0.065], hiz: [2.5, 3.5] },
+  'kalp':     { puan: 0,  can: 1, ozellik: 'kalp',  boyut: [0.05, 0.055], hiz: [2.5, 3.5] }
+};
+
+function uzHazirla() {
+  document.getElementById('uz-gameover').style.display = 'none';
+  document.getElementById('uz-baslangic').style.display = 'block';
+  requestAnimationFrame(() => {
+    uzBoyutla();
+    uzGemi = null;
+    uzNesneler = [];
+    uzMermiler = [];
+    uzPartikuller = [];
+    uzYildiziBaslat();
+    uzAktif = false;
+    uzBitti = false;
+    uzDuraklatildi = false;
+    uzAtesAktif = false;
+    uzSkor = 0;
+    uzMesafe = 0;
+    uzToplanan = 0;
+    uzCan = 3;
+    uzHizCarpan = 1.0;
+    uzHUDGuncelle();
+    uzCizArkaPlan();
+  });
+}
+
+function uzBaslat() {
+  document.getElementById('uz-baslangic').style.display = 'none';
+  document.getElementById('uz-gameover').style.display = 'none';
+  uzBoyutla();
+  uzNesneler = [];
+  uzMermiler = [];
+  uzPartikuller = [];
+  uzYildiziBaslat();
+  uzSkor = 0;
+  uzMesafe = 0;
+  uzToplanan = 0;
+  uzCan = 3;
+  uzHizCarpan = 1.0;
+  uzAktif = true;
+  uzBitti = false;
+  uzDuraklatildi = false;
+  uzAtesAktif = false;
+  const gemiBoy = UZ_W * 0.13;
+  uzGemi = {
+    x: UZ_W / 2,
+    y: UZ_H - gemiBoy * 1.5,
+    w: gemiBoy,
+    h: gemiBoy * 1.3,
+    kalkanZaman: 0,
+    silah: 'tek',
+    atesGec: 0  // ateş arası sayaç
+  };
+  uzGecmisFrame = 0;
+  uzHUDGuncelle();
+  document.getElementById('uz-duraklat-btn').innerText = '⏸️ Durdur';
+  cancelAnimationFrame(window.uzAnim);
+  uzLoop();
+}
+
+function uzBoyutla() {
+  const canvas = document.getElementById('uz-board');
+  let w = canvas.clientWidth;
+  if (!w || w < 50) {
+    const ekran = document.getElementById('game-uzay');
+    if (ekran && ekran.clientWidth > 50) w = Math.min(380, ekran.clientWidth - 32);
+    else w = Math.min(380, (window.innerWidth || 360) - 40);
+  }
+  w = Math.min(w, 380);
+  const h = Math.round(w * 1.5);
+  hdKur(canvas, w, h);
+  UZ_W = w;
+  UZ_H = h;
+}
+
+function uzYildiziBaslat() {
+  uzYildizArka = [];
+  for (let i = 0; i < 80; i++) {
+    uzYildizArka.push({
+      x: Math.random() * UZ_W,
+      y: Math.random() * UZ_H,
+      r: 0.4 + Math.random() * 1.8,
+      hiz: 0.3 + Math.random() * 1.8,
+      parlak: 0.4 + Math.random() * 0.6
+    });
+  }
+}
+
+function uzHUDGuncelle() {
+  document.getElementById('uz-skor').innerText = uzSkor;
+  document.getElementById('uz-best').innerText = uzBest;
+  document.getElementById('uz-can').innerText = uzCan;
+  document.getElementById('uz-mesafe').innerText = Math.floor(uzMesafe);
+  document.getElementById('uz-hiz').innerText = 'x' + uzHizCarpan.toFixed(1);
+  document.getElementById('uz-silah').innerText = uzGemi ? UZ_SILAHLAR[uzGemi.silah].ad : 'Tek';
+}
+
+function uzDuraklat() {
+  if (uzBitti || !uzAktif) return;
+  uzDuraklatildi = !uzDuraklatildi;
+  document.getElementById('uz-duraklat-btn').innerText = uzDuraklatildi ? '▶️ Devam' : '⏸️ Durdur';
+}
+
+// ATEŞ butonu basılı tutma
+function uzAtesBasla(e) {
+  if (e && e.cancelable) e.preventDefault();
+  uzAtesAktif = true;
+}
+function uzAtesBitir(e) {
+  if (e && e.cancelable) e.preventDefault();
+  uzAtesAktif = false;
+}
+
+// Silahın özelliklerine göre mermi fırlat
+function uzAtesEt() {
+  if (!uzGemi || !uzAktif || uzBitti || uzDuraklatildi) return;
+  const s = UZ_SILAHLAR[uzGemi.silah];
+  if (uzGemi.atesGec > 0) { uzGemi.atesGec--; return; }
+  uzGemi.atesGec = s.atesAraligi;
+  // Mermi başlangıç noktası: geminin burnu
+  const burnX = uzGemi.x;
+  const burnY = uzGemi.y - uzGemi.h * 0.5;
+  const mermiR = UZ_W * 0.012;
+  // mermiSay 1 → tek doğrudan, 2 → iki yana, 3 → tek doğrudan + iki yan açılı
+  if (s.mermiSay === 1) {
+    uzMermiler.push({
+      x: burnX, y: burnY, dx: 0, dy: -s.mermiHiz,
+      r: mermiR * (s.kalin ? 1.6 : 1), hasar: s.hasar, renk: s.renk,
+      kalin: s.kalin || false
+    });
+  } else if (s.mermiSay === 2) {
+    uzMermiler.push({
+      x: burnX - uzGemi.w * 0.18, y: burnY, dx: 0, dy: -s.mermiHiz,
+      r: mermiR, hasar: s.hasar, renk: s.renk
+    });
+    uzMermiler.push({
+      x: burnX + uzGemi.w * 0.18, y: burnY, dx: 0, dy: -s.mermiHiz,
+      r: mermiR, hasar: s.hasar, renk: s.renk
+    });
+  } else if (s.mermiSay === 3) {
+    // Orta düz, sol-sağ küçük açıyla
+    uzMermiler.push({
+      x: burnX, y: burnY, dx: 0, dy: -s.mermiHiz,
+      r: mermiR, hasar: s.hasar, renk: s.renk
+    });
+    uzMermiler.push({
+      x: burnX - uzGemi.w * 0.15, y: burnY, dx: -1.5, dy: -s.mermiHiz,
+      r: mermiR, hasar: s.hasar, renk: s.renk
+    });
+    uzMermiler.push({
+      x: burnX + uzGemi.w * 0.15, y: burnY, dx: 1.5, dy: -s.mermiHiz,
+      r: mermiR, hasar: s.hasar, renk: s.renk
+    });
+  }
+  sfx.tik();
+}
+
+function uzNesneUret() {
+  const r = Math.random();
+  let tip;
+  // Olasılıklar: goktasi 35, yildiz 25, kaya 18, mucevher 10, ufo 6, kutu 4, kalp 2
+  if      (r < 0.35) tip = 'goktasi';
+  else if (r < 0.60) tip = 'yildiz';
+  else if (r < 0.78) tip = 'kaya';
+  else if (r < 0.88) tip = 'mucevher';
+  else if (r < 0.94) tip = 'ufo';
+  else if (r < 0.98) tip = 'kutu';
+  else               tip = 'kalp';
+  const cfg = UZ_NESNE_TIPLERI[tip];
+  const boyut = UZ_W * (cfg.boyut[0] + Math.random() * (cfg.boyut[1] - cfg.boyut[0]));
+  const x = boyut + Math.random() * (UZ_W - boyut * 2);
+  const hizMin = cfg.hiz[0], hizMax = cfg.hiz[1];
+  uzNesneler.push({
+    x,
+    y: -boyut * 2,
+    tip,
+    r: boyut,
+    dy: (hizMin + Math.random() * (hizMax - hizMin)) * uzHizCarpan,
+    dx: tip === 'ufo' ? (Math.random() - 0.5) * 2 : 0, // UFO yan yan dolaşır
+    can: cfg.can,
+    donme: 0,
+    donmeHizi: (Math.random() - 0.5) * 0.06,
+    olcek: 1
+  });
+}
+
+function uzCarpisma(a, b) {
+  const dx = a.x - b.x, dy = a.y - b.y;
+  return Math.hypot(dx, dy) < (a.r || a.w / 2) + (b.r || b.w / 2);
+}
+
+// Bir kayayı vurunca parçala - 2 küçük göktaşı yerine düşer
+function uzKayayiParcala(kaya) {
+  for (let i = 0; i < 2; i++) {
+    const yon = i === 0 ? -1 : 1;
+    uzNesneler.push({
+      x: kaya.x + yon * kaya.r * 0.4,
+      y: kaya.y,
+      tip: 'goktasi',
+      r: kaya.r * 0.55,
+      dy: kaya.dy * 0.9,
+      dx: yon * 1.5,
+      can: 1,
+      donme: 0,
+      donmeHizi: (Math.random() - 0.5) * 0.1,
+      olcek: 1
+    });
+  }
+}
+
+function uzAdim() {
+  if (uzBitti || uzDuraklatildi) return;
+  uzGecmisFrame++;
+  uzHizCarpan = Math.min(3.5, 1.0 + uzGecmisFrame / 600 * 0.1);
+  uzMesafe += uzHizCarpan;
+  const uretAraligi = Math.max(18, 50 - Math.floor(uzHizCarpan * 8));
+  if (uzGecmisFrame % uretAraligi === 0) uzNesneUret();
+  // Otomatik ateş (buton basılıyken)
+  if (uzAtesAktif) uzAtesEt();
+  else if (uzGemi && uzGemi.atesGec > 0) uzGemi.atesGec--;
+  // Yıldız arka plan
+  uzYildizArka.forEach(s => {
+    s.y += s.hiz * uzHizCarpan;
+    if (s.y > UZ_H) { s.y = -2; s.x = Math.random() * UZ_W; }
+  });
+  // Mermileri hareket ettir
+  uzMermiler.forEach(m => { m.x += m.dx; m.y += m.dy; });
+  // Mermi-nesne çarpışması
+  uzMermiler.forEach(m => {
+    if (m._tukendi) return;
+    for (const n of uzNesneler) {
+      if (n._patlamis) continue;
+      const cfg = UZ_NESNE_TIPLERI[n.tip];
+      // Mermiyle vurulamayan tipler (yıldız/mücevher/kutu/kalp toplanır, vurulmaz)
+      if (cfg.ozellik !== 'vur') continue;
+      const dx = m.x - n.x, dy = m.y - n.y;
+      if (Math.hypot(dx, dy) < n.r + m.r) {
+        n.can -= m.hasar;
+        m._tukendi = true;
+        uzPatlama(m.x, m.y, m.renk, 4);
+        if (n.can <= 0) {
+          n._patlamis = true;
+          uzSkor += cfg.puan;
+          uzPatlama(n.x, n.y, n.tip === 'ufo' ? '#ff6bd1' : '#fa8c16', n.tip === 'ufo' ? 24 : 14);
+          sfx.dogru();
+          if (n.tip === 'kaya') uzKayayiParcala(n);
+          if (uzSkor > uzBest) { uzBest = uzSkor; save('uz_best', uzBest); }
+        } else {
+          sfx.tik();
+        }
+        break;
+      }
+    }
+  });
+  uzMermiler = uzMermiler.filter(m => !m._tukendi && m.y > -20 && m.x > -20 && m.x < UZ_W + 20);
+  // Nesneleri hareket ettir
+  uzNesneler.forEach(n => {
+    n.y += n.dy;
+    n.x += n.dx || 0;
+    n.donme += n.donmeHizi;
+    // UFO yatay duvarlardan sek
+    if (n.tip === 'ufo') {
+      if (n.x < n.r) { n.x = n.r; n.dx = Math.abs(n.dx); }
+      if (n.x > UZ_W - n.r) { n.x = UZ_W - n.r; n.dx = -Math.abs(n.dx); }
+    }
+  });
+  if (uzGemi.kalkanZaman > 0) uzGemi.kalkanZaman--;
+  // Gemi-nesne çarpışması
+  uzNesneler.forEach(n => {
+    if (n._patlamis) return;
+    if (n.y < 0 || n.y > UZ_H + n.r) return;
+    if (uzCarpisma(uzGemi, n)) {
+      const cfg = UZ_NESNE_TIPLERI[n.tip];
+      if (cfg.ozellik === 'topla') {
+        // yıldız/mücevher
+        uzSkor += cfg.puan;
+        uzToplanan++;
+        n._patlamis = true;
+        sfx.dogru();
+        uzPatlama(n.x, n.y, n.tip === 'mucevher' ? '#19d3e0' : '#fadb14', n.tip === 'mucevher' ? 16 : 8);
+        if (uzSkor > uzBest) { uzBest = uzSkor; save('uz_best', uzBest); }
+      } else if (cfg.ozellik === 'guc') {
+        // Silah yükselt - sıra: tek → cift → uclu → lazer (lazerse tekrar lazer kalır)
+        const sirali = ['tek', 'cift', 'uclu', 'lazer'];
+        const idx = sirali.indexOf(uzGemi.silah);
+        if (idx < sirali.length - 1) {
+          uzGemi.silah = sirali[idx + 1];
+          toast('🔫 ' + UZ_SILAHLAR[uzGemi.silah].ad + ' silahı!');
+        } else {
+          // Zaten lazerdeyse +30 bonus puan
+          uzSkor += 30;
+          toast('💰 +30 bonus');
+        }
+        n._patlamis = true;
+        sfx.guc();
+        uzPatlama(n.x, n.y, '#9b5de5', 14);
+      } else if (cfg.ozellik === 'kalp') {
+        // Can ekle (maks 5)
+        if (uzCan < 5) {
+          uzCan++;
+          toast('❤️ +1 Can');
+        } else {
+          uzSkor += 50;
+          toast('💰 +50 (can dolu)');
+        }
+        n._patlamis = true;
+        sfx.guc();
+        uzPatlama(n.x, n.y, '#e94560', 14);
+      } else {
+        // vur tipleri direkt geminin üstüne geldi - zarar
+        if (uzGemi.kalkanZaman <= 0) {
+          uzCan--;
+          uzGemi.kalkanZaman = 60;
+          sfx.yanlis();
+          uzPatlama(n.x, n.y, '#fa8c16', 18);
+          n._patlamis = true;
+          if (n.tip === 'kaya') uzKayayiParcala(n);
+          if (uzCan <= 0) { uzBitir(); return; }
+        }
+      }
+    }
+  });
+  uzNesneler = uzNesneler.filter(n => !n._patlamis && n.y < UZ_H + n.r + 30);
+  // Partiküller
+  uzPartikuller.forEach(p => {
+    p.x += p.dx; p.y += p.dy; p.dy += 0.15; p.life -= 0.03;
+  });
+  uzPartikuller = uzPartikuller.filter(p => p.life > 0);
+  if (uzGecmisFrame % 6 === 0) uzHUDGuncelle();
+}
+
+function uzPatlama(x, y, renk, adet) {
+  for (let i = 0; i < adet; i++) {
+    uzPartikuller.push({
+      x, y,
+      dx: (Math.random() - 0.5) * 6,
+      dy: (Math.random() - 0.5) * 6 - 1,
+      life: 1,
+      renk,
+      boyut: 2 + Math.random() * 3
+    });
+  }
+}
+
+function uzCizArkaPlan() {
+  const canvas = document.getElementById('uz-board');
+  const ctx = canvas.getContext('2d');
+  const lw = canvas._lw || UZ_W, lh = canvas._lh || UZ_H;
+  ctx.clearRect(0, 0, lw, lh);
+  uzYildizArka.forEach(s => {
+    ctx.fillStyle = 'rgba(255,255,255,' + s.parlak + ')';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+  });
+}
+
+function uzCiz() {
+  const canvas = document.getElementById('uz-board');
+  const ctx = canvas.getContext('2d');
+  const lw = canvas._lw || UZ_W, lh = canvas._lh || UZ_H;
+  ctx.clearRect(0, 0, lw, lh);
+  // Paralaks yıldızlar
+  uzYildizArka.forEach(s => {
+    ctx.fillStyle = 'rgba(255,255,255,' + s.parlak + ')';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 7); ctx.fill();
+  });
+  // Nesneler
+  uzNesneler.forEach(n => {
+    if (n.y < -n.r * 2) return;
+    if (n.tip === 'goktasi') uzGoktasiCiz(ctx, n);
+    else if (n.tip === 'kaya') uzKayaCiz(ctx, n);
+    else if (n.tip === 'ufo') uzUFOCiz(ctx, n);
+    else if (n.tip === 'yildiz') uzYildizCiz(ctx, n);
+    else if (n.tip === 'mucevher') uzMucevherCiz(ctx, n);
+    else if (n.tip === 'kutu') uzKutuCiz(ctx, n);
+    else if (n.tip === 'kalp') uzKalpCiz(ctx, n);
+  });
+  // Mermiler
+  uzMermiler.forEach(m => uzMermiCiz(ctx, m));
+  // Gemi
+  if (uzGemi) uzGemiCiz(ctx, uzGemi);
+  // Partiküller
+  uzPartikuller.forEach(p => {
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.renk;
+    ctx.beginPath(); ctx.arc(p.x, p.y, p.boyut, 0, 7); ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  if (uzDuraklatildi && !uzBitti) {
+    ctx.fillStyle = 'rgba(0,0,0,.7)';
+    ctx.fillRect(0, 0, lw, lh);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + Math.floor(UZ_W * 0.08) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⏸️ DURAKLATIDI', lw / 2, lh / 2);
+  }
+}
+
+function uzGemiCiz(ctx, g) {
+  ctx.save();
+  ctx.translate(g.x, g.y);
+  // Roket alevi
+  const alevBoy = g.h * (0.4 + Math.sin(uzGecmisFrame / 3) * 0.15);
+  const alevGrad = ctx.createLinearGradient(0, g.h * 0.45, 0, g.h * 0.45 + alevBoy);
+  alevGrad.addColorStop(0, '#fff8dc');
+  alevGrad.addColorStop(0.3, '#fadb14');
+  alevGrad.addColorStop(0.7, '#fa8c16');
+  alevGrad.addColorStop(1, 'rgba(233,69,96,0)');
+  ctx.fillStyle = alevGrad;
+  ctx.beginPath();
+  ctx.moveTo(-g.w * 0.15, g.h * 0.4);
+  ctx.lineTo(0, g.h * 0.4 + alevBoy);
+  ctx.lineTo(g.w * 0.15, g.h * 0.4);
+  ctx.closePath();
+  ctx.fill();
+  // Gövde
+  const gradGovde = ctx.createLinearGradient(-g.w/2, 0, g.w/2, 0);
+  gradGovde.addColorStop(0, '#d0d4dc');
+  gradGovde.addColorStop(0.5, '#f5f6fa');
+  gradGovde.addColorStop(1, '#9aa0ad');
+  ctx.fillStyle = gradGovde;
+  ctx.beginPath();
+  ctx.moveTo(0, -g.h * 0.5);
+  ctx.lineTo(g.w * 0.35, g.h * 0.15);
+  ctx.lineTo(g.w * 0.35, g.h * 0.4);
+  ctx.lineTo(-g.w * 0.35, g.h * 0.4);
+  ctx.lineTo(-g.w * 0.35, g.h * 0.15);
+  ctx.closePath();
+  ctx.fill();
+  // Kanatlar
+  ctx.fillStyle = '#e94560';
+  ctx.beginPath();
+  ctx.moveTo(g.w * 0.35, g.h * 0.1);
+  ctx.lineTo(g.w * 0.55, g.h * 0.4);
+  ctx.lineTo(g.w * 0.35, g.h * 0.4);
+  ctx.closePath();
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(-g.w * 0.35, g.h * 0.1);
+  ctx.lineTo(-g.w * 0.55, g.h * 0.4);
+  ctx.lineTo(-g.w * 0.35, g.h * 0.4);
+  ctx.closePath();
+  ctx.fill();
+  // Cam
+  const gradCam = ctx.createRadialGradient(0, -g.h * 0.15, 1, 0, -g.h * 0.15, g.w * 0.18);
+  gradCam.addColorStop(0, '#a5e8ff');
+  gradCam.addColorStop(1, '#19d3e0');
+  ctx.fillStyle = gradCam;
+  ctx.beginPath();
+  ctx.ellipse(0, -g.h * 0.15, g.w * 0.18, g.h * 0.12, 0, 0, 7);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.7)';
+  ctx.beginPath();
+  ctx.ellipse(-g.w * 0.06, -g.h * 0.18, g.w * 0.05, g.h * 0.04, -0.3, 0, 7);
+  ctx.fill();
+  // Çevre koyu hat
+  ctx.strokeStyle = '#5a626e';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(0, -g.h * 0.5);
+  ctx.lineTo(g.w * 0.35, g.h * 0.15);
+  ctx.lineTo(g.w * 0.35, g.h * 0.4);
+  ctx.lineTo(-g.w * 0.35, g.h * 0.4);
+  ctx.lineTo(-g.w * 0.35, g.h * 0.15);
+  ctx.closePath();
+  ctx.stroke();
+  ctx.restore();
+  // Kalkan halkası
+  if (g.kalkanZaman > 0) {
+    const par = 0.4 + 0.4 * Math.sin(uzGecmisFrame / 4);
+    ctx.strokeStyle = 'rgba(25,211,224,' + par + ')';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(g.x, g.y, g.w * 0.7, 0, 7);
+    ctx.stroke();
+  }
+}
+
+// Mermi çizimi - silah rengine göre HD küre + iz
+function uzMermiCiz(ctx, m) {
+  // İz (üstte uzanan)
+  const izGrad = ctx.createLinearGradient(m.x, m.y, m.x, m.y + 18);
+  izGrad.addColorStop(0, m.renk);
+  izGrad.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.strokeStyle = izGrad;
+  ctx.lineWidth = m.kalin ? m.r * 1.8 : m.r * 1.2;
+  ctx.lineCap = 'round';
+  ctx.beginPath();
+  ctx.moveTo(m.x, m.y);
+  ctx.lineTo(m.x - m.dx * 1.5, m.y + 18);
+  ctx.stroke();
+  // Mermi başı parlak küre
+  hd3DKure(ctx, m.x, m.y, m.r, m.renk);
+  // Lazer için ek glow
+  if (m.kalin) {
+    ctx.strokeStyle = 'rgba(255,107,209,.5)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.arc(m.x, m.y, m.r * 1.8, 0, 7);
+    ctx.stroke();
+  }
+}
+
+// Küçük göktaşı - basit kraterli HD küre (eskisi gibi ama daha küçük ve daha kayalık)
+function uzGoktasiCiz(ctx, n) {
+  ctx.save();
+  ctx.translate(n.x, n.y);
+  ctx.rotate(n.donme);
+  // Düzensiz kenarlı göktaşı (8 köşeli, hafif rastgele)
+  ctx.fillStyle = '#7a6a5a';
+  ctx.beginPath();
+  for (let i = 0; i < 8; i++) {
+    const aci = (i / 8) * Math.PI * 2;
+    const yari = n.r * (0.85 + Math.sin(i * 1.7) * 0.15);
+    if (i === 0) ctx.moveTo(Math.cos(aci) * yari, Math.sin(aci) * yari);
+    else ctx.lineTo(Math.cos(aci) * yari, Math.sin(aci) * yari);
+  }
+  ctx.closePath();
+  // Gradient ile derinlik
+  const grad = ctx.createRadialGradient(-n.r * 0.3, -n.r * 0.3, n.r * 0.1, 0, 0, n.r);
+  grad.addColorStop(0, '#9c8b7a');
+  grad.addColorStop(0.6, '#7a6a5a');
+  grad.addColorStop(1, '#4a3e30');
+  ctx.fillStyle = grad;
+  ctx.fill();
+  // Kenar koyu hat
+  ctx.strokeStyle = '#3a2e22';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  // 2-3 küçük krater
+  ctx.fillStyle = 'rgba(0,0,0,.45)';
+  for (let i = 0; i < 3; i++) {
+    const aci = (i / 3) * Math.PI * 2 + 0.5;
+    const mes = n.r * 0.4;
+    ctx.beginPath();
+    ctx.arc(Math.cos(aci) * mes, Math.sin(aci) * mes, n.r * 0.13, 0, 7);
+    ctx.fill();
+  }
+  ctx.restore();
+}
+
+// Büyük kaya - daha karmaşık, çatlaklar, 12 köşeli düzensiz
+function uzKayaCiz(ctx, n) {
+  ctx.save();
+  ctx.translate(n.x, n.y);
+  ctx.rotate(n.donme);
+  // Düzensiz şekil (12 köşeli)
+  ctx.beginPath();
+  const koseSayisi = 12;
+  for (let i = 0; i < koseSayisi; i++) {
+    const aci = (i / koseSayisi) * Math.PI * 2;
+    const yari = n.r * (0.82 + ((i * 7) % 5) * 0.05);
+    if (i === 0) ctx.moveTo(Math.cos(aci) * yari, Math.sin(aci) * yari);
+    else ctx.lineTo(Math.cos(aci) * yari, Math.sin(aci) * yari);
+  }
+  ctx.closePath();
+  // Üç katmanlı gradient (volkanik kaya hissi)
+  const grad = ctx.createRadialGradient(-n.r * 0.35, -n.r * 0.4, n.r * 0.1, 0, 0, n.r * 1.1);
+  grad.addColorStop(0, '#a89684');
+  grad.addColorStop(0.45, '#6f5d4a');
+  grad.addColorStop(1, '#332618');
+  ctx.fillStyle = grad;
+  ctx.fill();
+  // Çatlaklar (rastgele iç çizgiler)
+  ctx.strokeStyle = 'rgba(20,12,8,.55)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.moveTo(-n.r * 0.5, -n.r * 0.2);
+  ctx.lineTo(n.r * 0.1, n.r * 0.1);
+  ctx.lineTo(n.r * 0.4, -n.r * 0.3);
+  ctx.moveTo(-n.r * 0.2, n.r * 0.4);
+  ctx.lineTo(n.r * 0.3, n.r * 0.5);
+  ctx.stroke();
+  // Büyük kraterler
+  ctx.fillStyle = 'rgba(0,0,0,.55)';
+  ctx.beginPath(); ctx.arc(-n.r * 0.25, -n.r * 0.15, n.r * 0.15, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(n.r * 0.3, n.r * 0.2, n.r * 0.12, 0, 7); ctx.fill();
+  ctx.beginPath(); ctx.arc(n.r * 0.05, -n.r * 0.45, n.r * 0.09, 0, 7); ctx.fill();
+  // Kenar koyu hat
+  ctx.strokeStyle = '#1a1108';
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  for (let i = 0; i < koseSayisi; i++) {
+    const aci = (i / koseSayisi) * Math.PI * 2;
+    const yari = n.r * (0.82 + ((i * 7) % 5) * 0.05);
+    if (i === 0) ctx.moveTo(Math.cos(aci) * yari, Math.sin(aci) * yari);
+    else ctx.lineTo(Math.cos(aci) * yari, Math.sin(aci) * yari);
+  }
+  ctx.closePath();
+  ctx.stroke();
+  // can göstergesi (kalan vuruş - üzerinde parlama)
+  if (n.can < 3) {
+    ctx.fillStyle = 'rgba(255,80,80,.7)';
+    ctx.font = 'bold ' + Math.floor(n.r * 0.5) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.can, 0, 0);
+  }
+  ctx.restore();
+}
+
+// UFO - daire gövdesi + üst cam kubbe + alt ışık
+function uzUFOCiz(ctx, n) {
+  ctx.save();
+  ctx.translate(n.x, n.y);
+  // Alt parlak ışın
+  const isikGrad = ctx.createRadialGradient(0, n.r * 0.5, 0, 0, n.r * 1.2, n.r * 1.5);
+  isikGrad.addColorStop(0, 'rgba(255,107,209,.6)');
+  isikGrad.addColorStop(1, 'rgba(255,107,209,0)');
+  ctx.fillStyle = isikGrad;
+  ctx.beginPath();
+  ctx.ellipse(0, n.r * 0.8, n.r * 1.1, n.r * 0.7, 0, 0, 7);
+  ctx.fill();
+  // Disk gövdesi (alt kısım gri-mor)
+  const gradDisk = ctx.createLinearGradient(0, -n.r * 0.2, 0, n.r * 0.4);
+  gradDisk.addColorStop(0, '#b8a0c8');
+  gradDisk.addColorStop(0.5, '#6a4a8a');
+  gradDisk.addColorStop(1, '#3a2050');
+  ctx.fillStyle = gradDisk;
+  ctx.beginPath();
+  ctx.ellipse(0, n.r * 0.1, n.r, n.r * 0.35, 0, 0, 7);
+  ctx.fill();
+  ctx.strokeStyle = '#1a0028';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // Üst cam kubbe
+  const gradKubbe = ctx.createRadialGradient(-n.r * 0.2, -n.r * 0.3, n.r * 0.05, 0, -n.r * 0.1, n.r * 0.6);
+  gradKubbe.addColorStop(0, '#fff');
+  gradKubbe.addColorStop(0.5, '#a5e8ff');
+  gradKubbe.addColorStop(1, '#19d3e0');
+  ctx.fillStyle = gradKubbe;
+  ctx.beginPath();
+  ctx.ellipse(0, -n.r * 0.15, n.r * 0.55, n.r * 0.4, 0, Math.PI, 0);
+  ctx.fill();
+  ctx.strokeStyle = '#0f8ea0';
+  ctx.lineWidth = 1.2;
+  ctx.stroke();
+  // Pilot silüeti (siyah)
+  ctx.fillStyle = '#1a1a2e';
+  ctx.beginPath();
+  ctx.ellipse(0, -n.r * 0.1, n.r * 0.18, n.r * 0.22, 0, 0, 7);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.arc(0, -n.r * 0.32, n.r * 0.12, 0, 7);
+  ctx.fill();
+  // Yan yanıp sönen ışıklar (3 adet)
+  const parlak = (Math.sin(uzGecmisFrame / 5) + 1) / 2;
+  for (let i = -1; i <= 1; i++) {
+    ctx.fillStyle = (Math.sin(uzGecmisFrame / 6 + i) > 0) ? '#fadb14' : '#e94560';
+    ctx.beginPath();
+    ctx.arc(i * n.r * 0.55, n.r * 0.2, n.r * 0.07, 0, 7);
+    ctx.fill();
+  }
+  // Can göstergesi
+  if (n.can < 5) {
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + Math.floor(n.r * 0.3) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(n.can, 0, n.r * 0.1);
+  }
+  ctx.restore();
+}
+
+function uzYildizCiz(ctx, n) {
+  const par = 0.6 + 0.4 * Math.sin(uzGecmisFrame / 10 + n.donme);
+  ctx.strokeStyle = 'rgba(250,219,20,' + par * 0.6 + ')';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(n.x, n.y, n.r * 1.6, 0, 7);
+  ctx.stroke();
+  ctx.fillStyle = '#fadb14';
+  ctx.strokeStyle = '#a37e08';
+  ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  for (let i = 0; i < 10; i++) {
+    const aci = (i / 10) * Math.PI * 2 - Math.PI / 2;
+    const yari = i % 2 === 0 ? n.r : n.r * 0.45;
+    const px = n.x + Math.cos(aci) * yari;
+    const py = n.y + Math.sin(aci) * yari;
+    if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+  }
+  ctx.closePath();
+  ctx.fill();
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.6)';
+  ctx.beginPath();
+  ctx.arc(n.x - n.r * 0.2, n.y - n.r * 0.2, n.r * 0.18, 0, 7);
+  ctx.fill();
+}
+
+function uzMucevherCiz(ctx, n) {
+  const par = 0.5 + 0.5 * Math.sin(uzGecmisFrame / 6 + n.donme);
+  ctx.strokeStyle = 'rgba(25,211,224,' + par * 0.8 + ')';
+  ctx.lineWidth = 3;
+  ctx.beginPath();
+  ctx.arc(n.x, n.y, n.r * 1.8, 0, 7);
+  ctx.stroke();
+  ctx.save();
+  ctx.translate(n.x, n.y);
+  ctx.rotate(n.donme);
+  const gradEl = ctx.createLinearGradient(0, -n.r, 0, n.r);
+  gradEl.addColorStop(0, '#a5e8ff');
+  gradEl.addColorStop(0.5, '#19d3e0');
+  gradEl.addColorStop(1, '#0f8ea0');
+  ctx.fillStyle = gradEl;
+  ctx.beginPath();
+  ctx.moveTo(0, -n.r);
+  ctx.lineTo(n.r * 0.8, -n.r * 0.3);
+  ctx.lineTo(n.r * 0.5, n.r);
+  ctx.lineTo(-n.r * 0.5, n.r);
+  ctx.lineTo(-n.r * 0.8, -n.r * 0.3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(255,255,255,.6)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, -n.r); ctx.lineTo(0, n.r);
+  ctx.moveTo(-n.r * 0.8, -n.r * 0.3); ctx.lineTo(n.r * 0.8, -n.r * 0.3);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.85)';
+  ctx.beginPath();
+  ctx.moveTo(-n.r * 0.15, -n.r * 0.7);
+  ctx.lineTo(n.r * 0.15, -n.r * 0.7);
+  ctx.lineTo(0, -n.r * 0.3);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// Silah yükseltme kutusu - mor + 🔫 ikonu
+function uzKutuCiz(ctx, n) {
+  ctx.save();
+  ctx.translate(n.x, n.y);
+  ctx.rotate(n.donme * 0.3);
+  // Parıltı halkası
+  const par = 0.6 + 0.4 * Math.sin(uzGecmisFrame / 8);
+  ctx.strokeStyle = 'rgba(155,93,229,' + par + ')';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(0, 0, n.r * 1.4, 0, 7);
+  ctx.stroke();
+  // Kutu (HD 3D)
+  hd3DKutu(ctx, -n.r, -n.r, n.r * 2, n.r * 2, '#9b5de5');
+  ctx.restore();
+  // İkon
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold ' + Math.floor(n.r * 1.1) + 'px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('🔫', n.x, n.y);
+}
+
+// Kalp - kırmızı, +1 can
+function uzKalpCiz(ctx, n) {
+  const par = 0.7 + 0.3 * Math.sin(uzGecmisFrame / 5);
+  ctx.strokeStyle = 'rgba(233,69,96,' + par + ')';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(n.x, n.y, n.r * 1.5, 0, 7);
+  ctx.stroke();
+  // Kalp şekli (iki yarım daire + alt üçgen)
+  ctx.save();
+  ctx.translate(n.x, n.y);
+  ctx.scale(1, 1 + par * 0.05); // hafif pulsing
+  const grad = ctx.createRadialGradient(-n.r * 0.3, -n.r * 0.3, n.r * 0.05, 0, 0, n.r);
+  grad.addColorStop(0, '#ff7a90');
+  grad.addColorStop(0.5, '#e94560');
+  grad.addColorStop(1, '#a3304a');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.moveTo(0, n.r * 0.7);
+  ctx.bezierCurveTo(n.r * 1.1, n.r * 0.1, n.r * 0.7, -n.r * 0.8, 0, -n.r * 0.2);
+  ctx.bezierCurveTo(-n.r * 0.7, -n.r * 0.8, -n.r * 1.1, n.r * 0.1, 0, n.r * 0.7);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = '#6a1428';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  // Parlama
+  ctx.fillStyle = 'rgba(255,255,255,.5)';
+  ctx.beginPath();
+  ctx.ellipse(-n.r * 0.35, -n.r * 0.3, n.r * 0.2, n.r * 0.1, -0.5, 0, 7);
+  ctx.fill();
+  ctx.restore();
+}
+
+function uzLoop() {
+  uzAdim();
+  uzCiz();
+  if (!uzBitti) window.uzAnim = requestAnimationFrame(uzLoop);
+}
+
+function uzBitir() {
+  uzBitti = true;
+  uzAktif = false;
+  cancelAnimationFrame(window.uzAnim);
+  sfx.yanlis();
+  document.getElementById('uz-gameover-detay').innerHTML =
+    'Skor: <strong>' + uzSkor + '</strong>' +
+    '<br>Mesafe: <strong>' + Math.floor(uzMesafe) + '</strong>m' +
+    '<br>Silah: <strong>' + UZ_SILAHLAR[uzGemi.silah].ad + '</strong>' +
+    (uzSkor === uzBest && uzSkor > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('uz-gameover').style.display = 'block';
+}
+
+// Parmak kontrolü - tek parmak: gemiyi yatay sürer
+(function uzBind() {
+  const canvas = document.getElementById('uz-board');
+  function hareket(clientX) {
+    if (!uzAktif || uzBitti || uzDuraklatildi || !uzGemi) return;
+    const rect = canvas.getBoundingClientRect();
+    const lw = canvas._lw || canvas.width;
+    const scale = lw / rect.width;
+    const x = (clientX - rect.left) * scale;
+    uzGemi.x = Math.max(uzGemi.w * 0.55, Math.min(UZ_W - uzGemi.w * 0.55, x));
+  }
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (e.touches.length) hareket(e.touches[0].clientX);
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length) hareket(e.touches[0].clientX);
+  }, { passive: false });
+  canvas.addEventListener('mousedown', e => { uzTouch = true; hareket(e.clientX); });
+  canvas.addEventListener('mousemove', e => { if (uzTouch) hareket(e.clientX); });
+  canvas.addEventListener('mouseup', () => { uzTouch = false; });
+})();
+
+// Klavye - sol/sağ: hareket, boşluk: ateş, P: durdur
+window.addEventListener('keydown', e => {
+  if (!document.getElementById('game-uzay').classList.contains('active')) return;
+  if (!uzAktif || !uzGemi) return;
+  const adim = 30;
+  if (e.key === 'ArrowLeft') {
+    uzGemi.x = Math.max(uzGemi.w * 0.55, uzGemi.x - adim);
+    e.preventDefault();
+  } else if (e.key === 'ArrowRight') {
+    uzGemi.x = Math.min(UZ_W - uzGemi.w * 0.55, uzGemi.x + adim);
+    e.preventDefault();
+  } else if (e.key === ' ') {
+    uzAtesAktif = true;
+    e.preventDefault();
+  } else if (e.key === 'p' || e.key === 'P') {
+    uzDuraklat();
+    e.preventDefault();
+  }
+});
+window.addEventListener('keyup', e => {
+  if (e.key === ' ') uzAtesAktif = false;
+});
+
+
 /* ============ RESIZE ============ */
 window.addEventListener('resize', () => {
   if (document.getElementById('game-blok').classList.contains('active')) {
@@ -5042,6 +6006,9 @@ window.addEventListener('resize', () => {
   }
   if (document.getElementById('game-reflex').classList.contains('active')) {
     requestAnimationFrame(() => { rfxBoyutla(); rfxCiz(); });
+  }
+  if (document.getElementById('game-uzay').classList.contains('active')) {
+    requestAnimationFrame(() => { uzBoyutla(); uzCiz(); });
   }
 });
 

@@ -29,6 +29,9 @@
   #bg-a, #bg-b { position: fixed; inset: 0; z-index: -2; background-size: cover; transition: opacity 1s ease; }
   #bg-b { opacity: 0; }
   #bg-overlay { position: fixed; inset: 0; z-index: -1; background: rgba(10,12,30,.55); }
+  /* Hayvan canvası: bg-overlay'in üstünde (-1'den büyük), içeriğin altında (0'dan küçük) */
+  #hayvan-canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    opacity: .85; }
 
   .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
   .active { display: block; animation: fade .3s ease; }
@@ -155,6 +158,46 @@
     box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2),
                 inset 0 0 0 2px rgba(120,140,200,.3); }
 
+  /* HAFIZA EŞLEŞTİR */
+  #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
+    border-radius: 18px;
+    background: linear-gradient(160deg, rgba(40,30,90,.7), rgba(20,15,60,.7));
+    box-shadow: 0 8px 24px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.18);
+    border: 1px solid rgba(255,255,255,.12); }
+  .mem-kart { aspect-ratio: 1; perspective: 800px; cursor: pointer;
+    transition: transform .15s; }
+  .mem-kart:active { transform: scale(.96); }
+  .mem-ic { position: relative; width: 100%; height: 100%;
+    transform-style: preserve-3d; transition: transform .5s; }
+  .mem-kart.acik .mem-ic { transform: rotateY(180deg); }
+  .mem-kart.eslesti .mem-ic { transform: rotateY(180deg); }
+  .mem-kart.eslesti { animation: memEslestiPop .4s; }
+  @keyframes memEslestiPop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.12); }
+  }
+  .mem-yuz { position: absolute; inset: 0; backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px; font-size: 2em; font-weight: 800;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.3); }
+  .mem-arka {
+    background: linear-gradient(135deg, #4a3a9e 0%, #6a4ad0 50%, #372a7d 100%);
+    color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.4); }
+  .mem-arka::before {
+    content: '?'; font-size: 1.4em; color: rgba(255,255,255,.85);
+    text-shadow: 0 2px 4px rgba(0,0,0,.4);
+  }
+  .mem-on {
+    background: linear-gradient(160deg, #fff 0%, #f0e6ff 100%);
+    color: #2d1b69;
+    transform: rotateY(180deg);
+  }
+  .mem-kart.eslesti .mem-on {
+    background: linear-gradient(160deg, #88f098 0%, #5ee06a 50%, #2ec44f 100%);
+    color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.3);
+  }
+
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
     background: rgba(0,0,0,.88); padding: 12px 22px; border-radius: 30px;
     font-weight: 600; opacity: 0; transition: opacity .3s; pointer-events: none; z-index: 100; max-width: 90%; }
@@ -167,6 +210,7 @@
 <div id="bg-a"></div>
 <div id="bg-b"></div>
 <div id="bg-overlay"></div>
+<canvas id="hayvan-canvas"></canvas>
 
 <div class="topbar">
   <button class="icon-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
@@ -215,8 +259,13 @@
     <strong>Tetris</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Bloklar düşer · Satırları doldur · Tek satırda sil</div>
   </div>
+  <div class="card" onclick="showGame('memory')">
+    <span class="menu-icon">🃏</span>
+    <strong>Hafıza Eşleştir</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kartları çevir · Çiftleri bul · Hafızanı çalıştır</div>
+  </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 12.0 · 8 oyun · Tetris eklendi</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 13.0 · 9 oyun · Hafıza + canlı hayvanlar</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -430,6 +479,29 @@
   <div style="opacity:.7;font-size:.8em;margin-top:6px">◀️▶️ kaydır · 🔄 döndür · ⬇️ DROP hemen düşür · Yatay satır temizlenir</div>
 </div>
 
+<!-- HAFIZA EŞLEŞTİR (MEMORY) -->
+<div id="game-memory" class="screen">
+  <div class="hud">
+    <span>🏆 <span id="mem-best">─</span></span>
+    <span>Hamle: <span id="mem-hamle">0</span></span>
+    <span>Eşleşen: <span id="mem-eslesen">0</span>/<span id="mem-toplam">8</span></span>
+  </div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:4px">Süre: <strong id="mem-sure">0:00</strong> · Bölüm <strong id="mem-level">1</strong></div>
+  <div id="mem-grid"></div>
+  <div id="mem-gameover" style="display:none; background:rgba(0,0,0,.88); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
+    <div style="font-weight:800; font-size:1.3em; margin:8px 0">🎉 Tamamlandı!</div>
+    <div id="mem-gameover-detay" style="margin:8px 0">─</div>
+    <button class="btn small" onclick="memSonraki()">▶️ Sonraki Bölüm</button>
+    <button class="btn alt small" onclick="memBaslat()">🔄 Tekrar</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="margin-top:8px">
+    <button class="btn alt small" onclick="memBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Kartlara dokun · Aynı çiftleri bul · Hamle ne kadar az, skor o kadar yüksek</div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -568,6 +640,337 @@ function hdRoundRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
+/* ============ HAYVAN MOTORU (her ekranda küçük canlılar) ============ */
+// Sahnenin temasına göre uygun türler dolaşır.
+// Çizimler tamamen HD: gradyan, gölge, parlama, animasyonlu kanat çırpma.
+let hayvanlar = [];
+const HAYVAN_TIPLERI = ['kelebek', 'ari', 'kus', 'balik', 'kurbaga'];
+
+// Her oyun ekranı için ayrı tür kompozisyonları
+const HAYVAN_SAHNE = {
+  'menu':     ['kelebek', 'ari', 'kus'],
+  'kelime':   ['kelebek', 'ari'],
+  'blok':     ['kus', 'kelebek'],
+  'puzzle':   ['kelebek', 'ari'],
+  'eslestir': ['kelebek', 'ari', 'kus'],
+  'snake':    ['kelebek', 'ari', 'kus'],
+  'balon':    ['kus', 'kelebek'],
+  'iki048':   ['ari', 'kelebek'],
+  'tetris':   ['kus', 'kelebek'],
+  'memory':   ['kelebek', 'ari', 'kus']
+};
+
+function hayvanYarat(tip, w, h) {
+  return {
+    tip,
+    x: Math.random() * w,
+    y: Math.random() * h,
+    vx: (Math.random() - 0.5) * 1.4,
+    vy: (Math.random() - 0.5) * 0.8,
+    boyut: 14 + Math.random() * 10,
+    aci: Math.random() * Math.PI * 2,
+    faz: Math.random() * 100, // kanat çırpma fazı
+    renk: hayvanRenkSec(tip),
+    omurSayaci: 0,
+    hedefDeg: Math.random() * 0.05 - 0.025
+  };
+}
+
+function hayvanRenkSec(tip) {
+  if (tip === 'kelebek') {
+    const renkler = ['#e94560', '#ff7043', '#9b5de5', '#19d3e0', '#f78ca0', '#fadb14'];
+    return renkler[Math.floor(Math.random() * renkler.length)];
+  }
+  if (tip === 'kus') return ['#1890ff', '#52c41a', '#fa8c16', '#e94560'][Math.floor(Math.random()*4)];
+  if (tip === 'ari') return '#fadb14';
+  if (tip === 'balik') return ['#19d3e0', '#fa8c16', '#e94560'][Math.floor(Math.random()*3)];
+  if (tip === 'kurbaga') return '#52c41a';
+  return '#fff';
+}
+
+function hayvanlariYerlestir(sahne) {
+  const canvas = document.getElementById('hayvan-canvas');
+  if (!canvas) return;
+  const tipler = HAYVAN_SAHNE[sahne] || HAYVAN_SAHNE['menu'];
+  const adet = window.innerWidth < 500 ? 6 : 10; // mobilde daha az
+  hayvanlar = [];
+  for (let i = 0; i < adet; i++) {
+    const tip = tipler[Math.floor(Math.random() * tipler.length)];
+    hayvanlar.push(hayvanYarat(tip, window.innerWidth, window.innerHeight));
+  }
+}
+
+function hayvanCanvasBoyutla() {
+  const canvas = document.getElementById('hayvan-canvas');
+  if (!canvas) return;
+  hdKur(canvas, window.innerWidth, window.innerHeight);
+}
+
+function hayvanGuncelle() {
+  const w = window.innerWidth, h = window.innerHeight;
+  hayvanlar.forEach(a => {
+    // Yumuşak yön değişimi (rastgele dolaşma)
+    a.omurSayaci++;
+    if (a.omurSayaci > 100) {
+      a.hedefDeg = (Math.random() - 0.5) * 0.06;
+      a.omurSayaci = 0;
+    }
+    // Vy'ye hafif sinüs ekle (kelebek dalgalı uçuş)
+    if (a.tip === 'kelebek') {
+      a.vy += Math.sin(a.faz / 20) * 0.05;
+    }
+    a.faz += 0.3;
+    a.x += a.vx;
+    a.y += a.vy;
+    a.aci += a.hedefDeg;
+    // Kenar kontrol: yumuşakça karşı tarafa geç
+    if (a.x < -30) a.x = w + 30;
+    if (a.x > w + 30) a.x = -30;
+    if (a.y < -30) a.y = h + 30;
+    if (a.y > h + 30) a.y = -30;
+    // Hız sınırla
+    a.vx = Math.max(-2, Math.min(2, a.vx));
+    a.vy = Math.max(-1.5, Math.min(1.5, a.vy));
+  });
+}
+
+function hayvanCiz() {
+  const canvas = document.getElementById('hayvan-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const lw = canvas._lw || window.innerWidth;
+  const lh = canvas._lh || window.innerHeight;
+  ctx.clearRect(0, 0, lw, lh);
+  hayvanlar.forEach(a => {
+    if (a.tip === 'kelebek') cizKelebek(ctx, a);
+    else if (a.tip === 'kus') cizKus(ctx, a);
+    else if (a.tip === 'ari') cizAri(ctx, a);
+    else if (a.tip === 'balik') cizBalik(ctx, a);
+    else if (a.tip === 'kurbaga') cizKurbaga(ctx, a);
+  });
+}
+
+// HD kelebek - iki kanat (üst-alt), gövde, antenler, kanat çırpma animasyonu
+function cizKelebek(ctx, a) {
+  const b = a.boyut;
+  const kanatFaz = Math.sin(a.faz / 2); // -1 ile 1 arası
+  const kanatGen = 0.6 + kanatFaz * 0.4; // 0.2-1.0
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  ctx.rotate(Math.atan2(a.vy, a.vx) + Math.PI / 2);
+  // Üst kanatlar (renkli, gradyanlı)
+  ctx.fillStyle = a.renk;
+  for (const yan of [-1, 1]) {
+    const gx = ctx.createRadialGradient(yan * b * 0.4, -b * 0.2, b * 0.05, yan * b * 0.4, -b * 0.2, b * 0.7);
+    gx.addColorStop(0, hdRenkTon(a.renk, 60));
+    gx.addColorStop(0.6, a.renk);
+    gx.addColorStop(1, hdRenkTon(a.renk, -40));
+    ctx.fillStyle = gx;
+    ctx.beginPath();
+    ctx.ellipse(yan * b * 0.45 * kanatGen, -b * 0.2, b * 0.55 * kanatGen, b * 0.4, yan * 0.3, 0, 7);
+    ctx.fill();
+    // Kanat üzerinde nokta deseni (kelebek)
+    ctx.fillStyle = hdRenkTon(a.renk, -70);
+    ctx.beginPath();
+    ctx.arc(yan * b * 0.55 * kanatGen, -b * 0.25, b * 0.08, 0, 7);
+    ctx.fill();
+  }
+  // Alt kanatlar
+  for (const yan of [-1, 1]) {
+    ctx.fillStyle = hdRenkTon(a.renk, -20);
+    ctx.beginPath();
+    ctx.ellipse(yan * b * 0.35 * kanatGen, b * 0.25, b * 0.4 * kanatGen, b * 0.3, yan * -0.3, 0, 7);
+    ctx.fill();
+  }
+  // Gövde (siyah, ince oval)
+  ctx.fillStyle = '#222';
+  ctx.beginPath();
+  ctx.ellipse(0, 0, b * 0.08, b * 0.45, 0, 0, 7);
+  ctx.fill();
+  // Antenler
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 1.2;
+  ctx.beginPath();
+  ctx.moveTo(0, -b * 0.4);
+  ctx.lineTo(-b * 0.15, -b * 0.65);
+  ctx.moveTo(0, -b * 0.4);
+  ctx.lineTo(b * 0.15, -b * 0.65);
+  ctx.stroke();
+  ctx.restore();
+}
+
+// HD küçük kuş - gövde, kanatlar (çırpan), baş, gaga, kuyruk
+function cizKus(ctx, a) {
+  const b = a.boyut * 1.1;
+  const kanatFaz = Math.sin(a.faz / 1.5);
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  // Uçuş yönü
+  const dx = a.vx, dy = a.vy;
+  const yon = dx >= 0 ? 1 : -1;
+  ctx.scale(yon, 1);
+  // Gölge (yere düşen)
+  ctx.fillStyle = 'rgba(0,0,0,.2)';
+  ctx.beginPath();
+  ctx.ellipse(0, b * 0.5, b * 0.5, b * 0.1, 0, 0, 7);
+  ctx.fill();
+  // Gövde
+  hd3DKure(ctx, 0, 0, b * 0.4, a.renk);
+  // Baş
+  hd3DKure(ctx, b * 0.45, -b * 0.15, b * 0.25, a.renk);
+  // Göz
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(b * 0.55, -b * 0.2, b * 0.06, 0, 7); ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(b * 0.57, -b * 0.2, b * 0.03, 0, 7); ctx.fill();
+  // Gaga (sarı, üçgen)
+  ctx.fillStyle = '#fadb14';
+  ctx.beginPath();
+  ctx.moveTo(b * 0.65, -b * 0.15);
+  ctx.lineTo(b * 0.85, -b * 0.1);
+  ctx.lineTo(b * 0.65, -b * 0.05);
+  ctx.closePath();
+  ctx.fill();
+  // Kanat (çırpan)
+  const kanatY = -b * 0.1 + kanatFaz * b * 0.2;
+  ctx.fillStyle = hdRenkTon(a.renk, -30);
+  ctx.beginPath();
+  ctx.ellipse(-b * 0.1, kanatY, b * 0.35, b * 0.15, kanatFaz * 0.4, 0, 7);
+  ctx.fill();
+  // Kuyruk
+  ctx.fillStyle = hdRenkTon(a.renk, -40);
+  ctx.beginPath();
+  ctx.moveTo(-b * 0.3, 0);
+  ctx.lineTo(-b * 0.6, -b * 0.1);
+  ctx.lineTo(-b * 0.55, b * 0.1);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// HD arı - sarı/siyah çizgili, kanatlar çırpıyor, anten, küçük iğne
+function cizAri(ctx, a) {
+  const b = a.boyut;
+  const kanatFaz = Math.sin(a.faz);
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  ctx.rotate(Math.atan2(a.vy, a.vx));
+  // Şeffaf kanatlar (üst üste, hızlı çırpma)
+  ctx.fillStyle = 'rgba(220,240,255,.6)';
+  for (const yan of [-1, 1]) {
+    ctx.beginPath();
+    ctx.ellipse(0, yan * b * 0.3, b * 0.4, b * 0.2 * Math.abs(kanatFaz) + b * 0.08, 0, 0, 7);
+    ctx.fill();
+  }
+  // Gövde (sarı-siyah çizgili)
+  hd3DKure(ctx, 0, 0, b * 0.4, '#fadb14');
+  ctx.fillStyle = '#222';
+  // Çizgiler (3 adet siyah bant)
+  for (let i = -1; i <= 1; i++) {
+    ctx.beginPath();
+    ctx.ellipse(i * b * 0.18, 0, b * 0.06, b * 0.35, 0, 0, 7);
+    ctx.fill();
+  }
+  // Baş (öne)
+  hd3DKure(ctx, b * 0.4, 0, b * 0.2, '#222');
+  // Göz
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(b * 0.48, -b * 0.05, b * 0.04, 0, 7); ctx.fill();
+  // Antenler
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(b * 0.5, -b * 0.1);
+  ctx.lineTo(b * 0.7, -b * 0.2);
+  ctx.moveTo(b * 0.5, b * 0.1);
+  ctx.lineTo(b * 0.7, b * 0.2);
+  ctx.stroke();
+  // İğne (arka)
+  ctx.fillStyle = '#222';
+  ctx.beginPath();
+  ctx.moveTo(-b * 0.4, 0);
+  ctx.lineTo(-b * 0.55, -b * 0.05);
+  ctx.lineTo(-b * 0.55, b * 0.05);
+  ctx.closePath();
+  ctx.fill();
+  ctx.restore();
+}
+
+// HD balık (eğer ileride deniz teması olursa)
+function cizBalik(ctx, a) {
+  const b = a.boyut;
+  const kuyrukFaz = Math.sin(a.faz / 3);
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  const yon = a.vx >= 0 ? 1 : -1;
+  ctx.scale(yon, 1);
+  // Gövde (oval gradyan)
+  const grad = ctx.createRadialGradient(0, -b * 0.1, b * 0.05, 0, 0, b * 0.6);
+  grad.addColorStop(0, hdRenkTon(a.renk, 50));
+  grad.addColorStop(1, hdRenkTon(a.renk, -30));
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.ellipse(0, 0, b * 0.5, b * 0.3, 0, 0, 7);
+  ctx.fill();
+  // Kuyruk (yelpaze, sallanıyor)
+  ctx.fillStyle = hdRenkTon(a.renk, -20);
+  ctx.beginPath();
+  ctx.moveTo(-b * 0.4, 0);
+  ctx.lineTo(-b * 0.7, -b * 0.25 + kuyrukFaz * b * 0.1);
+  ctx.lineTo(-b * 0.7, b * 0.25 + kuyrukFaz * b * 0.1);
+  ctx.closePath();
+  ctx.fill();
+  // Yüzgeç
+  ctx.fillStyle = hdRenkTon(a.renk, -40);
+  ctx.beginPath();
+  ctx.moveTo(0, -b * 0.25);
+  ctx.lineTo(b * 0.15, -b * 0.45);
+  ctx.lineTo(b * 0.25, -b * 0.25);
+  ctx.closePath();
+  ctx.fill();
+  // Göz
+  ctx.fillStyle = '#fff';
+  ctx.beginPath(); ctx.arc(b * 0.3, -b * 0.05, b * 0.06, 0, 7); ctx.fill();
+  ctx.fillStyle = '#000';
+  ctx.beginPath(); ctx.arc(b * 0.32, -b * 0.05, b * 0.03, 0, 7); ctx.fill();
+  ctx.restore();
+}
+
+// HD kurbağa (orantılı, yeşil)
+function cizKurbaga(ctx, a) {
+  const b = a.boyut;
+  ctx.save();
+  ctx.translate(a.x, a.y);
+  // Gövde
+  hd3DKure(ctx, 0, 0, b * 0.5, '#52c41a');
+  // İki çıkık göz
+  for (const yan of [-1, 1]) {
+    hd3DKure(ctx, yan * b * 0.2, -b * 0.4, b * 0.15, '#52c41a');
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(yan * b * 0.2, -b * 0.4, b * 0.1, 0, 7); ctx.fill();
+    ctx.fillStyle = '#000';
+    ctx.beginPath(); ctx.arc(yan * b * 0.2, -b * 0.4, b * 0.05, 0, 7); ctx.fill();
+  }
+  ctx.restore();
+}
+
+// Ana döngü
+function hayvanLoop() {
+  hayvanGuncelle();
+  hayvanCiz();
+  requestAnimationFrame(hayvanLoop);
+}
+
+// Başlat: pencere yüklendiğinde tek seferlik kur
+window.addEventListener('load', () => {
+  hayvanCanvasBoyutla();
+  hayvanlariYerlestir('menu');
+  hayvanLoop();
+});
+// Yeniden boyutlandır
+window.addEventListener('resize', () => {
+  hayvanCanvasBoyutla();
+});
+
+
 let sesAcik = load('ses', true);
 let audioCtx = null;
 function ses(freq, dur, type, vol) {
@@ -627,6 +1030,8 @@ function showGame(g) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById(g === 'menu' ? 'menu' : 'game-' + g).classList.add('active');
   cancelAnimationFrame(window.blokAnim);
+  // Sahnenin hayvanları değişsin
+  if (typeof hayvanlariYerlestir === 'function') hayvanlariYerlestir(g);
   if (g === 'menu') setDuvar('varsayilan');
   if (g === 'kelime') { setDuvar('sehir'); requestAnimationFrame(() => initKelime()); }
   if (g === 'blok') { setDuvar('teknoloji'); requestAnimationFrame(() => blokYeniOyun()); }
@@ -636,8 +1041,10 @@ function showGame(g) {
   if (g === 'balon') { setDuvar('teknoloji'); requestAnimationFrame(() => balonBaslat()); }
   if (g === 'iki048') { setDuvar('yapi'); requestAnimationFrame(() => i048Baslat()); }
   if (g === 'tetris') { setDuvar('teknoloji'); requestAnimationFrame(() => trBaslat()); }
+  if (g === 'memory') { setDuvar('muzik'); requestAnimationFrame(() => memBaslat()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
+  if (g !== 'memory') { clearInterval(window.memSureTimer); }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -3624,6 +4031,172 @@ window.addEventListener('keydown', e => {
   else if (e.key === ' ') { trHizliDus(); e.preventDefault(); }
   else if (e.key === 'p' || e.key === 'P') { trDuraklat(); e.preventDefault(); }
 });
+
+
+/* ============ HAFIZA EŞLEŞTİR (MEMORY) ============ */
+// Klasik kart çevirme: 4x4'te 8 çift, ileride büyüyebilir
+const MEM_BOLUMLER = [
+  { sutun: 4, satir: 4, ad: 'Kolay' },    // 16 kart, 8 çift
+  { sutun: 4, satir: 5, ad: 'Orta' },     // 20 kart, 10 çift
+  { sutun: 5, satir: 6, ad: 'Zor' },      // 30 kart, 15 çift
+  { sutun: 6, satir: 6, ad: 'Usta' }      // 36 kart, 18 çift
+];
+// Çift için kullanılan semboller (emoji)
+const MEM_SEMBOLLER = [
+  '🦋', '🐝', '🐞', '🦜', '🐢', '🦀', '🦋', '🐠',
+  '🌸', '🌺', '🌻', '🌷', '🌹', '🍀', '🌴', '🌵',
+  '🍎', '🍊', '🍋', '🍇', '🍓', '🥝', '🍑', '🥭'
+];
+let memKartlar = [];      // [{ id, sembol, acik, eslesti }]
+let memSecilenler = [];   // şu an açık ama henüz eşleşmemiş kartlar
+let memHamleSayisi = 0;
+let memEslesenSayisi = 0;
+let memBaslamaZamani = 0;
+let memBolum = 1;
+let memBestler = load('mem_bestler', {});
+let memKilit = false;
+
+function memBaslat() {
+  memBolum = load('mem_bolum', 1);
+  memYeniBolum();
+}
+
+function memSonraki() {
+  memBolum++;
+  if (memBolum > MEM_BOLUMLER.length) {
+    toast('🏆 Tüm bölümler bitti!');
+    memBolum = 1;
+  }
+  save('mem_bolum', memBolum);
+  memYeniBolum();
+}
+
+function memYeniBolum() {
+  document.getElementById('mem-gameover').style.display = 'none';
+  const bolumIdx = Math.min(memBolum - 1, MEM_BOLUMLER.length - 1);
+  const cfg = MEM_BOLUMLER[bolumIdx];
+  const toplamKart = cfg.sutun * cfg.satir;
+  const ciftSayisi = toplamKart / 2;
+  // Sembolleri rastgele seç ve çiftle
+  const karistirSemboller = [...new Set(MEM_SEMBOLLER)].sort(() => Math.random() - 0.5);
+  const secilenSemboller = karistirSemboller.slice(0, ciftSayisi);
+  const kartListe = [];
+  secilenSemboller.forEach((s, i) => {
+    kartListe.push({ id: i * 2, sembol: s, acik: false, eslesti: false });
+    kartListe.push({ id: i * 2 + 1, sembol: s, acik: false, eslesti: false });
+  });
+  // Karıştır
+  kartListe.sort(() => Math.random() - 0.5);
+  memKartlar = kartListe;
+  memSecilenler = [];
+  memHamleSayisi = 0;
+  memEslesenSayisi = 0;
+  memBaslamaZamani = Date.now();
+  memKilit = false;
+  // HUD
+  document.getElementById('mem-hamle').innerText = 0;
+  document.getElementById('mem-eslesen').innerText = 0;
+  document.getElementById('mem-toplam').innerText = ciftSayisi;
+  document.getElementById('mem-level').innerText = memBolum + ' (' + cfg.ad + ')';
+  const bestKey = cfg.sutun + 'x' + cfg.satir;
+  document.getElementById('mem-best').innerText = memBestler[bestKey] || '─';
+  document.getElementById('mem-sure').innerText = '0:00';
+  // Grid'i kur
+  const grid = document.getElementById('mem-grid');
+  grid.style.gridTemplateColumns = 'repeat(' + cfg.sutun + ', 1fr)';
+  grid.innerHTML = '';
+  memKartlar.forEach((k, idx) => {
+    const div = document.createElement('div');
+    div.className = 'mem-kart';
+    div.dataset.idx = idx;
+    div.innerHTML = '<div class="mem-ic">' +
+      '<div class="mem-yuz mem-arka"></div>' +
+      '<div class="mem-yuz mem-on">' + k.sembol + '</div>' +
+    '</div>';
+    div.addEventListener('click', () => memKartCevir(idx));
+    div.addEventListener('touchend', e => { e.preventDefault(); memKartCevir(idx); }, { passive: false });
+    grid.appendChild(div);
+  });
+  // Süre sayacı
+  clearInterval(window.memSureTimer);
+  window.memSureTimer = setInterval(memSureGuncelle, 1000);
+}
+
+function memSureGuncelle() {
+  const gecen = Math.floor((Date.now() - memBaslamaZamani) / 1000);
+  const dk = Math.floor(gecen / 60);
+  const sn = gecen % 60;
+  document.getElementById('mem-sure').innerText = dk + ':' + (sn < 10 ? '0' : '') + sn;
+}
+
+function memKartCevir(idx) {
+  if (memKilit) return;
+  const k = memKartlar[idx];
+  if (k.acik || k.eslesti) return;
+  // En fazla 2 kart açık olabilir
+  if (memSecilenler.length >= 2) return;
+  k.acik = true;
+  memSecilenler.push(idx);
+  const grid = document.getElementById('mem-grid');
+  grid.children[idx].classList.add('acik');
+  sfx.tik();
+  if (memSecilenler.length === 2) {
+    memHamleSayisi++;
+    document.getElementById('mem-hamle').innerText = memHamleSayisi;
+    const [a, b] = memSecilenler;
+    if (memKartlar[a].sembol === memKartlar[b].sembol) {
+      // Eşleşti
+      memKartlar[a].eslesti = true;
+      memKartlar[b].eslesti = true;
+      grid.children[a].classList.add('eslesti');
+      grid.children[b].classList.add('eslesti');
+      memSecilenler = [];
+      memEslesenSayisi++;
+      document.getElementById('mem-eslesen').innerText = memEslesenSayisi;
+      sfx.dogru();
+      // Tamamlandı mı?
+      const toplam = memKartlar.length / 2;
+      if (memEslesenSayisi >= toplam) {
+        setTimeout(memBitir, 700);
+      }
+    } else {
+      // Eşleşmedi - 0.8s sonra kapat
+      memKilit = true;
+      setTimeout(() => {
+        memKartlar[a].acik = false;
+        memKartlar[b].acik = false;
+        grid.children[a].classList.remove('acik');
+        grid.children[b].classList.remove('acik');
+        memSecilenler = [];
+        memKilit = false;
+        sfx.yanlis();
+      }, 800);
+    }
+  }
+}
+
+function memBitir() {
+  clearInterval(window.memSureTimer);
+  const sure = Math.floor((Date.now() - memBaslamaZamani) / 1000);
+  const cfg = MEM_BOLUMLER[Math.min(memBolum - 1, MEM_BOLUMLER.length - 1)];
+  const bestKey = cfg.sutun + 'x' + cfg.satir;
+  const onceki = memBestler[bestKey];
+  // Daha az hamle daha iyi (eşitse daha az süre)
+  const yeniBest = !onceki || memHamleSayisi < onceki || (memHamleSayisi === onceki && sure < (memBestler[bestKey + '_sure'] || 9999));
+  if (yeniBest) {
+    memBestler[bestKey] = memHamleSayisi;
+    memBestler[bestKey + '_sure'] = sure;
+    save('mem_bestler', memBestler);
+  }
+  const dk = Math.floor(sure / 60);
+  const sn = sure % 60;
+  const sureStr = dk + ':' + (sn < 10 ? '0' : '') + sn;
+  document.getElementById('mem-gameover-detay').innerHTML =
+    '<strong>' + memHamleSayisi + '</strong> hamle · <strong>' + sureStr + '</strong>' +
+    (yeniBest ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('mem-gameover').style.display = 'block';
+  sfx.kazan();
+}
 
 
 /* ============ RESIZE ============ */

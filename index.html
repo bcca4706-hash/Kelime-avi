@@ -158,6 +158,13 @@
     box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2),
                 inset 0 0 0 2px rgba(120,140,200,.3); }
 
+  /* PONG */
+  #pong-board { display: block; margin: 10px auto; touch-action: none; border-radius: 14px; max-width: 380px; width: 94%;
+    background: radial-gradient(ellipse at center, #1a1f3a 0%, #0a0e27 100%);
+    box-shadow: 0 8px 24px rgba(0,0,0,.6), inset 0 1px 0 rgba(255,255,255,.2),
+                inset 0 0 0 2px rgba(100,180,220,.25),
+                0 0 24px rgba(25,211,224,.15); }
+
   /* HAFIZA EŞLEŞTİR */
   #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
     border-radius: 18px;
@@ -264,8 +271,18 @@
     <strong>Hafıza Eşleştir</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kartları çevir · Çiftleri bul · Hafızanı çalıştır</div>
   </div>
+  <div class="card" onclick="showGame('pong')">
+    <span class="menu-icon">🏓</span>
+    <strong>Pong</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Parmakla raket sür · AI'a karşı 7 sayıya kadar</div>
+  </div>
+  <div class="card" onclick="showGame('reflex')">
+    <span class="menu-icon">🎯</span>
+    <strong>Reflex Master</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
+  </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 13.0 · 9 oyun · Hafıza + canlı hayvanlar</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 15.0 · 11 oyun · Reflex Master eklendi</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -500,6 +517,37 @@
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Kartlara dokun · Aynı çiftleri bul · Hamle ne kadar az, skor o kadar yüksek</div>
+</div>
+
+<!-- PONG -->
+<div id="game-pong" class="screen">
+  <div class="hud">
+    <span>👑 <span id="pong-best">0</span></span>
+    <span style="font-size:1.3em;font-weight:800">
+      <span id="pong-skor-sen" style="color:#19d3e0">0</span>
+      <span style="opacity:.5"> : </span>
+      <span id="pong-skor-ai" style="color:#e94560">0</span>
+    </span>
+    <span>Zorluk: <span id="pong-zorluk">Orta</span></span>
+  </div>
+  <div style="display:flex;justify-content:center;gap:6px;margin-bottom:6px">
+    <button class="btn alt small" onclick="pongZorluk('kolay')" style="padding:6px 12px">😊 Kolay</button>
+    <button class="btn small" onclick="pongZorluk('orta')" style="padding:6px 12px">🎯 Orta</button>
+    <button class="btn alt small" onclick="pongZorluk('zor')" style="padding:6px 12px">🔥 Zor</button>
+  </div>
+  <canvas id="pong-board" width="360" height="500"></canvas>
+  <div id="pong-gameover" style="display:none; background:rgba(0,0,0,.88); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
+    <div id="pong-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">🏆</div>
+    <div id="pong-gameover-skor" style="margin:8px 0">─</div>
+    <button class="btn small" onclick="pongBaslat()">🔄 Tekrar</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div>
+    <button class="btn alt small" onclick="pongDuraklat()" id="pong-duraklat-btn">⏸️ Durdur</button>
+    <button class="btn alt small" onclick="pongBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağını ekranda sürükle → alt raket takip eder · İlk 7 sayıya ulaşan kazanır</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -1042,9 +1090,11 @@ function showGame(g) {
   if (g === 'iki048') { setDuvar('yapi'); requestAnimationFrame(() => i048Baslat()); }
   if (g === 'tetris') { setDuvar('teknoloji'); requestAnimationFrame(() => trBaslat()); }
   if (g === 'memory') { setDuvar('muzik'); requestAnimationFrame(() => memBaslat()); }
+  if (g === 'pong') { setDuvar('teknoloji'); requestAnimationFrame(() => pongBaslat()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }
+  if (g !== 'pong') { cancelAnimationFrame(window.pongAnim); }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -4199,6 +4249,340 @@ function memBitir() {
 }
 
 
+/* ============ PONG ============ */
+let pongBoard;
+let PONG_W, PONG_H;
+let pongRaketSen, pongRaketAi; // {x, y, w, h}
+let pongTop;                    // {x, y, dx, dy, r}
+let pongSkorSen, pongSkorAi;
+let pongBitti, pongDuraklatildi;
+let pongZorlukAyari = 'orta';
+let pongBest = load('pong_best', 0);
+let pongIzler = [];             // top arkasındaki iz noktalar
+let pongHedef = 7;              // ilk 7'ye ulaşan kazanır
+let pongTouch = null;
+let pongParticles = [];         // puan anında patlama partiküllleri
+
+// AI zorluğu: rakip raketin maksimum hızı + reaksiyon gecikmesi
+const PONG_ZORLUK = {
+  'kolay': { aiHiz: 3.5, aiTakipOran: 0.06, topHiz: 5 },
+  'orta':  { aiHiz: 5.0, aiTakipOran: 0.10, topHiz: 6 },
+  'zor':   { aiHiz: 7.5, aiTakipOran: 0.16, topHiz: 7.5 }
+};
+
+function pongZorluk(z) {
+  pongZorlukAyari = z;
+  document.getElementById('pong-zorluk').innerText = z === 'kolay' ? 'Kolay' : z === 'zor' ? 'Zor' : 'Orta';
+  pongBaslat();
+}
+
+function pongBaslat() {
+  document.getElementById('pong-gameover').style.display = 'none';
+  document.getElementById('pong-duraklat-btn').innerText = '⏸️ Durdur';
+  pongBoyutla();
+  pongSkorSen = 0;
+  pongSkorAi = 0;
+  pongBitti = false;
+  pongDuraklatildi = false;
+  pongIzler = [];
+  pongParticles = [];
+  // Raketler
+  const raketGen = PONG_W * 0.22;
+  const raketYuk = 14;
+  pongRaketSen = { x: PONG_W / 2 - raketGen / 2, y: PONG_H - 30, w: raketGen, h: raketYuk };
+  pongRaketAi  = { x: PONG_W / 2 - raketGen / 2, y: 16,           w: raketGen, h: raketYuk };
+  pongTopSifirla(Math.random() < 0.5 ? 1 : -1);
+  pongHUDGuncelle();
+  cancelAnimationFrame(window.pongAnim);
+  pongLoop();
+}
+
+function pongTopSifirla(yon) {
+  // yon = 1 → aşağı (AI'a doğru başlar değil, ortadan başlayıp aşağı), -1 → yukarı
+  const cfg = PONG_ZORLUK[pongZorlukAyari];
+  pongTop = {
+    x: PONG_W / 2,
+    y: PONG_H / 2,
+    dx: (Math.random() - 0.5) * cfg.topHiz * 0.7,
+    dy: yon * cfg.topHiz * 0.7,
+    r: 8
+  };
+}
+
+function pongBoyutla() {
+  const canvas = document.getElementById('pong-board');
+  const w = Math.min(canvas.clientWidth || 360, 380);
+  const h = Math.round(w * 1.35);
+  hdKur(canvas, w, h);
+  PONG_W = w;
+  PONG_H = h;
+}
+
+function pongHUDGuncelle() {
+  document.getElementById('pong-skor-sen').innerText = pongSkorSen;
+  document.getElementById('pong-skor-ai').innerText = pongSkorAi;
+  document.getElementById('pong-best').innerText = pongBest;
+}
+
+function pongDuraklat() {
+  if (pongBitti) return;
+  pongDuraklatildi = !pongDuraklatildi;
+  document.getElementById('pong-duraklat-btn').innerText = pongDuraklatildi ? '▶️ Devam' : '⏸️ Durdur';
+}
+
+function pongLoop() {
+  pongAdim();
+  pongCiz();
+  if (!pongBitti) window.pongAnim = requestAnimationFrame(pongLoop);
+}
+
+function pongAdim() {
+  if (pongDuraklatildi || pongBitti) return;
+  // Topu hareket ettir
+  pongTop.x += pongTop.dx;
+  pongTop.y += pongTop.dy;
+  // İz bırak (son 8 nokta)
+  pongIzler.push({ x: pongTop.x, y: pongTop.y });
+  if (pongIzler.length > 8) pongIzler.shift();
+  // Yan duvarlardan sek
+  if (pongTop.x - pongTop.r < 0) {
+    pongTop.x = pongTop.r;
+    pongTop.dx = Math.abs(pongTop.dx);
+    sfx.tik();
+  }
+  if (pongTop.x + pongTop.r > PONG_W) {
+    pongTop.x = PONG_W - pongTop.r;
+    pongTop.dx = -Math.abs(pongTop.dx);
+    sfx.tik();
+  }
+  // Oyuncu raketine çarpma (alt)
+  if (pongTop.dy > 0 &&
+      pongTop.y + pongTop.r >= pongRaketSen.y &&
+      pongTop.y - pongTop.r < pongRaketSen.y + pongRaketSen.h &&
+      pongTop.x >= pongRaketSen.x &&
+      pongTop.x <= pongRaketSen.x + pongRaketSen.w) {
+    pongTop.y = pongRaketSen.y - pongTop.r;
+    pongTop.dy = -Math.abs(pongTop.dy);
+    // Açı: raketin neresine çarptıysa o yöne sek
+    const fark = (pongTop.x - (pongRaketSen.x + pongRaketSen.w / 2)) / (pongRaketSen.w / 2);
+    pongTop.dx += fark * 2.5;
+    // Hızı sınırla
+    const maxHiz = PONG_ZORLUK[pongZorlukAyari].topHiz * 1.8;
+    const hizN = Math.hypot(pongTop.dx, pongTop.dy);
+    if (hizN > maxHiz) {
+      pongTop.dx = pongTop.dx / hizN * maxHiz;
+      pongTop.dy = pongTop.dy / hizN * maxHiz;
+    }
+    sfx.dogru();
+  }
+  // AI raketine çarpma (üst)
+  if (pongTop.dy < 0 &&
+      pongTop.y - pongTop.r <= pongRaketAi.y + pongRaketAi.h &&
+      pongTop.y + pongTop.r > pongRaketAi.y &&
+      pongTop.x >= pongRaketAi.x &&
+      pongTop.x <= pongRaketAi.x + pongRaketAi.w) {
+    pongTop.y = pongRaketAi.y + pongRaketAi.h + pongTop.r;
+    pongTop.dy = Math.abs(pongTop.dy);
+    const fark = (pongTop.x - (pongRaketAi.x + pongRaketAi.w / 2)) / (pongRaketAi.w / 2);
+    pongTop.dx += fark * 2.5;
+    sfx.dogru();
+  }
+  // Alt çıkış: AI puan
+  if (pongTop.y - pongTop.r > PONG_H) {
+    pongSkorAi++;
+    pongPuanPatlama(pongTop.x, PONG_H - 20, '#e94560');
+    pongHUDGuncelle();
+    sfx.yanlis();
+    if (pongSkorAi >= pongHedef) { pongBitir(false); return; }
+    pongIzler = [];
+    pongTopSifirla(-1); // top yukarı (AI'a) gitsin
+  }
+  // Üst çıkış: oyuncu puan
+  if (pongTop.y + pongTop.r < 0) {
+    pongSkorSen++;
+    pongPuanPatlama(pongTop.x, 20, '#19d3e0');
+    pongHUDGuncelle();
+    sfx.dogru();
+    if (pongSkorSen >= pongHedef) { pongBitir(true); return; }
+    pongIzler = [];
+    pongTopSifirla(1); // top aşağı (oyuncuya) gitsin
+  }
+  // AI hareketi: topu takip et (zorluk seviyesine göre tepkili)
+  const cfg = PONG_ZORLUK[pongZorlukAyari];
+  const aiMerkez = pongRaketAi.x + pongRaketAi.w / 2;
+  let aiHedef = pongTop.x;
+  // Top aşağı gidiyorsa AI bekleyebilir (zorlukla orantılı)
+  if (pongTop.dy > 0 && pongZorlukAyari !== 'zor') {
+    aiHedef = PONG_W / 2 + (pongTop.x - PONG_W / 2) * 0.4;
+  }
+  const fark = aiHedef - aiMerkez;
+  const hareket = Math.max(-cfg.aiHiz, Math.min(cfg.aiHiz, fark * cfg.aiTakipOran * 4));
+  pongRaketAi.x += hareket;
+  pongRaketAi.x = Math.max(0, Math.min(PONG_W - pongRaketAi.w, pongRaketAi.x));
+  // Partiküller
+  pongParticles.forEach(p => {
+    p.x += p.dx;
+    p.y += p.dy;
+    p.dy += 0.18;
+    p.life -= 0.04;
+  });
+  pongParticles = pongParticles.filter(p => p.life > 0);
+}
+
+function pongPuanPatlama(x, y, renk) {
+  for (let i = 0; i < 14; i++) {
+    pongParticles.push({
+      x, y,
+      dx: (Math.random() - 0.5) * 6,
+      dy: (Math.random() - 0.5) * 6 - 1,
+      life: 1,
+      renk,
+      boyut: 2 + Math.random() * 3
+    });
+  }
+}
+
+function pongBitir(kazandi) {
+  pongBitti = true;
+  cancelAnimationFrame(window.pongAnim);
+  if (kazandi) {
+    sfx.kazan();
+    // Skor = oyuncu puanı - rakip puan (kazanılan farka göre); en yüksek skor
+    const skorYeni = pongSkorSen - pongSkorAi;
+    if (skorYeni > pongBest) {
+      pongBest = skorYeni;
+      save('pong_best', pongBest);
+      pongHUDGuncelle();
+    }
+    document.getElementById('pong-gameover-baslik').innerText = '🏆 Sen Kazandın!';
+  } else {
+    sfx.yanlis();
+    document.getElementById('pong-gameover-baslik').innerText = '💀 Sen Kaybettin';
+  }
+  document.getElementById('pong-gameover-skor').innerText =
+    'Skor: ' + pongSkorSen + ' - ' + pongSkorAi + ' · Zorluk: ' +
+    (pongZorlukAyari === 'kolay' ? 'Kolay' : pongZorlukAyari === 'zor' ? 'Zor' : 'Orta');
+  document.getElementById('pong-gameover').style.display = 'block';
+}
+
+function pongCiz() {
+  const canvas = document.getElementById('pong-board');
+  const ctx = canvas.getContext('2d');
+  const lw = canvas._lw || PONG_W;
+  const lh = canvas._lh || PONG_H;
+  ctx.clearRect(0, 0, lw, lh);
+  // Orta çizgi (kesikli, neon)
+  ctx.strokeStyle = 'rgba(100,180,220,.35)';
+  ctx.lineWidth = 2;
+  ctx.setLineDash([8, 8]);
+  ctx.beginPath();
+  ctx.moveTo(0, PONG_H / 2);
+  ctx.lineTo(PONG_W, PONG_H / 2);
+  ctx.stroke();
+  ctx.setLineDash([]);
+  // Orta daire
+  ctx.strokeStyle = 'rgba(100,180,220,.25)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(PONG_W / 2, PONG_H / 2, PONG_W * 0.13, 0, 7);
+  ctx.stroke();
+  // Kenar parlaması (üst ve alt)
+  ctx.strokeStyle = 'rgba(255,255,255,.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(0, 1); ctx.lineTo(PONG_W, 1);
+  ctx.moveTo(0, PONG_H - 1); ctx.lineTo(PONG_W, PONG_H - 1);
+  ctx.stroke();
+  // Skor (büyük arkaplan rakamlar)
+  ctx.fillStyle = 'rgba(255,255,255,.06)';
+  ctx.font = 'bold ' + Math.floor(PONG_W * 0.4) + 'px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(pongSkorAi, PONG_W / 2, PONG_H * 0.27);
+  ctx.fillText(pongSkorSen, PONG_W / 2, PONG_H * 0.73);
+  // İz (top arkasında)
+  pongIzler.forEach((p, i) => {
+    const a = (i + 1) / pongIzler.length;
+    ctx.fillStyle = 'rgba(255,255,255,' + (a * 0.4) + ')';
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, pongTop.r * a, 0, 7);
+    ctx.fill();
+  });
+  // Top (parlak HD küre)
+  hd3DKure(ctx, pongTop.x, pongTop.y, pongTop.r, '#ffffff');
+  // Glow halkası
+  ctx.strokeStyle = 'rgba(255,255,255,.4)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath();
+  ctx.arc(pongTop.x, pongTop.y, pongTop.r * 1.5, 0, 7);
+  ctx.stroke();
+  // Raketler - HD 3D kutu, oyuncu mavi, AI kırmızı
+  hd3DKutu(ctx, pongRaketSen.x, pongRaketSen.y, pongRaketSen.w, pongRaketSen.h, '#19d3e0');
+  hd3DKutu(ctx, pongRaketAi.x, pongRaketAi.y, pongRaketAi.w, pongRaketAi.h, '#e94560');
+  // Partiküller (puan patlama)
+  pongParticles.forEach(p => {
+    ctx.globalAlpha = Math.max(0, p.life);
+    ctx.fillStyle = p.renk;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.boyut, 0, 7);
+    ctx.fill();
+  });
+  ctx.globalAlpha = 1;
+  // Duraklat overlay
+  if (pongDuraklatildi && !pongBitti) {
+    ctx.fillStyle = 'rgba(0,0,0,.7)';
+    ctx.fillRect(0, 0, lw, lh);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + Math.floor(PONG_W * 0.08) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('⏸️ DURAKLATIDI', lw / 2, lh / 2);
+  }
+}
+
+// Oyuncu kontrolü: parmak sürükle (sadece x ekseni alt raketi takip eder)
+(function pongBind() {
+  const canvas = document.getElementById('pong-board');
+  function hareket(clientX) {
+    if (pongBitti || pongDuraklatildi || !pongRaketSen) return;
+    const rect = canvas.getBoundingClientRect();
+    const lw = canvas._lw || canvas.width;
+    const scale = lw / rect.width;
+    const x = (clientX - rect.left) * scale;
+    pongRaketSen.x = x - pongRaketSen.w / 2;
+    pongRaketSen.x = Math.max(0, Math.min(PONG_W - pongRaketSen.w, pongRaketSen.x));
+  }
+  canvas.addEventListener('touchstart', e => {
+    e.preventDefault();
+    if (e.touches.length) hareket(e.touches[0].clientX);
+  }, { passive: false });
+  canvas.addEventListener('touchmove', e => {
+    e.preventDefault();
+    if (e.touches.length) hareket(e.touches[0].clientX);
+  }, { passive: false });
+  canvas.addEventListener('mousedown', e => { pongTouch = true; hareket(e.clientX); });
+  canvas.addEventListener('mousemove', e => { if (pongTouch) hareket(e.clientX); });
+  canvas.addEventListener('mouseup', () => { pongTouch = false; });
+})();
+
+// Klavye (masaüstü)
+window.addEventListener('keydown', e => {
+  if (!document.getElementById('game-pong').classList.contains('active')) return;
+  if (!pongRaketSen) return;
+  const adim = 25;
+  if (e.key === 'ArrowLeft') {
+    pongRaketSen.x = Math.max(0, pongRaketSen.x - adim);
+    e.preventDefault();
+  } else if (e.key === 'ArrowRight') {
+    pongRaketSen.x = Math.min(PONG_W - pongRaketSen.w, pongRaketSen.x + adim);
+    e.preventDefault();
+  } else if (e.key === 'p' || e.key === 'P') {
+    pongDuraklat();
+    e.preventDefault();
+  }
+});
+
+
 /* ============ RESIZE ============ */
 window.addEventListener('resize', () => {
   if (document.getElementById('game-blok').classList.contains('active')) {
@@ -4225,6 +4609,9 @@ window.addEventListener('resize', () => {
   }
   if (document.getElementById('game-tetris').classList.contains('active') && trBoard) {
     requestAnimationFrame(() => { trBoyutla(); trCiz(); });
+  }
+  if (document.getElementById('game-pong').classList.contains('active') && pongRaketSen) {
+    requestAnimationFrame(() => { pongBoyutla(); pongCiz(); });
   }
 });
 

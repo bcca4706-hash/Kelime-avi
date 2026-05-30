@@ -22,7 +22,9 @@
     font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
     text-align: center;
     min-height: 100vh;
+    min-height: 100dvh;
     overflow-x: hidden;
+    overflow-y: auto;
     position: relative;
     background: #16213e;
   }
@@ -36,11 +38,31 @@
   .screen { display: none; padding: 16px; max-width: 480px; margin: 0 auto; position: relative; z-index: 1; }
   /* Yatay modda canvas'lar daha geniş yer kaplayabilsin */
   @media (orientation: landscape) {
-    .screen { max-width: 720px; padding: 10px; }
+    .screen { max-width: 760px; padding: 8px 12px; }
+    .topbar { padding: 4px 12px; }
+    .hud { font-size: 0.85em; padding: 4px 8px; gap: 6px; }
+    .card { padding: 12px; margin: 6px; }
+    .menu-icon { font-size: 1.4em; }
+    h1, h2 { font-size: 1.1em; margin: 6px 0; }
     /* Yatay modda canvas'lar yer kazanmalı */
-    #ks-board { max-width: 640px; }
-    #uz-board, #bk-board, #pong-board, #rfx-board { max-width: 460px; }
-    #tr-board { max-width: 360px; }
+    #ks-board { max-width: 680px; }
+    #uz-board, #bk-board { max-width: 440px; }
+    #pong-board, #rfx-board { max-width: 460px; }
+    #tr-board { max-width: 280px; }
+    /* Yatayda menü kartlarını grid yap (2 sütun) */
+    #menu { max-width: 720px; }
+    #menu > .card { display: inline-block; width: 46%; vertical-align: top; }
+  }
+  /* Yatay modda kısa yükseklik (telefon yatay) için daha kompakt */
+  @media (orientation: landscape) and (max-height: 500px) {
+    .screen { padding: 4px 8px; }
+    .hud { font-size: 0.78em; padding: 3px 6px; }
+    .btn, .btn.alt { padding: 6px 10px; font-size: .9em; margin: 3px; }
+    .btn.small { padding: 5px 8px; font-size: .85em; }
+    /* Canvas'ları yüksekliğe göre sınırla */
+    #uz-board, #bk-board { max-height: 60vh; }
+    #ks-board { max-height: 50vh; max-width: 580px; }
+    #pong-board, #rfx-board { max-height: 65vh; }
   }
   .active { display: block; animation: fade .3s ease; }
   @keyframes fade { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; } }
@@ -333,7 +355,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 18.1 · 14 oyun · Yatay mod desteği</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 18.2 · Yatay mod düzeltildi</div>
 </div>
 
 <!-- KELİME AVI -->

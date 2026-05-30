@@ -40,20 +40,15 @@
   @media (orientation: landscape) {
     body { overflow: hidden; }
     .screen { max-width: 100vw; padding: 4px 8px; height: 100vh; height: 100dvh;
-              display: none; flex-direction: column; }
+              display: none; flex-direction: column; align-items: center; }
     .screen.active { display: flex !important; }
     .topbar { padding: 2px 8px; }
-    .hud { font-size: 0.8em; padding: 3px 8px; gap: 4px; margin-bottom: 3px; }
+    .hud { font-size: 0.8em; padding: 3px 8px; gap: 4px; margin-bottom: 3px; width: 100%; max-width: 700px; }
     .card { padding: 12px; margin: 6px; border-radius: 22px; }
     .menu-icon { font-size: 1.3em; }
     h1, h2 { font-size: 1em; margin: 4px 0; }
-    /* Yatayda canvas'lar tam alanı kullansın */
-    canvas { max-width: 100% !important; max-height: 100% !important;
-             width: auto !important; height: auto !important; }
-    #ks-board, #uz-board, #bk-board, #pong-board, #rfx-board, #tr-board,
-    #blok-board, #p-board, #p-tepsi, #e-board, #sn-board, #bl-board, #i48-board {
-      max-width: none !important; max-height: 100% !important;
-    }
+    /* Yataydayken canvas'ı parent flex ortalı tutalım - JS boyutluyor */
+    canvas { display: block; margin: 0 auto; }
     /* Menü kartları 3 sütunlu grid - yatay sığsın */
     #menu { max-width: 100vw; padding: 10px; overflow-y: auto; }
     #menu > .card { display: inline-block; width: 30%; vertical-align: top;
@@ -389,7 +384,7 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
   </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 19.0 · Yatay tam ekran + popup kontrol</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 19.1 · Yatay düzgün boyutlandı</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -831,6 +826,40 @@
 
 <script>
 /* ============ GENEL YARDIMCILAR ============ */
+// Yatay mod tespiti
+function yatayMi() {
+  return window.innerWidth > window.innerHeight;
+}
+// Bir oyun ekranı için canvas boyutunu hesapla (yatay/dikey uyumlu)
+// oranYW = yükseklik / genişlik oranı (dikey için, örn 1.5 = uzun dikey)
+// maxW = dikey modda maksimum genişlik
+// rezervY = HUD + popup + açıklamanın aldığı dikey yer (yataydayken çıkart)
+function oyunBoyutHesapla(ekranId, oranYW, maxW, rezervY) {
+  rezervY = rezervY || 110;
+  const yatay = yatayMi();
+  const winW = window.innerWidth;
+  const winH = window.innerHeight;
+  if (yatay) {
+    // Yatayda: yükseklik kısıt - ekran yüksekliğinden HUD/butonlar çıkar
+    const kullanH = winH - rezervY;
+    // Önce yüksekliği baz al, genişliği hesapla
+    let h = Math.max(150, kullanH);
+    let w = h / oranYW;
+    // Genişlik çok büyürse pencerenin %95'ine sığdır
+    const maxAvailW = winW * 0.95;
+    if (w > maxAvailW) {
+      w = maxAvailW;
+      h = w * oranYW;
+    }
+    return { w: Math.floor(w), h: Math.floor(h) };
+  } else {
+    // Dikeyde: genişlik kısıt
+    const ekran = document.getElementById(ekranId);
+    let w = ekran ? Math.min(maxW, ekran.clientWidth - 32) : Math.min(maxW, winW - 40);
+    if (w < 50) w = Math.min(maxW, winW - 40);
+    return { w: Math.floor(w), h: Math.floor(w * oranYW) };
+  }
+}
 function toast(msg) {
   const t = document.getElementById('toast');
   t.innerText = msg;
@@ -1569,9 +1598,22 @@ function cizIzgara() {
   const g = document.getElementById('grid');
   if (!kelIzgara) { g.innerHTML = ''; return; }
   const wrap = document.getElementById('grid-wrap');
-  const ekranW = Math.min(wrap.parentElement.clientWidth - 24, 420);
-  const cellCalc = Math.floor((ekranW - (kelIzgara.sutun + 1) * 4) / kelIzgara.sutun);
-  const boyut = Math.max(22, Math.min(cellCalc, 40));
+  // Yatayda yükseklik kısıtlayıcı, dikeyde genişlik
+  const yatay = window.innerWidth > window.innerHeight;
+  let boyut;
+  if (yatay) {
+    // Yatayda mevcut canvas yüksekliğini kullan (~ekran yüksekliği - HUD - kelime listesi)
+    const kullanH = window.innerHeight - 220; // HUD + zorluk + kelimeler + buton
+    boyut = Math.max(20, Math.min(Math.floor(kullanH / kelIzgara.satir) - 4, 40));
+    // Genişlik de sığsın
+    const ekranW = window.innerWidth * 0.6; // yatayda yarı ekran
+    const boyut2 = Math.floor((ekranW - (kelIzgara.sutun + 1) * 4) / kelIzgara.sutun);
+    boyut = Math.min(boyut, boyut2);
+  } else {
+    const ekranW = Math.min(wrap.parentElement.clientWidth - 24, 420);
+    const cellCalc = Math.floor((ekranW - (kelIzgara.sutun + 1) * 4) / kelIzgara.sutun);
+    boyut = Math.max(22, Math.min(cellCalc, 40));
+  }
   g.style.gridTemplateColumns = `repeat(${kelIzgara.sutun}, ${boyut}px)`;
   g.style.gridAutoRows = `${boyut}px`;
   g.style.fontSize = Math.floor(boyut * 0.5) + 'px';
@@ -1865,10 +1907,12 @@ function guncelleHUD() {
 
 function blokKur() {
   const canvas = document.getElementById('c1');
-  const gorunenW = Math.min(canvas.clientWidth || 320, 380);
-  const gorunenH = Math.round(gorunenW * 1.6);
-  hdKur(canvas, gorunenW, gorunenH); // HD: yüksek DPI rendering
-  BK_W = gorunenW; BK_H = gorunenH;
+  // Blok kırıcı dikey - oran 1.6
+  const b = oyunBoyutHesapla('game-blok', 1.6, 380, 130);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  BK_W = b.w; BK_H = b.h;
   BK_CELL = Math.floor((BK_W - 8) / BK_COLS);
   BK_TOP_Y = 8;
   BK_ALT_Y = BK_H - 30;
@@ -2226,13 +2270,20 @@ const P_SEKILLER = [
 function pBoyutla() {
   const board = document.getElementById('p-board');
   const tray = document.getElementById('p-tray');
-  P_W = Math.min(board.clientWidth || 360, 380);
-  hdKur(board, P_W, P_W); // HD board
+  // Board kare + tepsi (board genişliği × 0.34) lazım, toplam yükseklik = w + 0.34w = 1.34w
+  // Yataydayken pencere yüksekliğine sığdır
+  const b = oyunBoyutHesapla('game-puzzle', 1.34, 380, 130);
+  P_W = b.w;
+  hdKur(board, P_W, P_W);
+  board.style.width = P_W + 'px';
+  board.style.height = P_W + 'px';
   P_PAD = Math.round(P_W * 0.03);
   P_GAP = Math.max(2, Math.round(P_W * 0.012));
   P_CELL = (P_W - P_PAD * 2 - P_GAP * (PB - 1)) / PB;
   T_W = P_W; T_H = Math.round(P_W * 0.34);
-  hdKur(tray, T_W, T_H); // HD tepsi
+  hdKur(tray, T_W, T_H);
+  tray.style.width = T_W + 'px';
+  tray.style.height = T_H + 'px';
   T_CELL = P_CELL * 0.8;
 }
 
@@ -2646,11 +2697,14 @@ function eHedefCiz() {
 
 function eBoyutla() {
   const canvas = document.getElementById('e-board');
-  E_W = Math.min(canvas.clientWidth || 360, 400);
-  const E_H = Math.round(E_W * (E_SATIR / E_SUTUN));
-  hdKur(canvas, E_W, E_H); // HD
-  E_PAD = Math.round(E_W * 0.015);
-  E_CELL = (E_W - E_PAD * 2) / E_SUTUN;
+  // Eşleştir 8x7 - oran 7/8 ≈ 0.875
+  const b = oyunBoyutHesapla('game-eslestir', E_SATIR / E_SUTUN, 400, 130);
+  E_W = b.w;
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  E_PAD = Math.round(b.w * 0.015);
+  E_CELL = (b.w - E_PAD * 2) / E_SUTUN;
 }
 
 function eMeyveCiz(ctx, cx, cy, rad, renk, olcek) {
@@ -3158,10 +3212,13 @@ function snHizMs() { return Math.max(50, 180 - snHiz * 6); }
 
 function snBoyutla() {
   const canvas = document.getElementById('sn-board');
-  const W = Math.min(canvas.clientWidth || 360, 380);
-  hdKur(canvas, W, W); // HD
-  snCell = W / SN_GRID;
-  canvas._lw = W; canvas._lh = W; // mantıksal boyut snCiz için
+  // Yılan kare - oran 1
+  const b = oyunBoyutHesapla('game-snake', 1.0, 380, 130);
+  hdKur(canvas, b.w, b.w);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.w + 'px';
+  snCell = b.w / SN_GRID;
+  canvas._lw = b.w; canvas._lh = b.w;
 }
 
 function snYemKoy() {
@@ -3500,12 +3557,14 @@ function balonYeniBolum() {
 
 function balonBoyutla() {
   const canvas = document.getElementById('bl-board');
-  const w = Math.min(canvas.clientWidth || 360, 380);
-  const h = Math.round(w * (BL_SATIR / BL_SUTUN));
-  hdKur(canvas, w, h);
-  BL_W = w; BL_H = h;
-  BL_PAD = Math.round(w * 0.02);
-  BL_CELL = (w - BL_PAD * 2) / BL_SUTUN;
+  const oran = BL_SATIR / BL_SUTUN; // 8/11 ≈ 0.73
+  const b = oyunBoyutHesapla('game-balon', oran, 380, 130);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  BL_W = b.w; BL_H = b.h;
+  BL_PAD = Math.round(b.w * 0.02);
+  BL_CELL = (b.w - BL_PAD * 2) / BL_SUTUN;
 }
 
 // Komşu aynı renkleri bul (flood fill)
@@ -3775,12 +3834,15 @@ function i48BosaTaşKoy() {
 
 function i48Boyutla() {
   const canvas = document.getElementById('i48-board');
-  const w = Math.min(canvas.clientWidth || 360, 380);
-  hdKur(canvas, w, w);
-  I48_W = w;
-  I48_PAD = Math.round(w * 0.025);
-  I48_GAP = Math.round(w * 0.018);
-  I48_CELL = (w - I48_PAD * 2 - I48_GAP * (I48_N - 1)) / I48_N;
+  // 2048 kare - oran 1
+  const b = oyunBoyutHesapla('game-iki048', 1.0, 380, 130);
+  hdKur(canvas, b.w, b.w);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.w + 'px';
+  I48_W = b.w;
+  I48_PAD = Math.round(b.w * 0.025);
+  I48_GAP = Math.round(b.w * 0.018);
+  I48_CELL = (b.w - I48_PAD * 2 - I48_GAP * (I48_N - 1)) / I48_N;
 }
 
 function i48HUDGuncelle() {
@@ -4095,11 +4157,14 @@ function trHizMs() {
 
 function trBoyutla() {
   const canvas = document.getElementById('tr-board');
-  const w = Math.min(canvas.clientWidth || 320, 340);
-  TR_CELL = Math.floor(w / TR_SUTUN);
+  // Tetris dikey - oran 2 (10 sütun x 20 satır)
+  const b = oyunBoyutHesapla('game-tetris', 2.0, 340, 140);
+  TR_CELL = Math.floor(b.w / TR_SUTUN);
   TR_W = TR_CELL * TR_SUTUN;
   TR_H = TR_CELL * TR_SATIR;
   hdKur(canvas, TR_W, TR_H);
+  canvas.style.width = TR_W + 'px';
+  canvas.style.height = TR_H + 'px';
 }
 
 function trHUDGuncelle() {
@@ -4603,11 +4668,12 @@ function pongTopSifirla(yon) {
 
 function pongBoyutla() {
   const canvas = document.getElementById('pong-board');
-  const w = Math.min(canvas.clientWidth || 360, 380);
-  const h = Math.round(w * 1.35);
-  hdKur(canvas, w, h);
-  PONG_W = w;
-  PONG_H = h;
+  const b = oyunBoyutHesapla('game-pong', 1.35, 380, 120);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  PONG_W = b.w;
+  PONG_H = b.h;
 }
 
 function pongHUDGuncelle() {
@@ -4950,18 +5016,12 @@ function rfxBaslat() {
 
 function rfxBoyutla() {
   const canvas = document.getElementById('rfx-board');
-  let w = canvas.clientWidth;
-  // Ekran daha yeni active olduysa clientWidth 0 dönebilir; parent'a veya pencereye bak
-  if (!w || w < 50) {
-    const ekran = document.getElementById('game-reflex');
-    if (ekran && ekran.clientWidth > 50) w = Math.min(380, ekran.clientWidth - 32);
-    else w = Math.min(380, (window.innerWidth || 360) - 40);
-  }
-  w = Math.min(w, 380);
-  const h = Math.round(w * 1.3);
-  hdKur(canvas, w, h);
-  RFX_W = w;
-  RFX_H = h;
+  const b = oyunBoyutHesapla('game-reflex', 1.3, 380, 120);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  RFX_W = b.w;
+  RFX_H = b.h;
 }
 
 function rfxUretAraligi() {
@@ -5360,17 +5420,12 @@ function uzBaslat() {
 
 function uzBoyutla() {
   const canvas = document.getElementById('uz-board');
-  let w = canvas.clientWidth;
-  if (!w || w < 50) {
-    const ekran = document.getElementById('game-uzay');
-    if (ekran && ekran.clientWidth > 50) w = Math.min(380, ekran.clientWidth - 32);
-    else w = Math.min(380, (window.innerWidth || 360) - 40);
-  }
-  w = Math.min(w, 380);
-  const h = Math.round(w * 1.5);
-  hdKur(canvas, w, h);
-  UZ_W = w;
-  UZ_H = h;
+  const b = oyunBoyutHesapla('game-uzay', 1.5, 380, 120);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  UZ_W = b.w;
+  UZ_H = b.h;
 }
 
 function uzYildiziBaslat() {
@@ -6244,17 +6299,12 @@ function bkBalikSonraki() {
 
 function bkBalikBoyutla() {
   const canvas = document.getElementById('bk-board');
-  let w = canvas.clientWidth;
-  if (!w || w < 50) {
-    const ekran = document.getElementById('game-balik');
-    if (ekran && ekran.clientWidth > 50) w = Math.min(380, ekran.clientWidth - 32);
-    else w = Math.min(380, (window.innerWidth || 360) - 40);
-  }
-  w = Math.min(w, 380);
-  const h = Math.round(w * 1.5);
-  hdKur(canvas, w, h);
-  BK_BALIK_W = w;
-  BK_BALIK_H = h;
+  const b = oyunBoyutHesapla('game-balik', 1.5, 380, 120);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  BK_BALIK_W = b.w;
+  BK_BALIK_H = b.h;
 }
 
 function bkBalikHUDGuncelle() {
@@ -7036,18 +7086,13 @@ function ksBaslat() {
 
 function ksBoyutla() {
   const canvas = document.getElementById('ks-board');
-  let w = canvas.clientWidth;
-  if (!w || w < 50) {
-    const ekran = document.getElementById('game-kosucu');
-    if (ekran && ekran.clientWidth > 50) w = Math.min(420, ekran.clientWidth - 24);
-    else w = Math.min(420, (window.innerWidth || 400) - 30);
-  }
-  w = Math.min(w, 420);
-  const h = Math.round(w * 0.62); // yatay format, side-scroll
-  hdKur(canvas, w, h);
-  KS_W = w;
-  KS_H = h;
-  KS_ZEMIN_Y = h * 0.82;
+  const b = oyunBoyutHesapla('game-kosucu', 0.62, 420, 130);
+  hdKur(canvas, b.w, b.h);
+  canvas.style.width = b.w + 'px';
+  canvas.style.height = b.h + 'px';
+  KS_W = b.w;
+  KS_H = b.h;
+  KS_ZEMIN_Y = b.h * 0.82;
 }
 
 function ksBulutlariBaslat() {

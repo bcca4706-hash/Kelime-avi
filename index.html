@@ -252,6 +252,91 @@
                 inset 0 0 0 2px rgba(255,150,100,.4),
                 0 0 24px rgba(255,140,90,.2); }
 
+  /* VAR MISIN YOK MUSUN */
+  .vy-kutu {
+    aspect-ratio: 1; border-radius: 12px; cursor: pointer;
+    background: linear-gradient(160deg, #6a4ad0 0%, #4a3a9e 50%, #2a1f63 100%);
+    box-shadow: 0 3px 8px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.25);
+    border: 1px solid rgba(255,255,255,.15);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 1em;
+    color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.4);
+    transition: transform .12s, opacity .25s;
+    user-select: none;
+  }
+  .vy-kutu:active { transform: scale(.93); }
+  .vy-kutu.acik {
+    background: linear-gradient(160deg, #444, #222);
+    opacity: .45; cursor: default; font-size: .75em;
+  }
+  .vy-kutu.secili {
+    background: linear-gradient(160deg, #fadb14, #e8a800);
+    color: #1a1a3e; text-shadow: none;
+    box-shadow: 0 0 12px rgba(250,219,20,.6), inset 0 1px 0 rgba(255,255,255,.4);
+    border-color: #fff;
+  }
+  .vy-para-hucre {
+    padding: 5px 8px; border-radius: 6px;
+    background: rgba(255,255,255,.08);
+    border: 1px solid rgba(255,255,255,.1);
+    transition: opacity .3s;
+  }
+  .vy-para-hucre.elendi { opacity: .25; text-decoration: line-through; color: #999; }
+  .vy-para-hucre.buyuk { color: #fadb14; font-weight: 700; }
+
+  /* MİLYONER */
+  .mil-secenek {
+    background: linear-gradient(160deg, rgba(74,58,158,.7), rgba(42,31,99,.7));
+    border: 2px solid rgba(255,255,255,.18);
+    border-radius: 26px; padding: 12px 16px;
+    color: #fff; font-size: .92em; font-weight: 600;
+    text-align: left; cursor: pointer;
+    transition: transform .12s, background .2s, border-color .2s;
+    display: flex; align-items: center; gap: 10px;
+    user-select: none;
+  }
+  .mil-secenek:active { transform: scale(.97); }
+  .mil-secenek.dogru {
+    background: linear-gradient(160deg, #52c41a, #2ec44f);
+    border-color: #88f098;
+    animation: milDogruPop .5s;
+  }
+  @keyframes milDogruPop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+  .mil-secenek.yanlis {
+    background: linear-gradient(160deg, #e94560, #a32d40);
+    border-color: #ff8090;
+  }
+  .mil-secenek.elendi { opacity: .3; text-decoration: line-through; pointer-events: none; }
+  .mil-secenek-harf {
+    display: inline-block; min-width: 28px; height: 28px;
+    background: rgba(255,255,255,.2); border-radius: 50%;
+    text-align: center; line-height: 28px; font-weight: 800;
+    border: 1px solid rgba(255,255,255,.25);
+  }
+  .mil-merdiven-satir {
+    display: flex; justify-content: space-between;
+    padding: 3px 10px; border-radius: 5px; margin: 1px 0;
+    background: rgba(255,255,255,.05);
+  }
+  .mil-merdiven-satir.aktif {
+    background: linear-gradient(90deg, #fadb14, #ff7043);
+    color: #1a1a3e; font-weight: 800;
+  }
+  .mil-merdiven-satir.baraj { border-left: 3px solid #fadb14; }
+  .mil-merdiven-satir.gecildi { opacity: .55; }
+  .mil-seyirci-bar {
+    height: 18px; background: rgba(255,255,255,.1); border-radius: 4px;
+    overflow: hidden; margin: 3px 0;
+    display: flex; align-items: center;
+  }
+  .mil-seyirci-doluluk {
+    height: 100%; background: linear-gradient(90deg, #19d3e0, #1890ff);
+    transition: width .5s;
+  }
+
   /* HAFIZA EŞLEŞTİR */
   #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
     border-radius: 18px;
@@ -383,8 +468,18 @@
     <strong>Engel Atla</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
   </div>
+  <div class="card" onclick="showGame('varyok')">
+    <span class="menu-icon">💼</span>
+    <strong>Var mısın Yok musun</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">22 kutu · Banker teklifleri · Sat veya devam et</div>
+  </div>
+  <div class="card" onclick="showGame('milyoner')">
+    <span class="menu-icon">💰</span>
+    <strong>Milyoner</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">12 soru · 3 yardım · 1 milyon TL hedefi</div>
+  </div>
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 19.1 · Yatay düzgün boyutlandı</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 20.0 · 16 oyun · Var mısın + Milyoner</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -820,6 +915,95 @@
     <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
   </div>
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Yukarı kaydır → zıpla · Aşağı kaydır → eğil · Sonsuz mesafe</div>
+</div>
+
+<!-- VAR MISIN YOK MUSUN -->
+<div id="game-varyok" class="screen">
+  <div class="hud">
+    <span>💼 Tur <strong id="vy-tur">1</strong></span>
+    <span style="font-size:1.1em;font-weight:800">Senin Kutun: <strong id="vy-secilen">─</strong></span>
+    <span>📦 <strong id="vy-kalan">22</strong></span>
+  </div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:6px">
+    Bu turda <strong id="vy-tur-acmali">6</strong> kutu aç · Sonra Banker teklif sunacak
+  </div>
+  <!-- Para tablosu üstte -->
+  <div id="vy-para-tablo" style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px;max-width:380px;margin:0 auto 8px;font-size:.78em"></div>
+  <!-- Kutular -->
+  <div id="vy-kutular" style="display:grid;grid-template-columns:repeat(6,1fr);gap:5px;max-width:380px;margin:0 auto"></div>
+  <!-- Banker teklif overlay -->
+  <div id="vy-teklif" style="display:none;background:linear-gradient(160deg,#1a1a3e,#2a1f63);border-radius:18px;padding:18px;margin:12px auto;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.6);border:2px solid #fadb14">
+    <div style="font-weight:800;font-size:1.1em;margin-bottom:6px">🎩 Banker Diyor ki:</div>
+    <div style="font-size:1.8em;font-weight:800;color:#fadb14;margin:10px 0">
+      <span id="vy-teklif-miktar">0</span> TL
+    </div>
+    <div style="opacity:.85;font-size:.85em;margin-bottom:10px">"Bu para senin olsun, ne dersin?"</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="vySat()">✅ VAR (Sat)</button>
+      <button class="btn alt small" onclick="vyDevam()">❌ YOK (Devam)</button>
+    </div>
+  </div>
+  <!-- Son tur: kutu değiştir -->
+  <div id="vy-degistir" style="display:none;background:linear-gradient(160deg,#1a1a3e,#2a1f63);border-radius:18px;padding:18px;margin:12px auto;max-width:340px;box-shadow:0 8px 24px rgba(0,0,0,.6);border:2px solid #19d3e0">
+    <div style="font-weight:800;font-size:1.1em;margin-bottom:10px">🎁 Son 2 Kutu Kaldı!</div>
+    <div style="opacity:.85;font-size:.85em;margin-bottom:10px">Kutunu değiştirmek ister misin?</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="vyDegistir(true)">🔄 Değiştir</button>
+      <button class="btn alt small" onclick="vyDegistir(false)">🤝 Kal</button>
+    </div>
+  </div>
+  <!-- Oyun sonu -->
+  <div id="vy-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="vy-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">🎉</div>
+    <div id="vy-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="vyBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="vyBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:4px">Kutulara dokun · Her tur hedefi kadar aç · Banker'in teklifini değerlendir</div>
+</div>
+
+<!-- MİLYONER -->
+<div id="game-milyoner" class="screen">
+  <div class="hud">
+    <span>👑 <span id="mil-best">0</span></span>
+    <span style="font-size:1.1em;font-weight:800">💰 <span id="mil-kazanc">0</span> TL</span>
+    <span>Soru <strong id="mil-soru-no">1</strong>/12</span>
+  </div>
+  <!-- Para basamak tablosu (sağda) -->
+  <div id="mil-merdiven" style="display:none;max-width:380px;margin:0 auto 6px;font-size:.72em"></div>
+  <!-- Yardımlar -->
+  <div style="display:flex;justify-content:center;gap:8px;margin-bottom:8px">
+    <button class="btn alt small" id="mil-yardim-5050" onclick="milYardim('5050')">5️⃣0️⃣:5️⃣0️⃣</button>
+    <button class="btn alt small" id="mil-yardim-seyirci" onclick="milYardim('seyirci')">👥 Seyirci</button>
+    <button class="btn alt small" id="mil-yardim-atla" onclick="milYardim('atla')">⏭️ Atla</button>
+  </div>
+  <!-- Soru -->
+  <div id="mil-soru-kutu" style="background:linear-gradient(160deg,#1a1a3e,#2a1f63);border-radius:18px;padding:14px;margin:10px auto;max-width:380px;box-shadow:0 8px 24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.18)">
+    <div id="mil-soru" style="font-size:1em;font-weight:600;margin-bottom:14px;min-height:60px;line-height:1.4"></div>
+    <div id="mil-secenekler" style="display:grid;grid-template-columns:1fr;gap:6px"></div>
+  </div>
+  <!-- Seyirci grafiği -->
+  <div id="mil-seyirci-kutu" style="display:none;background:rgba(0,0,0,.85);border-radius:14px;padding:12px;margin:10px auto;max-width:340px"></div>
+  <!-- Oyun sonu -->
+  <div id="mil-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="mil-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">─</div>
+    <div id="mil-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="milBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="milBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:4px">5. soru baraj · 10. soru ikinci baraj · 12'de 1 milyon TL!</div>
 </div>
 
 <div id="toast" class="toast"></div>
@@ -1401,6 +1585,8 @@ function showGame(g) {
   if (g === 'uzay') { setDuvar('teknoloji'); requestAnimationFrame(() => uzHazirla()); }
   if (g === 'balik') { setDuvar('doga'); requestAnimationFrame(() => bkBalikHazirla()); }
   if (g === 'kosucu') { setDuvar('doga'); requestAnimationFrame(() => ksHazirla()); }
+  if (g === 'varyok') { setDuvar('muzik'); requestAnimationFrame(() => vyBaslat()); }
+  if (g === 'milyoner') { setDuvar('teknoloji'); requestAnimationFrame(() => milBaslat()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }
@@ -7727,6 +7913,471 @@ window.addEventListener('keydown', e => {
   else if (e.key === 'ArrowDown') { ksEgil(); e.preventDefault(); }
   else if (e.key === 'p' || e.key === 'P') { ksDuraklat(); e.preventDefault(); }
 });
+
+
+/* ============ VAR MISIN YOK MUSUN ============ */
+const VY_MIKTARLAR = [
+  1, 5, 10, 25, 50, 100, 250, 500, 1000, 2500, 5000,
+  7500, 10000, 25000, 50000, 75000, 100000, 250000,
+  500000, 750000, 900000, 1000000
+];
+// Her turda kaç kutu açılacak: 6,5,4,3,2,1 = 21 toplam (22 kutu - 1 oyuncu kutusu)
+const VY_TUR_ACMA = [6, 5, 4, 3, 2, 1];
+
+let vyKutular = [];      // [{ no, miktar, acik }]
+let vyOyuncuKutu = null;  // oyuncunun seçtiği kutu no
+let vyTur = 0;
+let vyTurAcma = 0;        // bu turda kaç kutu açıldı
+let vyDurum = 'sec';      // 'sec' (kendi kutu seç) | 'ac' (kutu aç) | 'teklif' | 'degistir' | 'bitti'
+
+function vyBaslat() {
+  document.getElementById('vy-gameover').style.display = 'none';
+  document.getElementById('vy-teklif').style.display = 'none';
+  document.getElementById('vy-degistir').style.display = 'none';
+  // Para miktarlarını karıştırıp kutulara dağıt
+  const karistir = [...VY_MIKTARLAR].sort(() => Math.random() - 0.5);
+  vyKutular = karistir.map((m, i) => ({ no: i + 1, miktar: m, acik: false }));
+  vyOyuncuKutu = null;
+  vyTur = 0;
+  vyTurAcma = 0;
+  vyDurum = 'sec';
+  vyHUDGuncelle();
+  vyKutulariCiz();
+  vyParaTablosuCiz();
+  toast('🎯 Kendi kutunu seç!');
+}
+
+function vyHUDGuncelle() {
+  document.getElementById('vy-tur').innerText = vyTur + 1;
+  document.getElementById('vy-secilen').innerText = vyOyuncuKutu ? '#' + vyOyuncuKutu : '─';
+  const kalan = vyKutular.filter(k => !k.acik && k.no !== vyOyuncuKutu).length;
+  document.getElementById('vy-kalan').innerText = kalan;
+  const hedef = VY_TUR_ACMA[vyTur] || 1;
+  document.getElementById('vy-tur-acmali').innerText = Math.max(0, hedef - vyTurAcma);
+}
+
+function vyKutulariCiz() {
+  const grid = document.getElementById('vy-kutular');
+  grid.innerHTML = '';
+  vyKutular.forEach(k => {
+    const div = document.createElement('div');
+    div.className = 'vy-kutu' + (k.acik ? ' acik' : '') + (k.no === vyOyuncuKutu ? ' secili' : '');
+    div.innerText = k.acik ? vyParaFormat(k.miktar) : k.no;
+    div.onclick = () => vyKutuTikla(k.no);
+    grid.appendChild(div);
+  });
+}
+
+function vyParaTablosuCiz() {
+  const grid = document.getElementById('vy-para-tablo');
+  grid.innerHTML = '';
+  // Soldan ascending, sağdan descending şeklinde 2 sütun
+  const sirali = [...VY_MIKTARLAR].sort((a, b) => a - b);
+  sirali.forEach(miktar => {
+    const div = document.createElement('div');
+    let cls = 'vy-para-hucre';
+    if (miktar >= 100000) cls += ' buyuk';
+    // Elenmiş mi: bir kutuda bu miktar varsa ve kutu açıksa eler
+    const elendi = vyKutular.some(k => k.acik && k.miktar === miktar);
+    if (elendi) cls += ' elendi';
+    div.className = cls;
+    div.innerText = vyParaFormat(miktar) + ' TL';
+    grid.appendChild(div);
+  });
+}
+
+function vyParaFormat(n) {
+  if (n >= 1000000) return (n / 1000000).toFixed(0) + 'M';
+  if (n >= 1000) return (n / 1000).toFixed(0) + 'K';
+  return n.toString();
+}
+
+function vyKutuTikla(no) {
+  if (vyDurum === 'sec') {
+    // Oyuncu kendi kutusunu seçti
+    vyOyuncuKutu = no;
+    vyDurum = 'ac';
+    vyHUDGuncelle();
+    vyKutulariCiz();
+    toast('📦 Senin kutun: #' + no);
+    sfx.dogru();
+    return;
+  }
+  if (vyDurum !== 'ac') return;
+  if (no === vyOyuncuKutu) {
+    toast('❌ Kendi kutunu açamazsın!');
+    return;
+  }
+  const kutu = vyKutular.find(k => k.no === no);
+  if (!kutu || kutu.acik) return;
+  kutu.acik = true;
+  vyTurAcma++;
+  sfx.tik();
+  vyKutulariCiz();
+  vyParaTablosuCiz();
+  vyHUDGuncelle();
+  // Bu tur hedefi tamamlandı mı?
+  const hedef = VY_TUR_ACMA[vyTur];
+  if (vyTurAcma >= hedef) {
+    // Banker teklif sunsun
+    setTimeout(() => vyBankerTeklif(), 600);
+  }
+}
+
+function vyKalanMiktarlar() {
+  return vyKutular.filter(k => !k.acik).map(k => k.miktar);
+}
+
+function vyBankerHesapla() {
+  // Klasik formül: kalan miktarların ortalaması × tur faktörü
+  // Erken turlarda düşük teklif, son turlarda gerçek değere yaklaşır
+  const kalan = vyKalanMiktarlar();
+  if (kalan.length === 0) return 0;
+  const ortalama = kalan.reduce((a, b) => a + b, 0) / kalan.length;
+  // Tur faktörü: 0.35 (ilk tur) → 1.00 (son tur)
+  const turSayi = VY_TUR_ACMA.length;
+  const faktor = 0.35 + (vyTur / Math.max(1, turSayi - 1)) * 0.65;
+  let teklif = ortalama * Math.min(1.0, faktor);
+  // Yuvarla: 100'ün katı
+  teklif = Math.round(teklif / 100) * 100;
+  return Math.max(50, teklif);
+}
+
+function vyBankerTeklif() {
+  // Son 2 kutu kaldı mı?
+  const kalan = vyKutular.filter(k => !k.acik && k.no !== vyOyuncuKutu);
+  if (kalan.length === 1) {
+    // Sadece 1 başka kutu + oyuncununki = toplam 2
+    vyDurum = 'degistir';
+    document.getElementById('vy-degistir').style.display = 'block';
+    return;
+  }
+  if (kalan.length === 0) {
+    // Tüm kutular açıldı, sadece oyuncununki kaldı
+    vyKutuAc();
+    return;
+  }
+  const teklif = vyBankerHesapla();
+  document.getElementById('vy-teklif-miktar').innerText = vyParaFormat(teklif) + ' TL (' + teklif.toLocaleString('tr-TR') + ')';
+  document.getElementById('vy-teklif').style.display = 'block';
+  vyDurum = 'teklif';
+  sfx.guc();
+}
+
+function vySat() {
+  // Banker teklifini kabul et
+  const teklif = vyBankerHesapla();
+  vyDurum = 'bitti';
+  document.getElementById('vy-teklif').style.display = 'none';
+  vyBitir(teklif, 'Banker ile anlaştın!');
+}
+
+function vyDevam() {
+  // Reddet, bir sonraki tura geç
+  document.getElementById('vy-teklif').style.display = 'none';
+  vyTur++;
+  vyTurAcma = 0;
+  vyDurum = 'ac';
+  vyHUDGuncelle();
+  if (vyTur >= VY_TUR_ACMA.length) {
+    // Tüm turlar bitti, son kutuyu aç
+    setTimeout(() => vyBankerTeklif(), 400);
+  } else {
+    toast('🎯 Tur ' + (vyTur + 1) + ': ' + VY_TUR_ACMA[vyTur] + ' kutu aç');
+  }
+}
+
+function vyDegistir(degistir) {
+  document.getElementById('vy-degistir').style.display = 'none';
+  if (degistir) {
+    // Kalan diğer kutuyu al
+    const digerKutu = vyKutular.find(k => !k.acik && k.no !== vyOyuncuKutu);
+    vyOyuncuKutu = digerKutu.no;
+    vyKutulariCiz();
+    toast('🔄 Yeni kutun: #' + vyOyuncuKutu);
+  }
+  setTimeout(() => vyKutuAc(), 800);
+}
+
+function vyKutuAc() {
+  const oyuncuKutu = vyKutular.find(k => k.no === vyOyuncuKutu);
+  if (!oyuncuKutu) return;
+  oyuncuKutu.acik = true;
+  vyKutulariCiz();
+  vyDurum = 'bitti';
+  vyBitir(oyuncuKutu.miktar, 'Kendi kutundan çıktı!');
+}
+
+function vyBitir(miktar, mesaj) {
+  document.getElementById('vy-gameover-baslik').innerText = miktar >= 100000 ? '🎉 Tebrikler!' : '💼 Oyun Bitti';
+  document.getElementById('vy-gameover-detay').innerHTML =
+    mesaj + '<br><div style="font-size:1.6em;color:#fadb14;margin:10px 0;font-weight:800">' +
+    miktar.toLocaleString('tr-TR') + ' TL</div>';
+  document.getElementById('vy-gameover').style.display = 'block';
+  if (miktar >= 100000) sfx.kazan();
+  else sfx.yanlis();
+  // En iyi skoru kaydet
+  const best = load('vy_best', 0);
+  if (miktar > best) save('vy_best', miktar);
+}
+
+
+
+/* ============ MİLYONER ============ */
+// 12 seviye, her seviye için ödüller
+const MIL_ODULLER = [
+  100, 200, 300, 500, 1000,           // 1-5 (5. baraj)
+  2000, 4000, 8000, 16000, 32000,     // 6-10 (10. baraj)
+  64000, 250000, 1000000              // 11-12 + 1 milyon (ama 13 index için emniyet)
+];
+const MIL_BARAJLAR = [4, 9]; // 5. soru (idx 4) ve 10. soru (idx 9) baraj
+
+// Soru havuzu - her zorluk için ayrı (toplam 60+ soru)
+const MIL_SORULAR = {
+  kolay: [
+    { s: 'Türkiye\'nin başkenti hangisidir?', sec: ['İstanbul', 'Ankara', 'İzmir', 'Bursa'], d: 1 },
+    { s: 'Bir haftada kaç gün vardır?', sec: ['5', '6', '7', '8'], d: 2 },
+    { s: 'Hangisi bir meyvedir?', sec: ['Domates', 'Patates', 'Elma', 'Soğan'], d: 2 },
+    { s: 'Suyun donma derecesi nedir?', sec: ['0°C', '10°C', '-5°C', '5°C'], d: 0 },
+    { s: 'Hangisi bir gezegendir?', sec: ['Güneş', 'Mars', 'Ay', 'Yıldız'], d: 1 },
+    { s: 'Türk bayrağında hangi şekil vardır?', sec: ['Yıldız ve Ay', 'Güneş', 'Aslan', 'Kartal'], d: 0 },
+    { s: '2+2 kaç eder?', sec: ['3', '4', '5', '22'], d: 1 },
+    { s: 'Kedi neyin yavrusudur?', sec: ['Kedi', 'Köpek', 'Aslan', 'Tavuk'], d: 0 },
+    { s: 'Hangi mevsimde okullar kapalıdır?', sec: ['Sonbahar', 'Kış', 'İlkbahar', 'Yaz'], d: 3 },
+    { s: 'Trafik lambasında kırmızı ne demek?', sec: ['Dur', 'Geç', 'Dikkat', 'Bekle'], d: 0 },
+    { s: 'Bir yılda kaç ay vardır?', sec: ['10', '11', '12', '13'], d: 2 },
+    { s: 'Hangisi bir renk değildir?', sec: ['Mavi', 'Yeşil', 'Kalem', 'Sarı'], d: 2 }
+  ],
+  orta: [
+    { s: 'İstanbul\'u fetheden Türk padişahı kimdir?', sec: ['Fatih Sultan Mehmet', 'Yavuz Sultan Selim', 'Kanuni', 'II. Murat'], d: 0 },
+    { s: 'En küçük asal sayı kaçtır?', sec: ['0', '1', '2', '3'], d: 2 },
+    { s: 'Atatürk hangi yıl doğmuştur?', sec: ['1881', '1885', '1888', '1890'], d: 0 },
+    { s: 'Hangisi bir kıtadır?', sec: ['Türkiye', 'Avrupa', 'Almanya', 'Akdeniz'], d: 1 },
+    { s: 'Dünyanın en büyük okyanusu hangisidir?', sec: ['Atlas', 'Hint', 'Pasifik', 'Arktik'], d: 2 },
+    { s: 'Hangi şehir Türkiye\'de değildir?', sec: ['Adana', 'Kars', 'Bursa', 'Atina'], d: 3 },
+    { s: 'Bir dik üçgenin iç açıları toplamı kaç derecedir?', sec: ['90', '120', '180', '360'], d: 2 },
+    { s: 'Eyfel Kulesi hangi şehirdedir?', sec: ['Londra', 'Paris', 'Roma', 'Berlin'], d: 1 },
+    { s: 'Türkiye\'nin para birimi nedir?', sec: ['Lira', 'Dolar', 'Avro', 'Pound'], d: 0 },
+    { s: 'Güneş hangi yönden doğar?', sec: ['Kuzey', 'Güney', 'Doğu', 'Batı'], d: 2 },
+    { s: '1 km kaç metredir?', sec: ['10', '100', '1000', '10000'], d: 2 },
+    { s: 'Cumhuriyet hangi yıl ilan edildi?', sec: ['1920', '1922', '1923', '1925'], d: 2 }
+  ],
+  zor: [
+    { s: 'Türk edebiyatında "Saatleri Ayarlama Enstitüsü" eserini kim yazmıştır?', sec: ['Yaşar Kemal', 'Ahmet Hamdi Tanpınar', 'Orhan Pamuk', 'Sait Faik'], d: 1 },
+    { s: 'Atatürk\'ün annesinin adı nedir?', sec: ['Zübeyde Hanım', 'Latife Hanım', 'Makbule Hanım', 'Fatma Hanım'], d: 0 },
+    { s: 'DNA\'nın çift sarmal yapısını kim keşfetti?', sec: ['Einstein', 'Watson ve Crick', 'Mendel', 'Darwin'], d: 1 },
+    { s: 'Periyodik tablonun ilk elementi hangisidir?', sec: ['Helyum', 'Hidrojen', 'Oksijen', 'Karbon'], d: 1 },
+    { s: 'Mona Lisa tablosu kime aittir?', sec: ['Van Gogh', 'Picasso', 'Da Vinci', 'Monet'], d: 2 },
+    { s: 'Hangisi Şehzade Mehmed\'in oğludur?', sec: ['Kanuni', 'Fatih', 'Yavuz', 'II. Bayezid'], d: 3 },
+    { s: 'Yer kabuğunun en bol elementi hangisidir?', sec: ['Demir', 'Silisyum', 'Oksijen', 'Alüminyum'], d: 2 },
+    { s: 'Newton\'un üç hareket yasası kaçıncı yüzyılda yayınlandı?', sec: ['16.', '17.', '18.', '19.'], d: 1 },
+    { s: 'En uzun Türk nehri hangisidir?', sec: ['Sakarya', 'Fırat', 'Kızılırmak', 'Dicle'], d: 2 },
+    { s: 'Hangisi Nobel ödülü kazanmış Türk yazardır?', sec: ['Yaşar Kemal', 'Nazım Hikmet', 'Orhan Pamuk', 'Aziz Nesin'], d: 2 }
+  ],
+  cokZor: [
+    { s: 'Heisenberg Belirsizlik İlkesi hangi fizik dalına aittir?', sec: ['Klasik Mekanik', 'Termodinamik', 'Kuantum Fiziği', 'Relativite'], d: 2 },
+    { s: 'Pi sayısının ilk 5 hanesi nedir?', sec: ['3.1415', '3.1416', '3.1419', '3.1410'], d: 0 },
+    { s: 'Antik Yunan filozofu Sokrates kimin öğretmenidir?', sec: ['Aristoteles', 'Platon', 'Pisagor', 'Demokritos'], d: 1 },
+    { s: 'Türk müziğinde "Hicaz" hangi kategoridedir?', sec: ['Ritim', 'Makam', 'Çalgı', 'Form'], d: 1 },
+    { s: 'En büyük asal sayı çiftleri arasındaki fark nedir?', sec: ['Sabit', '2', '4', 'Değişken'], d: 1 },
+    { s: 'Osmanlı Devleti\'nin son padişahı kimdir?', sec: ['V. Mehmed', 'VI. Mehmed', 'Abdülmecid II', 'Abdülhamid II'], d: 1 },
+    { s: 'Bilgisayar biliminde "Big-O" notasyonu neyi gösterir?', sec: ['Hata oranı', 'Algoritma karmaşıklığı', 'Veri boyutu', 'Bellek adresi'], d: 1 },
+    { s: 'Hangi vitamin yağda çözünür?', sec: ['Vitamin C', 'Vitamin B', 'Vitamin K', 'Vitamin B12'], d: 2 },
+    { s: 'Türkiye\'nin en yüksek dağı hangisidir?', sec: ['Erciyes', 'Kaçkar', 'Ağrı', 'Süphan'], d: 2 },
+    { s: 'Voyager 1 uzay sondası hangi yıl fırlatıldı?', sec: ['1969', '1977', '1981', '1990'], d: 1 }
+  ]
+};
+
+let milSoruIdx = 0;
+let milKazanc = 0;
+let milMevcutSoru = null;
+let milYardimlar = { '5050': true, 'seyirci': true, 'atla': true };
+let milElenenSecenekler = [];
+let milBest = load('mil_best', 0);
+
+function milBaslat() {
+  document.getElementById('mil-gameover').style.display = 'none';
+  document.getElementById('mil-seyirci-kutu').style.display = 'none';
+  document.getElementById('mil-soru-kutu').style.display = 'block';
+  milSoruIdx = 0;
+  milKazanc = 0;
+  milYardimlar = { '5050': true, 'seyirci': true, 'atla': true };
+  milElenenSecenekler = [];
+  milYardimButonlariGuncelle();
+  document.getElementById('mil-best').innerText = milBest.toLocaleString('tr-TR');
+  milMerdiveniCiz();
+  milSonrakiSoru();
+}
+
+function milZorlukSec(idx) {
+  // 0-3 kolay, 4-6 orta, 7-9 zor, 10-12 çok zor
+  if (idx < 4) return 'kolay';
+  if (idx < 7) return 'orta';
+  if (idx < 10) return 'zor';
+  return 'cokZor';
+}
+
+function milSonrakiSoru() {
+  milElenenSecenekler = [];
+  document.getElementById('mil-seyirci-kutu').style.display = 'none';
+  if (milSoruIdx >= 13) {
+    // 1 Milyon kazanıldı!
+    milBitir(true, 1000000);
+    return;
+  }
+  const zorluk = milZorlukSec(milSoruIdx);
+  const havuz = MIL_SORULAR[zorluk];
+  // Rastgele soru seç (tekrarsız)
+  milMevcutSoru = havuz[Math.floor(Math.random() * havuz.length)];
+  document.getElementById('mil-soru').innerText = milMevcutSoru.s;
+  document.getElementById('mil-soru-no').innerText = (milSoruIdx + 1);
+  document.getElementById('mil-kazanc').innerText = (MIL_ODULLER[milSoruIdx] || 0).toLocaleString('tr-TR');
+  // Şıklar
+  const grid = document.getElementById('mil-secenekler');
+  grid.innerHTML = '';
+  const harfler = ['A', 'B', 'C', 'D'];
+  milMevcutSoru.sec.forEach((s, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'mil-secenek';
+    btn.innerHTML = '<span class="mil-secenek-harf">' + harfler[i] + '</span><span>' + s + '</span>';
+    btn.onclick = () => milCevapla(i);
+    grid.appendChild(btn);
+  });
+  milMerdiveniCiz();
+}
+
+function milCevapla(idx) {
+  if (milElenenSecenekler.includes(idx)) return;
+  const grid = document.getElementById('mil-secenekler');
+  const dogru = milMevcutSoru.d;
+  // Seçilen şıkkı sarıya boya, 1 saniye sonra sonuçları aç
+  Array.from(grid.children).forEach((el, i) => {
+    el.style.pointerEvents = 'none';
+    if (i === idx) {
+      el.style.background = 'linear-gradient(160deg, #fadb14, #e8a800)';
+      el.style.color = '#1a1a3e';
+    }
+  });
+  setTimeout(() => {
+    if (idx === dogru) {
+      grid.children[idx].classList.add('dogru');
+      grid.children[idx].style.background = '';
+      grid.children[idx].style.color = '';
+      sfx.kazan();
+      milKazanc = MIL_ODULLER[milSoruIdx];
+      document.getElementById('mil-kazanc').innerText = milKazanc.toLocaleString('tr-TR');
+      setTimeout(() => {
+        milSoruIdx++;
+        // 5. ve 10. soru barajları
+        if (milSoruIdx === 5 || milSoruIdx === 10) {
+          toast('🏆 Baraj geçildi! ' + milKazanc.toLocaleString('tr-TR') + ' TL garantili!');
+        }
+        milSonrakiSoru();
+      }, 1100);
+    } else {
+      grid.children[idx].classList.add('yanlis');
+      grid.children[dogru].classList.add('dogru');
+      sfx.yanlis();
+      // Düşülen baraj
+      let dusus = 0;
+      if (milSoruIdx >= 10) dusus = MIL_ODULLER[9];   // 10. baraj
+      else if (milSoruIdx >= 5) dusus = MIL_ODULLER[4]; // 5. baraj
+      setTimeout(() => milBitir(false, dusus), 1500);
+    }
+  }, 1000);
+}
+
+function milYardim(tip) {
+  if (!milYardimlar[tip]) return;
+  if (!milMevcutSoru) return;
+  milYardimlar[tip] = false;
+  milYardimButonlariGuncelle();
+  if (tip === '5050') {
+    // İki yanlış seçeneği el
+    const yanlisIdx = [0, 1, 2, 3].filter(i => i !== milMevcutSoru.d);
+    yanlisIdx.sort(() => Math.random() - 0.5);
+    const elenenler = yanlisIdx.slice(0, 2);
+    milElenenSecenekler = elenenler;
+    const grid = document.getElementById('mil-secenekler');
+    elenenler.forEach(i => grid.children[i].classList.add('elendi'));
+    toast('5️⃣0️⃣:5️⃣0️⃣ - 2 yanlış elendi!');
+    sfx.tik();
+  } else if (tip === 'seyirci') {
+    // Seyirci anketi - doğru cevaba yüksek olasılık
+    const dogru = milMevcutSoru.d;
+    let dagilim = [0, 0, 0, 0];
+    // Zorluğa göre doğru cevabın oranı: kolay→%80, çok zor→%45
+    const zorlukOrani = { 'kolay': 80, 'orta': 65, 'zor': 55, 'cokZor': 45 };
+    const dogruOran = zorlukOrani[milZorlukSec(milSoruIdx)];
+    dagilim[dogru] = dogruOran + Math.floor(Math.random() * 10) - 5;
+    let kalan = 100 - dagilim[dogru];
+    for (let i = 0; i < 4; i++) {
+      if (i === dogru) continue;
+      if (milElenenSecenekler.includes(i)) { dagilim[i] = 0; continue; }
+      const pay = Math.floor(Math.random() * (kalan / 2 + 1));
+      dagilim[i] = pay;
+      kalan -= pay;
+    }
+    // Dengele
+    const toplam = dagilim.reduce((a, b) => a + b, 0);
+    dagilim = dagilim.map(d => Math.round(d * 100 / toplam));
+    // Çiz
+    const kutu = document.getElementById('mil-seyirci-kutu');
+    kutu.style.display = 'block';
+    kutu.innerHTML = '<div style="font-weight:700;margin-bottom:6px">👥 Seyirci Anketi</div>';
+    const harfler = ['A', 'B', 'C', 'D'];
+    dagilim.forEach((d, i) => {
+      const sat = document.createElement('div');
+      sat.style.display = 'flex';
+      sat.style.alignItems = 'center';
+      sat.style.gap = '8px';
+      sat.style.margin = '4px 0';
+      sat.innerHTML = '<div style="width:20px;font-weight:700">' + harfler[i] + '</div>' +
+        '<div class="mil-seyirci-bar" style="flex:1"><div class="mil-seyirci-doluluk" style="width:' + d + '%"></div></div>' +
+        '<div style="width:40px;text-align:right;font-weight:700">' + d + '%</div>';
+      kutu.appendChild(sat);
+    });
+    sfx.guc();
+  } else if (tip === 'atla') {
+    // Soruyu atla - aynı seviyeden yeni soru
+    toast('⏭️ Soru atlandı!');
+    sfx.tik();
+    milSonrakiSoru();
+  }
+}
+
+function milYardimButonlariGuncelle() {
+  ['5050', 'seyirci', 'atla'].forEach(tip => {
+    const btn = document.getElementById('mil-yardim-' + tip);
+    if (!milYardimlar[tip]) {
+      btn.style.opacity = '.35';
+      btn.disabled = true;
+    } else {
+      btn.style.opacity = '1';
+      btn.disabled = false;
+    }
+  });
+}
+
+function milMerdiveniCiz() {
+  const mer = document.getElementById('mil-merdiven');
+  mer.style.display = 'none'; // şu an gizli, isteğe bağlı görüntüleme
+}
+
+function milBitir(kazandi, miktar) {
+  if (miktar > milBest) {
+    milBest = miktar;
+    save('mil_best', milBest);
+  }
+  document.getElementById('mil-gameover-baslik').innerText = kazandi ? '🏆 MİLYONER OLDUN!' : '💼 Oyun Bitti';
+  document.getElementById('mil-gameover-detay').innerHTML =
+    'Kazandığın: <div style="font-size:1.6em;color:#fadb14;margin:10px 0;font-weight:800">' +
+    miktar.toLocaleString('tr-TR') + ' TL</div>' +
+    'Geldiğin soru: <strong>' + (milSoruIdx + 1) + '</strong>/13' +
+    (miktar === milBest && miktar > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('mil-gameover').style.display = 'block';
+}
+
 
 
 /* ============ RESIZE / ORIENTATION ============ */

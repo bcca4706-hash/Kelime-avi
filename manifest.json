@@ -1,11 +1,11 @@
 {
   "name": "Mega Oyun Portalı",
   "short_name": "Oyun Portalı",
-  "description": "14 oyunluk mobil oyun portalı: Kelime Avı, Tetris, Pong, Uzay, Balık ve daha fazlası.",
+  "description": "Kelime Avı, Blok Kırıcı, Blok Yerleştir ve Meyve Eşleştir.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "orientation": "any",
+  "orientation": "portrait",
   "background_color": "#16213e",
   "theme_color": "#2a1f63",
   "lang": "tr",

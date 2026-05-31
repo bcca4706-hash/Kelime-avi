@@ -114,12 +114,113 @@
   }
   .kategori-sekme:active { transform: scale(.95); }
   .kategori-sekme.aktif {
-    background: linear-gradient(160deg, #6a4ad0, #4a3a9e);
-    border-color: #9b7af5;
+    background: linear-gradient(160deg, var(--tema-1, #6a4ad0), var(--tema-2, #4a3a9e));
+    border-color: var(--tema-3, #9b7af5);
     box-shadow: 0 3px 10px rgba(106,74,208,.5), inset 0 1px 0 rgba(255,255,255,.25);
   }
-  /* Filtreleme - gizli kategoriler */
   .card.gizli { display: none !important; }
+
+  /* PROFİL */
+  .profil-ozet {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    max-width: 380px; margin: 14px auto;
+  }
+  .profil-ozet-hucre {
+    background: linear-gradient(160deg, rgba(255,255,255,.13), rgba(255,255,255,.06));
+    border: 1px solid rgba(255,255,255,.18);
+    border-radius: 18px; padding: 14px 6px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
+  }
+  .profil-ozet-deger { font-size: 1.8em; font-weight: 900; color: var(--tema-vurgu, #fadb14); }
+  .profil-ozet-etiket { font-size: .75em; opacity: .8; margin-top: 4px; }
+
+  .pr-rozet {
+    background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 2px solid rgba(255,255,255,.15);
+    border-radius: 18px; padding: 10px 6px;
+    text-align: center; cursor: pointer;
+    transition: transform .15s, box-shadow .2s;
+    opacity: .35; filter: grayscale(0.8);
+  }
+  .pr-rozet.kazanildi {
+    opacity: 1; filter: none;
+    border-color: var(--tema-vurgu, #fadb14);
+    box-shadow: 0 4px 16px rgba(250,219,20,.3), inset 0 1px 0 rgba(255,255,255,.2);
+    animation: rozetParla 2s infinite alternate;
+  }
+  @keyframes rozetParla {
+    0% { box-shadow: 0 4px 16px rgba(250,219,20,.3), inset 0 1px 0 rgba(255,255,255,.2); }
+    100% { box-shadow: 0 4px 24px rgba(250,219,20,.6), inset 0 1px 0 rgba(255,255,255,.3); }
+  }
+  .pr-rozet-emoji { font-size: 2em; }
+  .pr-rozet-ad { font-size: .7em; font-weight: 700; margin-top: 4px; line-height: 1.2; }
+  .pr-rozet-aciklama { font-size: .65em; opacity: .7; margin-top: 2px; line-height: 1.2; }
+
+  .pr-skor-satir {
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(255,255,255,.06); border-radius: 12px;
+    padding: 10px 14px; margin: 6px 0;
+    border: 1px solid rgba(255,255,255,.1);
+  }
+  .pr-skor-isim { font-weight: 600; }
+  .pr-skor-deger { color: var(--tema-vurgu, #fadb14); font-weight: 800; }
+
+  /* AYARLAR */
+  .ayar-grup {
+    background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 18px; padding: 14px;
+    max-width: 380px; margin: 12px auto;
+  }
+  .ayar-grup h2 { margin: 0 0 10px; font-size: 1.05em; }
+  .ayar-toggle {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 10px 0; cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .ayar-toggle:last-child { border-bottom: none; }
+  .ayar-toggle input { display: none; }
+  .ayar-toggle-slider {
+    width: 44px; height: 24px; background: rgba(255,255,255,.18);
+    border-radius: 12px; position: relative; transition: background .2s;
+  }
+  .ayar-toggle-slider::before {
+    content: ''; position: absolute; top: 2px; left: 2px;
+    width: 20px; height: 20px; border-radius: 50%; background: #fff;
+    transition: transform .2s; box-shadow: 0 2px 4px rgba(0,0,0,.2);
+  }
+  .ayar-toggle input:checked + .ayar-toggle-slider {
+    background: var(--tema-1, #6a4ad0);
+  }
+  .ayar-toggle input:checked + .ayar-toggle-slider::before {
+    transform: translateX(20px);
+  }
+
+  .tema-kart {
+    aspect-ratio: 1; border-radius: 16px; padding: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; user-select: none;
+    color: #fff; font-weight: 700;
+    border: 3px solid transparent;
+    transition: transform .12s, border-color .2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  .tema-kart:active { transform: scale(.95); }
+  .tema-kart.aktif { border-color: #fff; box-shadow: 0 0 16px rgba(255,255,255,.5); }
+
+  /* Tema değişkenleri - default mor */
+  :root {
+    --tema-1: #6a4ad0;
+    --tema-2: #4a3a9e;
+    --tema-3: #9b7af5;
+    --tema-vurgu: #fadb14;
+  }
+  body.tema-mavi { --tema-1: #1890ff; --tema-2: #003a8c; --tema-3: #69b9ff; --tema-vurgu: #ffd700; }
+  body.tema-yesil { --tema-1: #52c41a; --tema-2: #135200; --tema-3: #95de64; --tema-vurgu: #fadb14; }
+  body.tema-koyu { --tema-1: #555; --tema-2: #222; --tema-3: #888; --tema-vurgu: #fadb14; }
+  body.tema-koyu { background: #0a0a0a !important; }
+  body.tema-koyu #bg-overlay { background: rgba(0,0,0,.7); }
   .card:active { transform: scale(.98); background: rgba(255,255,255,.14); }
   .menu-icon { font-size: 2.4em; display: block; margin-bottom: 4px; }
 
@@ -520,7 +621,9 @@
 <canvas id="hayvan-canvas"></canvas>
 
 <div class="topbar">
+  <button class="icon-btn" onclick="showGame('profil')" title="Profil">🏆</button>
   <button class="icon-btn" id="sound-btn" onclick="toggleSound()">🔊</button>
+  <button class="icon-btn" onclick="showGame('ayarlar')" title="Ayarlar">⚙️</button>
 </div>
 
 <!-- ANA MENÜ -->
@@ -654,7 +757,93 @@
   </div>
 
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 22.0 · 21 oyun · Kategoriler + Çocuk oyunları</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 23.0 · 21 oyun · Profil + Rozetler + Tema</div>
+</div>
+
+<!-- PROFİL -->
+<div id="game-profil" class="screen">
+  <h1>🏆 Profilim</h1>
+  <!-- Genel istatistikler -->
+  <div class="profil-ozet">
+    <div class="profil-ozet-hucre">
+      <div class="profil-ozet-deger" id="pr-toplam-oyun">0</div>
+      <div class="profil-ozet-etiket">Oyun Oynandı</div>
+    </div>
+    <div class="profil-ozet-hucre">
+      <div class="profil-ozet-deger" id="pr-toplam-puan">0</div>
+      <div class="profil-ozet-etiket">Toplam Puan</div>
+    </div>
+    <div class="profil-ozet-hucre">
+      <div class="profil-ozet-deger" id="pr-rozet-sayi">0</div>
+      <div class="profil-ozet-etiket">Rozet</div>
+    </div>
+  </div>
+  <!-- Rozetler bölümü -->
+  <h2 style="margin-top:20px">🎖️ Rozetler</h2>
+  <div id="pr-rozetler" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:380px;margin:10px auto"></div>
+  <!-- En iyi skorlar -->
+  <h2 style="margin-top:20px">📊 En İyi Skorlar</h2>
+  <div id="pr-skorlar" style="max-width:380px;margin:10px auto"></div>
+
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+</div>
+
+<!-- AYARLAR -->
+<div id="game-ayarlar" class="screen">
+  <h1>⚙️ Ayarlar</h1>
+  <div class="ayar-grup">
+    <h2>🎨 Tema</h2>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:340px;margin:10px auto">
+      <div class="tema-kart" data-tema="mor" onclick="temaSec('mor')" style="background:linear-gradient(160deg,#6a4ad0,#2a1f63)">
+        <div style="font-size:1.4em">🟣</div>
+        <div style="font-size:.75em;margin-top:4px">Mor</div>
+      </div>
+      <div class="tema-kart" data-tema="mavi" onclick="temaSec('mavi')" style="background:linear-gradient(160deg,#1890ff,#003a8c)">
+        <div style="font-size:1.4em">🔵</div>
+        <div style="font-size:.75em;margin-top:4px">Mavi</div>
+      </div>
+      <div class="tema-kart" data-tema="yesil" onclick="temaSec('yesil')" style="background:linear-gradient(160deg,#52c41a,#135200)">
+        <div style="font-size:1.4em">🟢</div>
+        <div style="font-size:.75em;margin-top:4px">Yeşil</div>
+      </div>
+      <div class="tema-kart" data-tema="koyu" onclick="temaSec('koyu')" style="background:linear-gradient(160deg,#222,#000)">
+        <div style="font-size:1.4em">⚫</div>
+        <div style="font-size:.75em;margin-top:4px">Koyu</div>
+      </div>
+    </div>
+  </div>
+  <div class="ayar-grup">
+    <h2>🔊 Ses & Titreşim</h2>
+    <label class="ayar-toggle">
+      <span>🔊 Ses Efektleri</span>
+      <input type="checkbox" id="ayar-ses" onchange="ayarToggle('ses', this.checked)">
+      <span class="ayar-toggle-slider"></span>
+    </label>
+    <label class="ayar-toggle">
+      <span>📳 Titreşim</span>
+      <input type="checkbox" id="ayar-titresim" onchange="ayarToggle('titresim', this.checked)">
+      <span class="ayar-toggle-slider"></span>
+    </label>
+  </div>
+  <div class="ayar-grup">
+    <h2>🗑️ Veri</h2>
+    <button class="btn alt small" onclick="ayarSifirla('skor')" style="margin:4px">🔄 Skorları Sıfırla</button>
+    <button class="btn alt small" onclick="ayarSifirla('hepsi')" style="margin:4px">⚠️ Tüm Veriyi Sil</button>
+  </div>
+  <div class="ayar-grup">
+    <h2>ℹ️ Hakkında</h2>
+    <div style="opacity:.85;font-size:.85em;line-height:1.6">
+      <strong>Mega Oyun Portalı</strong><br>
+      21 oyun · Türkçe<br>
+      Tek dosyada PWA<br>
+      sürüm 23.0
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
 </div>
 
 <!-- KELİME AVI -->
@@ -1359,6 +1548,246 @@ function kategoriSec(kat) {
   });
   try { save('son_kategori', kat); } catch (e) {}
 }
+
+/* ============ PROFİL + ROZETLER + AYARLAR ============ */
+
+// Tüm rozetler - id, emoji, ad, açıklama, kontrol fonksiyonu
+const ROZETLER = [
+  { id: 'ilk_oyun',     emoji: '🎮', ad: 'İlk Oyun',         aciklama: 'İlk oyununu oynadın' },
+  { id: 'on_oyun',      emoji: '🔥', ad: 'Düzenli Oyuncu',    aciklama: '10 oyun tamamladın' },
+  { id: 'yuz_oyun',     emoji: '⭐', ad: 'Sadık Oyuncu',      aciklama: '100 oyun tamamladın' },
+  { id: 'sudoku_usta',  emoji: '🧩', ad: 'Sudoku Ustası',     aciklama: 'Sudoku\'yu zor modda bitir' },
+  { id: 'milyoner',     emoji: '💰', ad: 'Milyoner',          aciklama: 'Milyoner\'de 1M kazan' },
+  { id: 'tetris_500',   emoji: '🟦', ad: 'Tetris Şampiyonu', aciklama: 'Tetris\'te 500 puan' },
+  { id: 'yilan_50',     emoji: '🐍', ad: 'Yılan Avcısı',      aciklama: 'Yılan\'da 50 yem' },
+  { id: 'i2048',        emoji: '🔢', ad: '2048 Kahramanı',    aciklama: '2048\'e ulaş' },
+  { id: 'uzay_1000',    emoji: '🚀', ad: 'Uzay Pilotu',       aciklama: 'Uzay\'da 1000 puan' },
+  { id: 'balik_5lvl',   emoji: '🎣', ad: 'Balıkçı',           aciklama: 'Balık 5 bölüm bitir' },
+  { id: 'kosucu_500m',  emoji: '🏃', ad: 'Maraton',           aciklama: 'Engel Atla\'da 500m' },
+  { id: 'asma_master',  emoji: '✏️', ad: 'Kelime Avcısı',     aciklama: 'Adam Asmaca\'da 500 puan' },
+  { id: 'reflex_500',   emoji: '🎯', ad: 'Refleks Üstadı',    aciklama: 'Reflex\'te 500 puan' },
+  { id: 'pong_zor',     emoji: '🏓', ad: 'Pong Şampiyonu',    aciklama: 'Pong zor modda kazan' },
+  { id: 'hafiza_usta',  emoji: '🃏', ad: 'Hafıza Ustası',     aciklama: 'Hafıza usta modda bitir' },
+  { id: 'cocuk_tum',    emoji: '🧸', ad: 'Çocuk Dostu',       aciklama: 'Tüm çocuk oyunlarında 100' },
+  { id: 'var_yarim_m',  emoji: '💼', ad: 'İyi Pazarlık',      aciklama: 'Var mısın\'da 500K kazan' },
+  { id: 'kategori',     emoji: '🌟', ad: 'Her Türden',        aciklama: 'Her kategoride oyun oyna' },
+  { id: 'gun_3',        emoji: '📅', ad: 'Sadık Ziyaretçi',   aciklama: '3 ayrı gün oyna' },
+  { id: 'tum_oyunlar',  emoji: '🏆', ad: 'Koleksiyoner',      aciklama: 'Tüm oyunları bir kez oyna' }
+];
+
+// İstatistikler
+function profilGetir() {
+  return {
+    toplamOyun: load('istat_toplam', 0),
+    toplamPuan: load('istat_puan', 0),
+    oynananOyunlar: load('istat_oyunlar', []),
+    rozetler: load('istat_rozetler', []),
+    gunler: load('istat_gunler', [])
+  };
+}
+
+function profilKaydet(p) {
+  save('istat_toplam', p.toplamOyun);
+  save('istat_puan', p.toplamPuan);
+  save('istat_oyunlar', p.oynananOyunlar);
+  save('istat_rozetler', p.rozetler);
+  save('istat_gunler', p.gunler);
+}
+
+// Bir oyunun bittiğini kaydet
+function oyunSonuKaydet(oyunId, kazanilanPuan) {
+  const p = profilGetir();
+  p.toplamOyun++;
+  p.toplamPuan += (kazanilanPuan || 0);
+  if (!p.oynananOyunlar.includes(oyunId)) p.oynananOyunlar.push(oyunId);
+  // Bugün oynanmış mı?
+  const bugun = new Date().toISOString().slice(0, 10);
+  if (!p.gunler.includes(bugun)) p.gunler.push(bugun);
+  profilKaydet(p);
+  // Rozet kontrolü
+  rozetKontrolEt();
+}
+
+// Rozet kazandığında işaretle
+function rozetKazan(id) {
+  const p = profilGetir();
+  if (p.rozetler.includes(id)) return false;
+  p.rozetler.push(id);
+  profilKaydet(p);
+  const rozet = ROZETLER.find(r => r.id === id);
+  if (rozet) toast('🎖️ Rozet: ' + rozet.ad);
+  return true;
+}
+
+// Tüm rozetleri kontrol et (zorla yeniden tarama)
+function rozetKontrolEt() {
+  const p = profilGetir();
+  // 1. İlk oyun
+  if (p.toplamOyun >= 1) rozetKazan('ilk_oyun');
+  if (p.toplamOyun >= 10) rozetKazan('on_oyun');
+  if (p.toplamOyun >= 100) rozetKazan('yuz_oyun');
+  if (p.gunler.length >= 3) rozetKazan('gun_3');
+  // Tüm oyunlar oynandı mı (21 farklı oyun)
+  if (p.oynananOyunlar.length >= 21) rozetKazan('tum_oyunlar');
+  // Kategori - her kategoriden bir oyun oynamış mı
+  const kategorilerMap = {
+    'cocuk': ['hayvansesi', 'renkesle', 'saymaca'],
+    'puzzle': ['blok', 'puzzle', 'eslestir', 'balon', 'iki048', 'tetris', 'memory', 'sudoku'],
+    'arcade': ['snake', 'pong', 'uzay', 'balik', 'kosucu'],
+    'refleks': ['reflex'],
+    'kelime': ['kelime', 'asma'],
+    'bilgi': ['varyok', 'milyoner']
+  };
+  const tumKategoriler = Object.keys(kategorilerMap).every(kat =>
+    kategorilerMap[kat].some(oyun => p.oynananOyunlar.includes(oyun))
+  );
+  if (tumKategoriler) rozetKazan('kategori');
+  // Skora göre rozetler
+  const trBest = load('tr_best', 0); if (trBest >= 500) rozetKazan('tetris_500');
+  const snBest = load('sn_best', 0); if (snBest >= 50) rozetKazan('yilan_50');
+  const i48Best = load('i48_best', 0); if (i48Best >= 2048) rozetKazan('i2048');
+  const uzBest = load('uz_best', 0); if (uzBest >= 1000) rozetKazan('uzay_1000');
+  const ksBest = load('ks_best', 0); if (ksBest >= 500) rozetKazan('kosucu_500m');
+  const asBest = load('as_best', 0); if (asBest >= 500) rozetKazan('asma_master');
+  const rfxBest = load('rfx_best', 0); if (rfxBest >= 500) rozetKazan('reflex_500');
+  const milBest = load('mil_best', 0); if (milBest >= 1000000) rozetKazan('milyoner');
+  const vyBest = load('vy_best', 0); if (vyBest >= 500000) rozetKazan('var_yarim_m');
+  const bkBalikBolum = load('bk_balik_bolum', 1); if (bkBalikBolum >= 5) rozetKazan('balik_5lvl');
+  // Sudoku zor modda bitirildi mi (sdBest.zor varsa)
+  const sdBest = load('sd_best', {});
+  if (sdBest && sdBest.zor) rozetKazan('sudoku_usta');
+  // Memory usta mod bitirildi mi
+  const memBolum = load('mem_bolum', 1); if (memBolum >= 4) rozetKazan('hafiza_usta');
+  // Pong zor mod kazanıldı mı (skoru pozitif olmalı)
+  const pongBest = load('pong_best', 0); if (pongBest >= 3) rozetKazan('pong_zor');
+  // Çocuk: tüm 3'ünde max skor
+  const hsBest = load('hs_best', 0);
+  const reBest = load('re_best', 0);
+  const saBest = load('sa_best', 0);
+  if (hsBest >= 100 && reBest >= 75 && saBest >= 100) rozetKazan('cocuk_tum');
+}
+
+// Profil sayfasını oluştur
+function profilGoster() {
+  const p = profilGetir();
+  document.getElementById('pr-toplam-oyun').innerText = p.toplamOyun;
+  document.getElementById('pr-toplam-puan').innerText = p.toplamPuan.toLocaleString('tr-TR');
+  document.getElementById('pr-rozet-sayi').innerText = p.rozetler.length + '/' + ROZETLER.length;
+  // Rozetler
+  const grid = document.getElementById('pr-rozetler');
+  grid.innerHTML = '';
+  ROZETLER.forEach(r => {
+    const kazandi = p.rozetler.includes(r.id);
+    const div = document.createElement('div');
+    div.className = 'pr-rozet' + (kazandi ? ' kazanildi' : '');
+    div.innerHTML = '<div class="pr-rozet-emoji">' + r.emoji + '</div>' +
+                    '<div class="pr-rozet-ad">' + r.ad + '</div>' +
+                    '<div class="pr-rozet-aciklama">' + r.aciklama + '</div>';
+    grid.appendChild(div);
+  });
+  // Skor tablosu
+  const skorlar = [
+    { id: 'kelime',     ad: '🔤 Kelime Avı',     key: 'kel_best',        format: 'puan' },
+    { id: 'blok',       ad: '🧱 Blok Kırıcı',    key: 'bk_best',         format: 'puan' },
+    { id: 'puzzle',     ad: '🧩 Blok Yerleştir', key: 'p_best',          format: 'puan' },
+    { id: 'eslestir',   ad: '🍓 Meyve Eşleştir', key: 'e_best',          format: 'puan' },
+    { id: 'snake',      ad: '🐍 Yılan',           key: 'sn_best',         format: 'puan' },
+    { id: 'balon',      ad: '🎈 Balon',           key: 'bl_best',         format: 'puan' },
+    { id: 'iki048',     ad: '🔢 2048',            key: 'i48_best',        format: 'puan' },
+    { id: 'tetris',     ad: '🟦 Tetris',          key: 'tr_best',         format: 'puan' },
+    { id: 'pong',       ad: '🏓 Pong',            key: 'pong_best',       format: 'fark' },
+    { id: 'reflex',     ad: '🎯 Reflex',          key: 'rfx_best',        format: 'puan' },
+    { id: 'uzay',       ad: '🚀 Uzay Kaçış',     key: 'uz_best',         format: 'puan' },
+    { id: 'balik',      ad: '🎣 Balık Tut',      key: 'bk_balik_best',   format: 'puan' },
+    { id: 'kosucu',     ad: '🏃 Engel Atla',     key: 'ks_best',         format: 'mesafe' },
+    { id: 'milyoner',   ad: '💰 Milyoner',       key: 'mil_best',        format: 'tl' },
+    { id: 'varyok',     ad: '💼 Var mısın',      key: 'vy_best',         format: 'tl' },
+    { id: 'asma',       ad: '✏️ Asmaca',         key: 'as_best',         format: 'puan' },
+    { id: 'hayvansesi', ad: '🐾 Hayvan Sesi',    key: 'hs_best',         format: 'puan' },
+    { id: 'renkesle',   ad: '🎨 Renk Eşle',      key: 're_best',         format: 'puan' },
+    { id: 'saymaca',    ad: '🔢 Sayı Saymaca',  key: 'sa_best',         format: 'puan' }
+  ];
+  const skorDiv = document.getElementById('pr-skorlar');
+  skorDiv.innerHTML = '';
+  skorlar.forEach(s => {
+    const v = load(s.key, 0);
+    let goster = '─';
+    if (v && v !== 0) {
+      if (s.format === 'tl') goster = v.toLocaleString('tr-TR') + ' TL';
+      else if (s.format === 'mesafe') goster = v + 'm';
+      else if (s.format === 'fark') goster = v + (v > 0 ? ' fark' : '');
+      else goster = v.toLocaleString('tr-TR');
+    }
+    const div = document.createElement('div');
+    div.className = 'pr-skor-satir';
+    div.innerHTML = '<span class="pr-skor-isim">' + s.ad + '</span>' +
+                    '<span class="pr-skor-deger">' + goster + '</span>';
+    skorDiv.appendChild(div);
+  });
+}
+
+/* ============ AYARLAR ============ */
+
+function ayarlarYukle() {
+  // Tema yükle
+  const tema = load('tema', 'mor');
+  temaUygula(tema);
+  // Toggle'ları yükle
+  const ses = load('ses', true);
+  const titresim = load('titresim', true);
+  const sesEl = document.getElementById('ayar-ses');
+  const titEl = document.getElementById('ayar-titresim');
+  if (sesEl) sesEl.checked = ses;
+  if (titEl) titEl.checked = titresim;
+}
+
+function ayarToggle(tip, deger) {
+  save(tip, deger);
+  if (tip === 'ses') {
+    sesAcik = deger;
+    const btn = document.getElementById('sound-btn');
+    if (btn) btn.innerText = deger ? '🔊' : '🔇';
+  }
+  if (tip === 'titresim' && deger && navigator.vibrate) {
+    navigator.vibrate(50); // test titreşimi
+  }
+}
+
+function ayarSifirla(tip) {
+  if (tip === 'skor') {
+    if (!confirm('Tüm skorlar silinecek. Emin misin?')) return;
+    // Sadece skor anahtarlarını sil
+    const skorAnahtarlari = ['kel_best','bk_best','p_best','e_best','sn_best','bl_best',
+      'i48_best','tr_best','pong_best','rfx_best','uz_best','bk_balik_best','ks_best',
+      'mil_best','vy_best','as_best','hs_best','re_best','sa_best','sd_best','mem_bolum'];
+    skorAnahtarlari.forEach(k => { try { localStorage.removeItem(k); } catch (e) {} });
+    toast('🗑️ Skorlar silindi');
+  } else if (tip === 'hepsi') {
+    if (!confirm('TÜM veri (skorlar + rozetler + ayarlar) silinecek! Emin misin?')) return;
+    try { localStorage.clear(); } catch (e) {}
+    toast('🗑️ Tüm veri silindi');
+    setTimeout(() => location.reload(), 800);
+  }
+}
+
+/* ============ TEMA ============ */
+
+function temaSec(t) {
+  temaUygula(t);
+  save('tema', t);
+}
+
+function temaUygula(t) {
+  // body class temizle
+  ['mor','mavi','yesil','koyu'].forEach(x => document.body.classList.remove('tema-' + x));
+  document.body.classList.add('tema-' + t);
+  // Aktif kart işaretle
+  document.querySelectorAll('.tema-kart').forEach(k => {
+    k.classList.toggle('aktif', k.dataset.tema === t);
+  });
+}
+
+
 // Bir oyun ekranı için canvas boyutunu hesapla (yatay/dikey uyumlu)
 // oranYW = yükseklik / genişlik oranı (dikey için, örn 1.5 = uzun dikey)
 // maxW = dikey modda maksimum genişlik
@@ -1847,6 +2276,13 @@ window.addEventListener('load', () => {
   hayvanCanvasBoyutla();
   hayvanlariYerlestir('menu');
   hayvanLoop();
+  // Tema uygula (kayıtlıysa)
+  try {
+    const tema = load('tema', 'mor');
+    if (typeof temaUygula === 'function') temaUygula(tema);
+  } catch (e) {}
+  // İlk rozet kontrolü
+  try { if (typeof rozetKontrolEt === 'function') rozetKontrolEt(); } catch (e) {}
 });
 // Yeniden boyutlandır
 window.addEventListener('resize', () => {
@@ -1915,6 +2351,12 @@ function showGame(g) {
   cancelAnimationFrame(window.blokAnim);
   // Sahnenin hayvanları değişsin
   if (typeof hayvanlariYerlestir === 'function') hayvanlariYerlestir(g);
+  // İstatistik: oyun başlatıldı (menü/profil/ayarlar dışı)
+  if (g !== 'menu' && g !== 'profil' && g !== 'ayarlar') {
+    if (typeof oyunSonuKaydet === 'function') {
+      try { oyunSonuKaydet(g, 0); } catch (e) {}
+    }
+  }
   if (g === 'menu') setDuvar('varsayilan');
   if (g === 'kelime') { setDuvar('sehir'); requestAnimationFrame(() => initKelime()); }
   if (g === 'blok') { setDuvar('teknoloji'); requestAnimationFrame(() => blokYeniOyun()); }
@@ -1937,6 +2379,8 @@ function showGame(g) {
   if (g === 'hayvansesi') { setDuvar('doga'); requestAnimationFrame(() => hsBaslat()); }
   if (g === 'renkesle') { setDuvar('varsayilan'); requestAnimationFrame(() => reBaslat()); }
   if (g === 'saymaca') { setDuvar('doga'); requestAnimationFrame(() => saBaslat()); }
+  if (g === 'profil') { setDuvar('varsayilan'); requestAnimationFrame(() => profilGoster()); }
+  if (g === 'ayarlar') { setDuvar('varsayilan'); requestAnimationFrame(() => ayarlarYukle()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }

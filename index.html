@@ -98,6 +98,28 @@
     transition: transform .12s, background .2s, box-shadow .2s;
     box-shadow: 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
   }
+
+  /* KATEGORİ SEKMELERİ */
+  .kategori-sekmeler {
+    display: flex; gap: 6px; flex-wrap: wrap; justify-content: center;
+    margin: 10px 0 14px;
+  }
+  .kategori-sekme {
+    background: rgba(255,255,255,.08); color: #fff;
+    border: 1px solid rgba(255,255,255,.2);
+    border-radius: 22px; padding: 7px 13px; font-size: .82em;
+    cursor: pointer; font-weight: 600;
+    transition: all .2s;
+    user-select: none;
+  }
+  .kategori-sekme:active { transform: scale(.95); }
+  .kategori-sekme.aktif {
+    background: linear-gradient(160deg, #6a4ad0, #4a3a9e);
+    border-color: #9b7af5;
+    box-shadow: 0 3px 10px rgba(106,74,208,.5), inset 0 1px 0 rgba(255,255,255,.25);
+  }
+  /* Filtreleme - gizli kategoriler */
+  .card.gizli { display: none !important; }
   .card:active { transform: scale(.98); background: rgba(255,255,255,.14); }
   .menu-icon { font-size: 2.4em; display: block; margin-bottom: 4px; }
 
@@ -337,6 +359,112 @@
     transition: width .5s;
   }
 
+  /* SUDOKU */
+  .sd-hucre {
+    aspect-ratio: 1; background: #f5f5fa; color: #1a1a3e;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.05em; font-weight: 700; cursor: pointer;
+    border: 1px solid #c0c4d0;
+    transition: background .15s;
+    user-select: none;
+  }
+  .sd-hucre.veri { background: #d8dce5; font-weight: 800; color: #0a0a2a; cursor: default; }
+  .sd-hucre.secili { background: #fadb14; box-shadow: inset 0 0 0 3px #ff7043; }
+  .sd-hucre.ayni-deger { background: #c0e8ff; }
+  .sd-hucre.iliskili { background: #e6e9f0; }
+  .sd-hucre.hata { color: #e94560; background: #ffd8e0; animation: sdHataYanip .4s; }
+  @keyframes sdHataYanip {
+    0%, 100% { background: #ffd8e0; }
+    50% { background: #ff8090; }
+  }
+  /* 3x3 blok kalın kenarlar */
+  .sd-hucre:nth-child(3n) { border-right: 2px solid #1a1a3e; }
+  .sd-hucre:nth-child(9n) { border-right: none; }
+  /* Satır ayırımı için JS class ekleyecek */
+  .sd-hucre.bot-kalın { border-bottom: 2px solid #1a1a3e; }
+
+  .sd-tus {
+    aspect-ratio: 1; background: linear-gradient(160deg, #6a4ad0, #4a3a9e);
+    color: #fff; font-weight: 800; font-size: 1.2em;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.25);
+    user-select: none;
+  }
+  .sd-tus:active { transform: scale(.93); }
+  .sd-tus.dolu { opacity: .35; }
+
+  /* ADAM ASMACA */
+  .as-harf-tus {
+    aspect-ratio: 1; background: linear-gradient(160deg, #6a4ad0, #4a3a9e);
+    color: #fff; font-weight: 800; font-size: 1em;
+    border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.25);
+    user-select: none;
+    transition: all .2s;
+  }
+  .as-harf-tus:active { transform: scale(.93); }
+  .as-harf-tus.dogru { background: linear-gradient(160deg, #52c41a, #2ec44f); opacity: .65; pointer-events: none; }
+  .as-harf-tus.yanlis { background: linear-gradient(160deg, #e94560, #a32d40); opacity: .45; pointer-events: none; }
+
+  /* ÇOCUK OYUNLARI - büyük renkli butonlar */
+  .cocuk-secenek {
+    padding: 16px; border-radius: 18px;
+    font-size: 1.1em; font-weight: 800;
+    cursor: pointer; user-select: none;
+    background: linear-gradient(160deg, #4a90e2, #2d6dbd);
+    color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,.3);
+    box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 2px 0 rgba(255,255,255,.25);
+    transition: transform .12s;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 60px;
+  }
+  .cocuk-secenek:active { transform: scale(.95); }
+  .cocuk-secenek.dogru {
+    background: linear-gradient(160deg, #52c41a, #2ec44f) !important;
+    animation: cocukDogruPop .5s;
+  }
+  .cocuk-secenek.yanlis {
+    background: linear-gradient(160deg, #e94560, #a32d40) !important;
+    animation: cocukYanlis .3s;
+  }
+  @keyframes cocukDogruPop {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.08); }
+  }
+  @keyframes cocukYanlis {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-6px); }
+    75% { transform: translateX(6px); }
+  }
+  .cocuk-renk-kare {
+    aspect-ratio: 1; border-radius: 22px;
+    cursor: pointer; user-select: none;
+    box-shadow: 0 6px 18px rgba(0,0,0,.4), inset 0 3px 0 rgba(255,255,255,.3),
+                inset 0 -3px 0 rgba(0,0,0,.2);
+    border: 3px solid rgba(255,255,255,.4);
+    transition: transform .12s;
+    min-height: 100px;
+  }
+  .cocuk-renk-kare:active { transform: scale(.95); }
+  .cocuk-sayi-tus {
+    padding: 18px 6px; border-radius: 16px;
+    font-size: 1.8em; font-weight: 900;
+    cursor: pointer; user-select: none;
+    background: linear-gradient(160deg, #fadb14, #e8a800);
+    color: #1a1a3e; text-shadow: 0 1px 0 rgba(255,255,255,.4);
+    box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 2px 0 rgba(255,255,255,.4);
+    transition: transform .12s;
+  }
+  .cocuk-sayi-tus:active { transform: scale(.92); }
+  .cocuk-nesne {
+    font-size: 2.4em; line-height: 1;
+    animation: cocukSallan 2s infinite ease-in-out;
+  }
+  @keyframes cocukSallan {
+    0%, 100% { transform: rotate(-4deg); }
+    50% { transform: rotate(4deg); }
+  }
+
   /* HAFIZA EŞLEŞTİR */
   #mem-grid { display: grid; gap: 8px; max-width: 360px; margin: 10px auto; padding: 12px;
     border-radius: 18px;
@@ -398,88 +526,135 @@
 <!-- ANA MENÜ -->
 <div id="menu" class="screen active">
   <h1>🎮 Oyun Merkezi</h1>
-  <div class="card" onclick="showGame('kelime')">
+  <div class="kategori-sekmeler">
+    <button class="kategori-sekme aktif" data-kat="tum" onclick="kategoriSec('tum')">🌟 Tümü</button>
+    <button class="kategori-sekme" data-kat="cocuk" onclick="kategoriSec('cocuk')">🧸 Çocuk</button>
+    <button class="kategori-sekme" data-kat="puzzle" onclick="kategoriSec('puzzle')">🧩 Puzzle</button>
+    <button class="kategori-sekme" data-kat="arcade" onclick="kategoriSec('arcade')">🕹️ Arcade</button>
+    <button class="kategori-sekme" data-kat="bilgi" onclick="kategoriSec('bilgi')">🧠 Bilgi</button>
+    <button class="kategori-sekme" data-kat="refleks" onclick="kategoriSec('refleks')">⚡ Refleks</button>
+    <button class="kategori-sekme" data-kat="kelime" onclick="kategoriSec('kelime')">📝 Kelime</button>
+  </div>
+
+  <!-- ÇOCUK -->
+  <div class="card" data-kategori="cocuk" onclick="showGame('hayvansesi')">
+    <span class="menu-icon">🐾</span>
+    <strong>Hayvan Sesi</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Hayvanı tanı · Doğru sesi seç · Eğlenceli öğren</div>
+  </div>
+  <div class="card" data-kategori="cocuk" onclick="showGame('renkesle')">
+    <span class="menu-icon">🎨</span>
+    <strong>Renk Eşle</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Renkleri tanı · Hızlı tıkla · Beyin idmanı</div>
+  </div>
+  <div class="card" data-kategori="cocuk" onclick="showGame('saymaca')">
+    <span class="menu-icon">🔢</span>
+    <strong>Sayı Saymaca</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Şekilleri say · Sayıları öğren · Eğitici</div>
+  </div>
+
+  <!-- KELİME -->
+  <div class="card" data-kategori="kelime" onclick="showGame('kelime')">
     <span class="menu-icon">🔤</span>
     <strong>Kelime Avı</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Çapraz bulmaca · 100+ kelime</div>
   </div>
-  <div class="card" onclick="showGame('blok')">
+  <div class="card" data-kategori="kelime" onclick="showGame('asma')">
+    <span class="menu-icon">✏️</span>
+    <strong>Adam Asmaca</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Klasik kelime tahmin · 6 hak · 4 kategori</div>
+  </div>
+
+  <!-- PUZZLE -->
+  <div class="card" data-kategori="puzzle" onclick="showGame('blok')">
     <span class="menu-icon">🧱</span>
     <strong>Blok Kırıcı</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Top sürüsü · Artan zorluk</div>
   </div>
-  <div class="card" onclick="showGame('puzzle')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('puzzle')">
     <span class="menu-icon">🧩</span>
     <strong>Blok Yerleştir</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürükle-bırak · Combo</div>
   </div>
-  <div class="card" onclick="showGame('eslestir')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('eslestir')">
     <span class="menu-icon">🍓</span>
     <strong>Meyve Eşleştir</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">3'lü eşleştir · Hamle limiti</div>
   </div>
-  <div class="card" onclick="showGame('snake')">
-    <span class="menu-icon">🐍</span>
-    <strong>Yılan</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
-  </div>
-  <div class="card" onclick="showGame('balon')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('balon')">
     <span class="menu-icon">🎈</span>
     <strong>Balon Patlat</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Komşu balonları patlat · Zincir kombo</div>
   </div>
-  <div class="card" onclick="showGame('iki048')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('iki048')">
     <span class="menu-icon">🔢</span>
     <strong>2048</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Aynı sayıları birleştir · 2048'e ulaş</div>
   </div>
-  <div class="card" onclick="showGame('tetris')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('tetris')">
     <span class="menu-icon">🟦</span>
     <strong>Tetris</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Bloklar düşer · Satırları doldur · Tek satırda sil</div>
   </div>
-  <div class="card" onclick="showGame('memory')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('memory')">
     <span class="menu-icon">🃏</span>
     <strong>Hafıza Eşleştir</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Kartları çevir · Çiftleri bul · Hafızanı çalıştır</div>
   </div>
-  <div class="card" onclick="showGame('pong')">
+  <div class="card" data-kategori="puzzle" onclick="showGame('sudoku')">
+    <span class="menu-icon">🔢</span>
+    <strong>Sudoku</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">9x9 mantık · 3 zorluk · İpucu sistemi</div>
+  </div>
+
+  <!-- ARCADE -->
+  <div class="card" data-kategori="arcade" onclick="showGame('snake')">
+    <span class="menu-icon">🐍</span>
+    <strong>Yılan</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
+  </div>
+  <div class="card" data-kategori="arcade" onclick="showGame('pong')">
     <span class="menu-icon">🏓</span>
     <strong>Pong</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Parmakla raket sür · AI'a karşı 7 sayıya kadar</div>
   </div>
-  <div class="card" onclick="showGame('reflex')">
-    <span class="menu-icon">🎯</span>
-    <strong>Reflex Master</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
-  </div>
-  <div class="card" onclick="showGame('uzay')">
+  <div class="card" data-kategori="arcade" onclick="showGame('uzay')">
     <span class="menu-icon">🚀</span>
     <strong>Uzay Kaçış</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">🔫 Ateş et · Düşmanları vur · Silah yükselt</div>
   </div>
-  <div class="card" onclick="showGame('balik')">
+  <div class="card" data-kategori="arcade" onclick="showGame('balik')">
     <span class="menu-icon">🎣</span>
     <strong>Balık Tut</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Oltayı sal · Balıkları yakala · Hedef tutturun</div>
   </div>
-  <div class="card" onclick="showGame('kosucu')">
+  <div class="card" data-kategori="arcade" onclick="showGame('kosucu')">
     <span class="menu-icon">🏃</span>
     <strong>Engel Atla</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
   </div>
-  <div class="card" onclick="showGame('varyok')">
+
+  <!-- REFLEKS -->
+  <div class="card" data-kategori="refleks" onclick="showGame('reflex')">
+    <span class="menu-icon">🎯</span>
+    <strong>Reflex Master</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
+  </div>
+
+  <!-- BİLGİ -->
+  <div class="card" data-kategori="bilgi" onclick="showGame('varyok')">
     <span class="menu-icon">💼</span>
     <strong>Var mısın Yok musun</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">22 kutu · Banker teklifleri · Sat veya devam et</div>
   </div>
-  <div class="card" onclick="showGame('milyoner')">
+  <div class="card" data-kategori="bilgi" onclick="showGame('milyoner')">
     <span class="menu-icon">💰</span>
     <strong>Milyoner</strong>
     <div style="opacity:.8;font-size:.85em;margin-top:4px">12 soru · 3 yardım · 1 milyon TL hedefi</div>
   </div>
+
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 20.0 · 16 oyun · Var mısın + Milyoner</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 22.0 · 21 oyun · Kategoriler + Çocuk oyunları</div>
 </div>
 
 <!-- KELİME AVI -->
@@ -1006,6 +1181,164 @@
   <div style="opacity:.7;font-size:.8em;margin-top:4px">5. soru baraj · 10. soru ikinci baraj · 12'de 1 milyon TL!</div>
 </div>
 
+<!-- SUDOKU -->
+<div id="game-sudoku" class="screen">
+  <div class="hud">
+    <span>⏱️ <span id="sd-sure">0:00</span></span>
+    <span style="font-size:1.1em;font-weight:800">Sudoku</span>
+    <span>❌ <span id="sd-hata">0</span>/3</span>
+  </div>
+  <div style="display:flex;justify-content:center;gap:6px;margin-bottom:6px">
+    <button class="btn alt small" onclick="sdZorluk('kolay')" id="sd-z-kolay" style="padding:6px 12px">😊 Kolay</button>
+    <button class="btn small" onclick="sdZorluk('orta')" id="sd-z-orta" style="padding:6px 12px">🎯 Orta</button>
+    <button class="btn alt small" onclick="sdZorluk('zor')" id="sd-z-zor" style="padding:6px 12px">🔥 Zor</button>
+  </div>
+  <div id="sd-tahta" style="display:grid;grid-template-columns:repeat(9,1fr);max-width:380px;margin:0 auto;background:#1a1a3e;padding:3px;border-radius:8px;border:2px solid rgba(255,255,255,.3)"></div>
+  <!-- Sayı tuş takımı -->
+  <div id="sd-tuslar" style="display:grid;grid-template-columns:repeat(9,1fr);gap:4px;max-width:380px;margin:10px auto;"></div>
+  <div style="display:flex;justify-content:center;gap:8px;margin-top:6px;flex-wrap:wrap">
+    <button class="btn alt small" onclick="sdSil()">🧹 Sil</button>
+    <button class="btn alt small" onclick="sdIpucu()" id="sd-ipucu-btn">💡 İpucu (<span id="sd-ipucu-sayi">3</span>)</button>
+  </div>
+  <div id="sd-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="sd-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">🎉</div>
+    <div id="sd-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="sdBaslat()">🔄 Yeni Oyun</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="sdBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Hücreye dokun · Sayı seç · Her satır, sütun ve 3x3 bölge 1-9 olmalı</div>
+</div>
+
+<!-- ADAM ASMACA -->
+<div id="game-asma" class="screen">
+  <div class="hud">
+    <span>👑 <span id="as-best">0</span></span>
+    <span style="font-size:1.1em;font-weight:800">Skor: <span id="as-skor">0</span></span>
+    <span>❤️ <span id="as-can">6</span></span>
+  </div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:6px">
+    Kategori: <strong id="as-kategori">─</strong> · Tur: <strong id="as-tur">1</strong>
+  </div>
+  <!-- Adam çizimi (SVG/canvas) -->
+  <canvas id="as-canvas" width="220" height="220" style="display:block;margin:0 auto;background:linear-gradient(160deg,rgba(40,30,90,.5),rgba(20,15,60,.5));border-radius:14px;border:1px solid rgba(255,255,255,.18)"></canvas>
+  <!-- Kelime gösterimi -->
+  <div id="as-kelime" style="font-size:1.8em;font-weight:800;letter-spacing:4px;margin:14px auto;font-family:monospace;min-height:50px"></div>
+  <!-- Klavye -->
+  <div id="as-klavye" style="display:grid;grid-template-columns:repeat(7,1fr);gap:4px;max-width:380px;margin:0 auto"></div>
+  <div id="as-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="as-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">─</div>
+    <div id="as-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="asSonraki()">▶️ Sonraki Kelime</button>
+      <button class="btn alt small" onclick="asBaslat()">🔄 Yeniden</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="asBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Harflere dokun · 6 yanlış hakkın var · Doğru tahmin → tur ilerle</div>
+</div>
+
+<!-- HAYVAN SESİ (ÇOCUK) -->
+<div id="game-hayvansesi" class="screen">
+  <div class="hud">
+    <span>👑 <span id="hs-best">0</span></span>
+    <span style="font-size:1.3em;font-weight:800">⭐ <span id="hs-skor">0</span></span>
+    <span>Tur <span id="hs-tur">1</span>/10</span>
+  </div>
+  <div style="opacity:.85;font-size:.95em;margin-bottom:8px">
+    🎵 Bu hayvanın sesi hangisi?
+  </div>
+  <!-- Büyük hayvan emoji -->
+  <div id="hs-hayvan-kutu" style="background:linear-gradient(160deg,#ff9a8b,#ff6a88,#d76d77);border-radius:30px;padding:30px;margin:14px auto;max-width:240px;box-shadow:0 8px 24px rgba(0,0,0,.4),inset 0 2px 0 rgba(255,255,255,.3)">
+    <div id="hs-hayvan-emoji" style="font-size:6em;line-height:1">🐶</div>
+    <div id="hs-hayvan-ad" style="font-size:1.4em;font-weight:800;margin-top:8px;text-shadow:0 2px 4px rgba(0,0,0,.4)">Köpek</div>
+  </div>
+  <!-- 4 seçenek -->
+  <div id="hs-secenekler" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:340px;margin:10px auto"></div>
+  <div id="hs-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="hs-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">🎉</div>
+    <div id="hs-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="hsBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="hsBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Doğru sesi seç · Her doğru cevap +10 puan</div>
+</div>
+
+<!-- RENK EŞLE (ÇOCUK) -->
+<div id="game-renkesle" class="screen">
+  <div class="hud">
+    <span>👑 <span id="re-best">0</span></span>
+    <span style="font-size:1.3em;font-weight:800">⭐ <span id="re-skor">0</span></span>
+    <span>Tur <span id="re-tur">1</span>/15</span>
+  </div>
+  <div style="opacity:.85;font-size:.95em;margin-bottom:8px">
+    🎨 Bu rengi seç:
+  </div>
+  <!-- Renk adı -->
+  <div id="re-renk-kutu" style="background:rgba(0,0,0,.8);border-radius:24px;padding:24px;margin:14px auto;max-width:260px;box-shadow:0 8px 24px rgba(0,0,0,.4)">
+    <div id="re-renk-ad" style="font-size:2.2em;font-weight:900;letter-spacing:2px">KIRMIZI</div>
+  </div>
+  <!-- 4 renkli kare -->
+  <div id="re-secenekler" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px;max-width:300px;margin:14px auto"></div>
+  <div id="re-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="re-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">🎉</div>
+    <div id="re-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="reBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="reBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Doğru renkli kareye dokun · Her doğru +5 puan</div>
+</div>
+
+<!-- SAYI SAYMACA (ÇOCUK) -->
+<div id="game-saymaca" class="screen">
+  <div class="hud">
+    <span>👑 <span id="sa-best">0</span></span>
+    <span style="font-size:1.3em;font-weight:800">⭐ <span id="sa-skor">0</span></span>
+    <span>Tur <span id="sa-tur">1</span>/10</span>
+  </div>
+  <div style="opacity:.85;font-size:.95em;margin-bottom:8px">
+    🔢 Kaç tane <span id="sa-nesne-ad">elma</span> var?
+  </div>
+  <!-- Sayılacak nesneler -->
+  <div id="sa-nesne-kutu" style="background:linear-gradient(160deg,#85d8ce,#4a90b8);border-radius:20px;padding:16px;margin:10px auto;max-width:340px;min-height:140px;display:flex;flex-wrap:wrap;gap:8px;justify-content:center;align-items:center;box-shadow:0 8px 24px rgba(0,0,0,.4)"></div>
+  <!-- 4 sayı seçeneği -->
+  <div id="sa-secenekler" style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;max-width:300px;margin:14px auto"></div>
+  <div id="sa-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="sa-gameover-baslik" style="font-weight:800;font-size:1.3em;margin:8px 0">🎉</div>
+    <div id="sa-gameover-detay" style="margin:8px 0">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="saBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="saBaslat()">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px">Şekilleri say · Doğru sayıya dokun · Her doğru +10 puan</div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -1013,6 +1346,18 @@
 // Yatay mod tespiti
 function yatayMi() {
   return window.innerWidth > window.innerHeight;
+}
+
+// Kategori filtreleme
+function kategoriSec(kat) {
+  document.querySelectorAll('.kategori-sekme').forEach(s => {
+    s.classList.toggle('aktif', s.dataset.kat === kat);
+  });
+  document.querySelectorAll('#menu .card').forEach(c => {
+    if (kat === 'tum') c.classList.remove('gizli');
+    else c.classList.toggle('gizli', c.dataset.kategori !== kat);
+  });
+  try { save('son_kategori', kat); } catch (e) {}
 }
 // Bir oyun ekranı için canvas boyutunu hesapla (yatay/dikey uyumlu)
 // oranYW = yükseklik / genişlik oranı (dikey için, örn 1.5 = uzun dikey)
@@ -1587,6 +1932,11 @@ function showGame(g) {
   if (g === 'kosucu') { setDuvar('doga'); requestAnimationFrame(() => ksHazirla()); }
   if (g === 'varyok') { setDuvar('muzik'); requestAnimationFrame(() => vyBaslat()); }
   if (g === 'milyoner') { setDuvar('teknoloji'); requestAnimationFrame(() => milBaslat()); }
+  if (g === 'sudoku') { setDuvar('muzik'); requestAnimationFrame(() => sdHazirla()); }
+  if (g === 'asma') { setDuvar('teknoloji'); requestAnimationFrame(() => asBaslat()); }
+  if (g === 'hayvansesi') { setDuvar('doga'); requestAnimationFrame(() => hsBaslat()); }
+  if (g === 'renkesle') { setDuvar('varsayilan'); requestAnimationFrame(() => reBaslat()); }
+  if (g === 'saymaca') { setDuvar('doga'); requestAnimationFrame(() => saBaslat()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
   if (g !== 'tetris') { clearInterval(window.trTimer); }
   if (g !== 'memory') { clearInterval(window.memSureTimer); }
@@ -1602,6 +1952,7 @@ function showGame(g) {
     clearInterval(window.bkBalikSureTimer);
   }
   if (g !== 'kosucu') { cancelAnimationFrame(window.ksAnim); }
+  if (g !== 'sudoku') { clearInterval(window.sdSureTimer); }
 }
 
 /* ============ KELİME AVI - CROSSWORD ============ */
@@ -8378,6 +8729,865 @@ function milBitir(kazandi, miktar) {
   document.getElementById('mil-gameover').style.display = 'block';
 }
 
+
+
+/* ============ SUDOKU ============ */
+let sdZorlukAyar = 'orta';
+let sdTahta = [];     // 9x9 - aktif değerler (oyuncu doldurdu)
+let sdCozum = [];     // 9x9 - tam çözüm
+let sdVeri = [];      // 9x9 - başlangıçta verilen mi (true) yoksa boş mu
+let sdSecili = null;  // {r, c}
+let sdHataSayisi = 0;
+let sdIpucuKalan = 3;
+let sdBaslangic = 0;
+let sdBitti = false;
+let sdBest = load('sd_best', {kolay: null, orta: null, zor: null});
+
+const SD_ZORLUK_SILME = {
+  'kolay': 40,
+  'orta': 50,
+  'zor': 58
+};
+
+function sdHazirla() {
+  // Zorluk seçimi ekrana yansıt
+  ['kolay','orta','zor'].forEach(z => {
+    document.getElementById('sd-z-' + z).className = (z === sdZorlukAyar) ? 'btn small' : 'btn alt small';
+  });
+  sdBaslat();
+}
+
+function sdZorluk(z) {
+  sdZorlukAyar = z;
+  sdHazirla();
+}
+
+function sdBaslat() {
+  document.getElementById('sd-gameover').style.display = 'none';
+  sdBitti = false;
+  sdHataSayisi = 0;
+  sdIpucuKalan = 3;
+  sdSecili = null;
+  sdBaslangic = Date.now();
+  // Tam çözüm üret, sonra hücreleri sil
+  sdCozum = sdYeniCozum();
+  sdTahta = sdCozum.map(satir => satir.slice());
+  sdVeri = Array.from({length: 9}, () => Array(9).fill(true));
+  // Rastgele hücreleri sil
+  const silSayi = SD_ZORLUK_SILME[sdZorlukAyar];
+  const hucreler = [];
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) hucreler.push([r, c]);
+  hucreler.sort(() => Math.random() - 0.5);
+  for (let i = 0; i < silSayi; i++) {
+    const [r, c] = hucreler[i];
+    sdTahta[r][c] = 0;
+    sdVeri[r][c] = false;
+  }
+  sdTahtaCiz();
+  sdTuslarCiz();
+  sdHUDGuncelle();
+  clearInterval(window.sdSureTimer);
+  window.sdSureTimer = setInterval(sdSureGuncelle, 1000);
+}
+
+// Boş tahta için rastgele tam çözüm üret (backtracking + karıştırma)
+function sdYeniCozum() {
+  const t = Array.from({length: 9}, () => Array(9).fill(0));
+  sdCoz(t, true);
+  return t;
+}
+
+function sdCoz(t, rastgele) {
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      if (t[r][c] === 0) {
+        const nums = [1,2,3,4,5,6,7,8,9];
+        if (rastgele) nums.sort(() => Math.random() - 0.5);
+        for (const n of nums) {
+          if (sdGecerli(t, r, c, n)) {
+            t[r][c] = n;
+            if (sdCoz(t, rastgele)) return true;
+            t[r][c] = 0;
+          }
+        }
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
+function sdGecerli(t, r, c, n) {
+  // Satır
+  for (let i = 0; i < 9; i++) if (t[r][i] === n) return false;
+  // Sütun
+  for (let i = 0; i < 9; i++) if (t[i][c] === n) return false;
+  // 3x3 blok
+  const br = Math.floor(r / 3) * 3, bc = Math.floor(c / 3) * 3;
+  for (let i = 0; i < 3; i++)
+    for (let j = 0; j < 3; j++)
+      if (t[br + i][bc + j] === n) return false;
+  return true;
+}
+
+function sdTahtaCiz() {
+  const grid = document.getElementById('sd-tahta');
+  grid.innerHTML = '';
+  for (let r = 0; r < 9; r++) {
+    for (let c = 0; c < 9; c++) {
+      const div = document.createElement('div');
+      let cls = 'sd-hucre';
+      if (sdVeri[r][c]) cls += ' veri';
+      // Aşağı kalın çizgi (3 ve 6 satır sonrası)
+      if (r === 2 || r === 5) cls += ' bot-kalın';
+      if (sdSecili && sdSecili.r === r && sdSecili.c === c) cls += ' secili';
+      else if (sdSecili) {
+        // Aynı değer
+        if (sdTahta[r][c] !== 0 && sdTahta[r][c] === sdTahta[sdSecili.r][sdSecili.c]) cls += ' ayni-deger';
+        // Aynı satır/sütun/blok
+        else if (r === sdSecili.r || c === sdSecili.c ||
+                 (Math.floor(r/3) === Math.floor(sdSecili.r/3) && Math.floor(c/3) === Math.floor(sdSecili.c/3))) cls += ' iliskili';
+      }
+      div.className = cls;
+      div.innerText = sdTahta[r][c] || '';
+      div.onclick = () => sdHucreSec(r, c);
+      grid.appendChild(div);
+    }
+  }
+}
+
+function sdTuslarCiz() {
+  const grid = document.getElementById('sd-tuslar');
+  grid.innerHTML = '';
+  // Hangi sayılar dolu (her sayıdan kaç tane var)
+  const sayac = [0,0,0,0,0,0,0,0,0,0];
+  for (let r = 0; r < 9; r++) for (let c = 0; c < 9; c++) if (sdTahta[r][c]) sayac[sdTahta[r][c]]++;
+  for (let n = 1; n <= 9; n++) {
+    const div = document.createElement('div');
+    div.className = 'sd-tus' + (sayac[n] >= 9 ? ' dolu' : '');
+    div.innerText = n;
+    div.onclick = () => sdSayiYerlestir(n);
+    grid.appendChild(div);
+  }
+}
+
+function sdHucreSec(r, c) {
+  if (sdBitti) return;
+  sdSecili = { r, c };
+  sdTahtaCiz();
+}
+
+function sdSayiYerlestir(n) {
+  if (sdBitti || !sdSecili) return;
+  const { r, c } = sdSecili;
+  if (sdVeri[r][c]) return; // başlangıç verisi değişmez
+  // Doğru cevap mı?
+  if (n === sdCozum[r][c]) {
+    sdTahta[r][c] = n;
+    sfx.dogru();
+    sdTahtaCiz();
+    sdTuslarCiz();
+    // Tüm tahta dolduğunda kazandı
+    if (sdTamamlandiMi()) {
+      sdBitir(true);
+    }
+  } else {
+    // Hata
+    sdHataSayisi++;
+    document.getElementById('sd-hata').innerText = sdHataSayisi;
+    sfx.yanlis();
+    // Geçici olarak hatalı göster
+    const grid = document.getElementById('sd-tahta');
+    const idx = r * 9 + c;
+    if (grid.children[idx]) {
+      grid.children[idx].classList.add('hata');
+      grid.children[idx].innerText = n;
+      setTimeout(() => {
+        sdTahtaCiz(); // hatalı değer silinsin
+      }, 600);
+    }
+    if (sdHataSayisi >= 3) {
+      sdBitir(false);
+    }
+  }
+}
+
+function sdSil() {
+  if (sdBitti || !sdSecili) return;
+  const { r, c } = sdSecili;
+  if (sdVeri[r][c]) return;
+  sdTahta[r][c] = 0;
+  sdTahtaCiz();
+  sdTuslarCiz();
+  sfx.tik();
+}
+
+function sdIpucu() {
+  if (sdBitti || sdIpucuKalan <= 0) return;
+  if (!sdSecili) {
+    toast('Önce boş bir hücre seç!');
+    return;
+  }
+  const { r, c } = sdSecili;
+  if (sdVeri[r][c] || sdTahta[r][c] === sdCozum[r][c]) {
+    toast('Boş bir hücre seç!');
+    return;
+  }
+  sdTahta[r][c] = sdCozum[r][c];
+  sdVeri[r][c] = true; // ipucu da artık değişmez
+  sdIpucuKalan--;
+  document.getElementById('sd-ipucu-sayi').innerText = sdIpucuKalan;
+  sdTahtaCiz();
+  sdTuslarCiz();
+  sfx.guc();
+  if (sdTamamlandiMi()) sdBitir(true);
+}
+
+function sdTamamlandiMi() {
+  for (let r = 0; r < 9; r++)
+    for (let c = 0; c < 9; c++)
+      if (sdTahta[r][c] !== sdCozum[r][c]) return false;
+  return true;
+}
+
+function sdSureGuncelle() {
+  if (sdBitti) return;
+  const gecen = Math.floor((Date.now() - sdBaslangic) / 1000);
+  const dk = Math.floor(gecen / 60);
+  const sn = gecen % 60;
+  document.getElementById('sd-sure').innerText = dk + ':' + (sn < 10 ? '0' : '') + sn;
+}
+
+function sdHUDGuncelle() {
+  document.getElementById('sd-hata').innerText = sdHataSayisi;
+  document.getElementById('sd-ipucu-sayi').innerText = sdIpucuKalan;
+}
+
+function sdBitir(kazandi) {
+  sdBitti = true;
+  clearInterval(window.sdSureTimer);
+  const sure = Math.floor((Date.now() - sdBaslangic) / 1000);
+  const dk = Math.floor(sure / 60);
+  const sn = sure % 60;
+  const sureStr = dk + ':' + (sn < 10 ? '0' : '') + sn;
+  let yeniRekor = false;
+  if (kazandi) {
+    sfx.kazan();
+    const onceki = sdBest[sdZorlukAyar];
+    if (!onceki || sure < onceki) {
+      sdBest[sdZorlukAyar] = sure;
+      save('sd_best', sdBest);
+      yeniRekor = true;
+    }
+    document.getElementById('sd-gameover-baslik').innerText = '🎉 Tamamlandı!';
+  } else {
+    sfx.yanlis();
+    document.getElementById('sd-gameover-baslik').innerText = '❌ 3 Hata = Oyun Bitti';
+  }
+  document.getElementById('sd-gameover-detay').innerHTML =
+    'Süre: <strong>' + sureStr + '</strong>' +
+    '<br>Zorluk: <strong>' + sdZorlukAyar + '</strong>' +
+    (yeniRekor ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni rekor!</div>' : '');
+  document.getElementById('sd-gameover').style.display = 'block';
+}
+
+
+
+/* ============ ADAM ASMACA ============ */
+const AS_KATEGORILER = {
+  'Hayvanlar': [
+    'KEDİ', 'KÖPEK', 'KAPLAN', 'ASLAN', 'FİL', 'ZÜRAFA', 'TAVŞAN', 'AYI', 'KURT',
+    'KARTAL', 'ŞAHİN', 'BAYKUŞ', 'PAPAĞAN', 'YILAN', 'TIMSAH', 'KANGURU', 'PANDA',
+    'KOALA', 'ZEBRA', 'GERGEDAN', 'KEKLİK', 'PELİKAN', 'YUNUS', 'KÖPEKBALIĞI'
+  ],
+  'Şehirler': [
+    'İSTANBUL', 'ANKARA', 'İZMİR', 'BURSA', 'ADANA', 'ANTALYA', 'KONYA', 'TRABZON',
+    'GAZİANTEP', 'ESKİŞEHİR', 'DİYARBAKIR', 'MERSİN', 'SAMSUN', 'KAYSERİ', 'MALATYA',
+    'ERZURUM', 'VAN', 'EDİRNE', 'ÇANAKKALE', 'ARTVİN', 'MARDİN', 'NEVŞEHİR', 'AYDIN'
+  ],
+  'Yiyecekler': [
+    'EKMEK', 'PEYNİR', 'ZEYTİN', 'DOMATES', 'PATATES', 'SOĞAN', 'BÖREK', 'MANTI',
+    'KEBAP', 'KÖFTE', 'LAHMACUN', 'BAKLAVA', 'KÜNEFE', 'PİDE', 'PİLAV', 'ÇORBA',
+    'BALIK', 'TAVUK', 'YOĞURT', 'AYRAN', 'ELMA', 'ARMUT', 'KARPUZ', 'KAVUN', 'ÇİLEK'
+  ],
+  'Meslekler': [
+    'DOKTOR', 'AVUKAT', 'ÖĞRETMEN', 'MÜHENDİS', 'MİMAR', 'GAZETECİ', 'POLİS',
+    'ASKER', 'PİLOT', 'AŞÇI', 'GARSON', 'BERBER', 'TERZİ', 'ÇİFTÇİ', 'BALIKÇI',
+    'KAPTAN', 'YAZAR', 'RESSAM', 'SANATÇI', 'ŞARKICI', 'OYUNCU', 'HEMŞİRE'
+  ]
+};
+
+const AS_TR_HARFLER = ['A','B','C','Ç','D','E','F','G','Ğ','H','I','İ','J','K','L','M','N','O','Ö','P','R','S','Ş','T','U','Ü','V','Y','Z'];
+
+let asKelime = '';
+let asKategori = '';
+let asTahmin = [];      // bulunan harfler
+let asYanlis = [];      // yanlış harfler
+let asCan = 6;
+let asSkor = 0;
+let asTur = 1;
+let asBitti = false;
+let asBest = load('as_best', 0);
+
+function asBaslat() {
+  document.getElementById('as-gameover').style.display = 'none';
+  asSkor = 0;
+  asTur = 1;
+  asYeniKelime();
+}
+
+function asSonraki() {
+  asTur++;
+  asYeniKelime();
+}
+
+function asYeniKelime() {
+  document.getElementById('as-gameover').style.display = 'none';
+  asBitti = false;
+  asCan = 6;
+  asTahmin = [];
+  asYanlis = [];
+  // Rastgele kategori + kelime
+  const katlar = Object.keys(AS_KATEGORILER);
+  asKategori = katlar[Math.floor(Math.random() * katlar.length)];
+  const havuz = AS_KATEGORILER[asKategori];
+  asKelime = havuz[Math.floor(Math.random() * havuz.length)];
+  // İçerdiği eşsiz harfleri tahmin dizisine sıfırla
+  asTahmin = asKelime.split('').map(h => h === ' ' ? ' ' : null);
+  asHUDGuncelle();
+  asKlavyeCiz();
+  asKelimeCiz();
+  asAdamCiz();
+}
+
+function asHUDGuncelle() {
+  document.getElementById('as-best').innerText = asBest;
+  document.getElementById('as-skor').innerText = asSkor;
+  document.getElementById('as-can').innerText = asCan;
+  document.getElementById('as-kategori').innerText = asKategori;
+  document.getElementById('as-tur').innerText = asTur;
+}
+
+function asKelimeCiz() {
+  const el = document.getElementById('as-kelime');
+  el.innerText = asKelime.split('').map((h, i) => {
+    if (h === ' ') return ' ';
+    return asTahmin[i] !== null ? h : '_';
+  }).join(' ');
+}
+
+function asKlavyeCiz() {
+  const grid = document.getElementById('as-klavye');
+  grid.innerHTML = '';
+  AS_TR_HARFLER.forEach(harf => {
+    const div = document.createElement('div');
+    let cls = 'as-harf-tus';
+    // Bulunmuş veya yanlış mı?
+    if (asKelime.includes(harf)) {
+      // Tahminde var mı kontrol et
+      const bulundu = asKelime.split('').some((h, i) => h === harf && asTahmin[i] === harf);
+      if (bulundu) cls += ' dogru';
+    }
+    if (asYanlis.includes(harf)) cls += ' yanlis';
+    div.className = cls;
+    div.innerText = harf;
+    div.onclick = () => asTahminEt(harf);
+    grid.appendChild(div);
+  });
+}
+
+function asTahminEt(harf) {
+  if (asBitti) return;
+  // Zaten denenmiş mi?
+  if (asYanlis.includes(harf)) return;
+  if (asKelime.split('').some((h, i) => h === harf && asTahmin[i] === harf)) return;
+  if (asKelime.includes(harf)) {
+    // Doğru tahmin - tüm konumlara yerleştir
+    asKelime.split('').forEach((h, i) => { if (h === harf) asTahmin[i] = harf; });
+    sfx.dogru();
+    asKelimeCiz();
+    asKlavyeCiz();
+    // Tüm kelime bulundu mu?
+    const tamam = asKelime.split('').every((h, i) => asTahmin[i] === h);
+    if (tamam) {
+      // Skor: kalan can × 10 + zorluk bonusu
+      const kazanc = asCan * 10 + asKelime.length * 2;
+      asSkor += kazanc;
+      if (asSkor > asBest) {
+        asBest = asSkor;
+        save('as_best', asBest);
+      }
+      asHUDGuncelle();
+      asBitir(true, kazanc);
+    }
+  } else {
+    // Yanlış tahmin
+    asYanlis.push(harf);
+    asCan--;
+    sfx.yanlis();
+    asHUDGuncelle();
+    asKlavyeCiz();
+    asAdamCiz();
+    if (asCan <= 0) {
+      asBitir(false, 0);
+    }
+  }
+}
+
+// Adam çizimi - HD canvas üzerinde, can azaldıkça parçalar eklenir
+function asAdamCiz() {
+  const canvas = document.getElementById('as-canvas');
+  if (!canvas) return;
+  hdKur(canvas, 220, 220);
+  const ctx = canvas.getContext('2d');
+  const W = 220, H = 220;
+  ctx.clearRect(0, 0, W, H);
+  // Asma direği (her zaman)
+  ctx.strokeStyle = '#8a6a3a';
+  ctx.lineWidth = 4;
+  ctx.lineCap = 'round';
+  // Zemin
+  ctx.beginPath();
+  ctx.moveTo(20, H - 20);
+  ctx.lineTo(W - 20, H - 20);
+  ctx.stroke();
+  // Dikey direk
+  ctx.beginPath();
+  ctx.moveTo(50, H - 20);
+  ctx.lineTo(50, 30);
+  ctx.stroke();
+  // Üst yatay
+  ctx.beginPath();
+  ctx.moveTo(50, 30);
+  ctx.lineTo(130, 30);
+  ctx.stroke();
+  // İp
+  ctx.strokeStyle = '#5a3a1a';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.moveTo(130, 30);
+  ctx.lineTo(130, 55);
+  ctx.stroke();
+  // Adam - kalan canlara göre parça parça
+  const yanlisSayisi = 6 - asCan;
+  ctx.strokeStyle = '#fadb14';
+  ctx.fillStyle = '#fadb14';
+  ctx.lineWidth = 3;
+  // Baş
+  if (yanlisSayisi >= 1) {
+    ctx.beginPath();
+    ctx.arc(130, 75, 18, 0, 7);
+    ctx.stroke();
+    // Gözler
+    ctx.fillStyle = '#000';
+    if (yanlisSayisi >= 5) {
+      // X gözler (ölü)
+      ctx.strokeStyle = '#000';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(122, 70); ctx.lineTo(128, 76);
+      ctx.moveTo(128, 70); ctx.lineTo(122, 76);
+      ctx.moveTo(132, 70); ctx.lineTo(138, 76);
+      ctx.moveTo(138, 70); ctx.lineTo(132, 76);
+      ctx.stroke();
+      ctx.strokeStyle = '#fadb14';
+      ctx.lineWidth = 3;
+    } else {
+      ctx.beginPath(); ctx.arc(125, 73, 1.5, 0, 7); ctx.fill();
+      ctx.beginPath(); ctx.arc(135, 73, 1.5, 0, 7); ctx.fill();
+    }
+    // Ağız
+    ctx.strokeStyle = '#000';
+    ctx.lineWidth = 1.5;
+    if (yanlisSayisi >= 6) {
+      // Üzgün - aşağı kavis
+      ctx.beginPath();
+      ctx.arc(130, 85, 4, Math.PI, 0);
+      ctx.stroke();
+    } else {
+      ctx.beginPath();
+      ctx.moveTo(126, 82); ctx.lineTo(134, 82);
+      ctx.stroke();
+    }
+    ctx.strokeStyle = '#fadb14';
+    ctx.lineWidth = 3;
+  }
+  // Gövde
+  if (yanlisSayisi >= 2) {
+    ctx.beginPath();
+    ctx.moveTo(130, 93);
+    ctx.lineTo(130, 145);
+    ctx.stroke();
+  }
+  // Sol kol
+  if (yanlisSayisi >= 3) {
+    ctx.beginPath();
+    ctx.moveTo(130, 105);
+    ctx.lineTo(110, 130);
+    ctx.stroke();
+  }
+  // Sağ kol
+  if (yanlisSayisi >= 4) {
+    ctx.beginPath();
+    ctx.moveTo(130, 105);
+    ctx.lineTo(150, 130);
+    ctx.stroke();
+  }
+  // Sol bacak
+  if (yanlisSayisi >= 5) {
+    ctx.beginPath();
+    ctx.moveTo(130, 145);
+    ctx.lineTo(115, 175);
+    ctx.stroke();
+  }
+  // Sağ bacak
+  if (yanlisSayisi >= 6) {
+    ctx.beginPath();
+    ctx.moveTo(130, 145);
+    ctx.lineTo(145, 175);
+    ctx.stroke();
+  }
+  // Kalan can sayısı yazısı
+  ctx.fillStyle = asCan <= 2 ? '#e94560' : '#fff';
+  ctx.font = 'bold 16px sans-serif';
+  ctx.textAlign = 'right';
+  ctx.fillText('❤️ ' + asCan + ' hak', W - 10, 25);
+}
+
+function asBitir(kazandi, kazanc) {
+  asBitti = true;
+  document.getElementById('as-gameover-baslik').innerText = kazandi ? '🎉 Tebrikler!' : '💀 Oyun Bitti';
+  document.getElementById('as-gameover-detay').innerHTML =
+    'Kelime: <strong>' + asKelime + '</strong>' +
+    '<br>Kategori: <strong>' + asKategori + '</strong>' +
+    (kazandi ? '<br>Bu turdan: <strong style="color:#fadb14">+' + kazanc + '</strong> puan' :
+               '<br>Toplam Skor: <strong>' + asSkor + '</strong>') +
+    (asSkor === asBest && asSkor > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  // Kazanırsa kelimeyi olduğu gibi göster
+  if (!kazandi) {
+    asTahmin = asKelime.split('');
+    asKelimeCiz();
+  }
+  document.getElementById('as-gameover').style.display = 'block';
+}
+
+
+
+/* ============ HAYVAN SESİ (ÇOCUK) ============ */
+const HS_HAYVANLAR = [
+  { emoji: '🐶', ad: 'Köpek', ses: 'Hav hav!' },
+  { emoji: '🐱', ad: 'Kedi', ses: 'Miyav!' },
+  { emoji: '🐮', ad: 'İnek', ses: 'Mööö!' },
+  { emoji: '🐑', ad: 'Koyun', ses: 'Mee!' },
+  { emoji: '🐔', ad: 'Tavuk', ses: 'Gıt gıt!' },
+  { emoji: '🐓', ad: 'Horoz', ses: 'Üürüü!' },
+  { emoji: '🦆', ad: 'Ördek', ses: 'Vak vak!' },
+  { emoji: '🐷', ad: 'Domuz', ses: 'Hırr!' },
+  { emoji: '🐴', ad: 'At', ses: 'Hi hi!' },
+  { emoji: '🐸', ad: 'Kurbağa', ses: 'Vrak vrak!' },
+  { emoji: '🦁', ad: 'Aslan', ses: 'Kükre!' },
+  { emoji: '🐺', ad: 'Kurt', ses: 'Auuuu!' },
+  { emoji: '🦉', ad: 'Baykuş', ses: 'Hu hu!' },
+  { emoji: '🐝', ad: 'Arı', ses: 'Vızzz!' },
+  { emoji: '🐍', ad: 'Yılan', ses: 'Sssss!' }
+];
+let hsTur = 0;
+let hsSkor = 0;
+let hsBest = load('hs_best', 0);
+let hsDogruHayvan = null;
+let hsBitti = false;
+
+function hsBaslat() {
+  document.getElementById('hs-gameover').style.display = 'none';
+  hsTur = 0;
+  hsSkor = 0;
+  hsBitti = false;
+  hsHUDGuncelle();
+  hsYeniTur();
+}
+
+function hsHUDGuncelle() {
+  document.getElementById('hs-skor').innerText = hsSkor;
+  document.getElementById('hs-best').innerText = hsBest;
+  document.getElementById('hs-tur').innerText = (hsTur + 1);
+}
+
+function hsYeniTur() {
+  if (hsTur >= 10) { hsBitir(); return; }
+  // Rastgele 1 doğru + 3 yanlış hayvan
+  const karistir = [...HS_HAYVANLAR].sort(() => Math.random() - 0.5);
+  hsDogruHayvan = karistir[0];
+  const yanlislar = karistir.slice(1, 4);
+  const secenekler = [hsDogruHayvan, ...yanlislar].sort(() => Math.random() - 0.5);
+  // Hayvan kutusunu doldur
+  document.getElementById('hs-hayvan-emoji').innerText = hsDogruHayvan.emoji;
+  document.getElementById('hs-hayvan-ad').innerText = hsDogruHayvan.ad;
+  // Seçenekler
+  const grid = document.getElementById('hs-secenekler');
+  grid.innerHTML = '';
+  secenekler.forEach(h => {
+    const div = document.createElement('div');
+    div.className = 'cocuk-secenek';
+    div.innerHTML = '<span style="font-size:1.5em;margin-right:8px">' + h.emoji + '</span>' + h.ses;
+    div.onclick = () => hsCevapla(div, h);
+    grid.appendChild(div);
+  });
+  hsHUDGuncelle();
+}
+
+function hsCevapla(el, hayvan) {
+  if (hsBitti) return;
+  const dogru = hayvan === hsDogruHayvan;
+  // Tüm seçenekleri pasifleştir
+  document.querySelectorAll('#hs-secenekler .cocuk-secenek').forEach(s => s.style.pointerEvents = 'none');
+  if (dogru) {
+    el.classList.add('dogru');
+    hsSkor += 10;
+    if (hsSkor > hsBest) { hsBest = hsSkor; save('hs_best', hsBest); }
+    sfx.dogru();
+    setTimeout(() => {
+      hsTur++;
+      hsYeniTur();
+    }, 900);
+  } else {
+    el.classList.add('yanlis');
+    sfx.yanlis();
+    // Doğru olanı yeşil göster
+    document.querySelectorAll('#hs-secenekler .cocuk-secenek').forEach(s => {
+      if (s.innerText.includes(hsDogruHayvan.ses)) s.classList.add('dogru');
+    });
+    setTimeout(() => {
+      hsTur++;
+      hsYeniTur();
+    }, 1300);
+  }
+}
+
+function hsBitir() {
+  hsBitti = true;
+  document.getElementById('hs-gameover-baslik').innerText = '🎉 Oyun Bitti!';
+  document.getElementById('hs-gameover-detay').innerHTML =
+    'Skor: <strong>' + hsSkor + '</strong> / 100' +
+    '<br>Doğru: <strong>' + (hsSkor / 10) + '/10</strong>' +
+    (hsSkor === hsBest && hsSkor > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('hs-gameover').style.display = 'block';
+  sfx.kazan();
+}
+
+/* ============ RENK EŞLE (ÇOCUK) ============ */
+const RE_RENKLER = [
+  { ad: 'KIRMIZI', hex: '#e94560' },
+  { ad: 'MAVİ', hex: '#1890ff' },
+  { ad: 'YEŞİL', hex: '#52c41a' },
+  { ad: 'SARI', hex: '#fadb14' },
+  { ad: 'TURUNCU', hex: '#fa8c16' },
+  { ad: 'MOR', hex: '#9b5de5' },
+  { ad: 'PEMBE', hex: '#ff7eb3' },
+  { ad: 'KAHVERENGİ', hex: '#8a5a3a' },
+  { ad: 'BEYAZ', hex: '#f5f5fa' },
+  { ad: 'SİYAH', hex: '#1a1a1a' }
+];
+let reTur = 0;
+let reSkor = 0;
+let reBest = load('re_best', 0);
+let reDogruRenk = null;
+let reBitti = false;
+
+function reBaslat() {
+  document.getElementById('re-gameover').style.display = 'none';
+  reTur = 0;
+  reSkor = 0;
+  reBitti = false;
+  reHUDGuncelle();
+  reYeniTur();
+}
+
+function reHUDGuncelle() {
+  document.getElementById('re-skor').innerText = reSkor;
+  document.getElementById('re-best').innerText = reBest;
+  document.getElementById('re-tur').innerText = (reTur + 1);
+}
+
+function reYeniTur() {
+  if (reTur >= 15) { reBitir(); return; }
+  const karistir = [...RE_RENKLER].sort(() => Math.random() - 0.5);
+  reDogruRenk = karistir[0];
+  const yanlislar = karistir.slice(1, 4);
+  const secenekler = [reDogruRenk, ...yanlislar].sort(() => Math.random() - 0.5);
+  document.getElementById('re-renk-ad').innerText = reDogruRenk.ad;
+  document.getElementById('re-renk-ad').style.color = '#fff'; // Renk adı her zaman beyaz
+  const grid = document.getElementById('re-secenekler');
+  grid.innerHTML = '';
+  secenekler.forEach(r => {
+    const div = document.createElement('div');
+    div.className = 'cocuk-renk-kare';
+    div.style.background = r.hex;
+    div.onclick = () => reCevapla(div, r);
+    grid.appendChild(div);
+  });
+  reHUDGuncelle();
+}
+
+function reCevapla(el, renk) {
+  if (reBitti) return;
+  const dogru = renk === reDogruRenk;
+  document.querySelectorAll('#re-secenekler .cocuk-renk-kare').forEach(s => s.style.pointerEvents = 'none');
+  if (dogru) {
+    el.style.transform = 'scale(1.15)';
+    el.style.boxShadow = '0 0 30px ' + renk.hex + ', 0 6px 18px rgba(0,0,0,.4)';
+    reSkor += 5;
+    if (reSkor > reBest) { reBest = reSkor; save('re_best', reBest); }
+    sfx.dogru();
+    setTimeout(() => {
+      reTur++;
+      reYeniTur();
+    }, 700);
+  } else {
+    el.style.opacity = '.3';
+    sfx.yanlis();
+    // Doğru olanı vurgula
+    document.querySelectorAll('#re-secenekler .cocuk-renk-kare').forEach(s => {
+      if (s.style.background === reDogruRenk.hex || s.style.backgroundColor === reDogruRenk.hex) {
+        s.style.boxShadow = '0 0 30px #52c41a, 0 0 0 4px #52c41a';
+      }
+    });
+    setTimeout(() => {
+      reTur++;
+      reYeniTur();
+    }, 1100);
+  }
+}
+
+function reBitir() {
+  reBitti = true;
+  document.getElementById('re-gameover-baslik').innerText = '🎉 Oyun Bitti!';
+  document.getElementById('re-gameover-detay').innerHTML =
+    'Skor: <strong>' + reSkor + '</strong> / 75' +
+    '<br>Doğru: <strong>' + (reSkor / 5) + '/15</strong>' +
+    (reSkor === reBest && reSkor > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('re-gameover').style.display = 'block';
+  sfx.kazan();
+}
+
+/* ============ SAYI SAYMACA (ÇOCUK) ============ */
+const SA_NESNELER = [
+  { emoji: '🍎', ad: 'elma' },
+  { emoji: '🍌', ad: 'muz' },
+  { emoji: '🍓', ad: 'çilek' },
+  { emoji: '🍇', ad: 'üzüm' },
+  { emoji: '🍊', ad: 'portakal' },
+  { emoji: '🐶', ad: 'köpek' },
+  { emoji: '🐱', ad: 'kedi' },
+  { emoji: '🦋', ad: 'kelebek' },
+  { emoji: '🌸', ad: 'çiçek' },
+  { emoji: '⭐', ad: 'yıldız' },
+  { emoji: '⚽', ad: 'top' },
+  { emoji: '🎈', ad: 'balon' },
+  { emoji: '🚗', ad: 'araba' },
+  { emoji: '🐝', ad: 'arı' }
+];
+let saTur = 0;
+let saSkor = 0;
+let saBest = load('sa_best', 0);
+let saDogruSayi = 0;
+let saBitti = false;
+
+function saBaslat() {
+  document.getElementById('sa-gameover').style.display = 'none';
+  saTur = 0;
+  saSkor = 0;
+  saBitti = false;
+  saHUDGuncelle();
+  saYeniTur();
+}
+
+function saHUDGuncelle() {
+  document.getElementById('sa-skor').innerText = saSkor;
+  document.getElementById('sa-best').innerText = saBest;
+  document.getElementById('sa-tur').innerText = (saTur + 1);
+}
+
+function saYeniTur() {
+  if (saTur >= 10) { saBitir(); return; }
+  // Tur ilerledikçe sayı artar: 1-3 → 1-5 → 1-9
+  let maxSayi;
+  if (saTur < 3) maxSayi = 5;
+  else if (saTur < 6) maxSayi = 7;
+  else maxSayi = 9;
+  saDogruSayi = 1 + Math.floor(Math.random() * maxSayi);
+  const nesne = SA_NESNELER[Math.floor(Math.random() * SA_NESNELER.length)];
+  document.getElementById('sa-nesne-ad').innerText = nesne.ad;
+  // Nesneleri çiz
+  const kutu = document.getElementById('sa-nesne-kutu');
+  kutu.innerHTML = '';
+  for (let i = 0; i < saDogruSayi; i++) {
+    const span = document.createElement('span');
+    span.className = 'cocuk-nesne';
+    span.style.animationDelay = (i * 0.15) + 's';
+    span.innerText = nesne.emoji;
+    kutu.appendChild(span);
+  }
+  // 4 sayı seçeneği üret
+  const secenekler = new Set([saDogruSayi]);
+  while (secenekler.size < 4) {
+    const yanlis = 1 + Math.floor(Math.random() * maxSayi);
+    if (yanlis !== saDogruSayi) secenekler.add(yanlis);
+  }
+  const dizi = [...secenekler].sort(() => Math.random() - 0.5);
+  const grid = document.getElementById('sa-secenekler');
+  grid.innerHTML = '';
+  dizi.forEach(s => {
+    const div = document.createElement('div');
+    div.className = 'cocuk-sayi-tus';
+    div.innerText = s;
+    div.onclick = () => saCevapla(div, s);
+    grid.appendChild(div);
+  });
+  saHUDGuncelle();
+}
+
+function saCevapla(el, sayi) {
+  if (saBitti) return;
+  const dogru = sayi === saDogruSayi;
+  document.querySelectorAll('#sa-secenekler .cocuk-sayi-tus').forEach(s => s.style.pointerEvents = 'none');
+  if (dogru) {
+    el.style.background = 'linear-gradient(160deg, #52c41a, #2ec44f)';
+    el.style.color = '#fff';
+    el.style.transform = 'scale(1.15)';
+    saSkor += 10;
+    if (saSkor > saBest) { saBest = saSkor; save('sa_best', saBest); }
+    sfx.dogru();
+    setTimeout(() => {
+      saTur++;
+      saYeniTur();
+    }, 800);
+  } else {
+    el.style.background = 'linear-gradient(160deg, #e94560, #a32d40)';
+    el.style.color = '#fff';
+    sfx.yanlis();
+    document.querySelectorAll('#sa-secenekler .cocuk-sayi-tus').forEach(s => {
+      if (parseInt(s.innerText) === saDogruSayi) {
+        s.style.background = 'linear-gradient(160deg, #52c41a, #2ec44f)';
+        s.style.color = '#fff';
+      }
+    });
+    setTimeout(() => {
+      saTur++;
+      saYeniTur();
+    }, 1300);
+  }
+}
+
+function saBitir() {
+  saBitti = true;
+  document.getElementById('sa-gameover-baslik').innerText = '🎉 Tebrikler!';
+  document.getElementById('sa-gameover-detay').innerHTML =
+    'Skor: <strong>' + saSkor + '</strong> / 100' +
+    '<br>Doğru: <strong>' + (saSkor / 10) + '/10</strong>' +
+    (saSkor === saBest && saSkor > 0 ? '<div style="color:#fadb14;margin-top:6px">⭐ Yeni en iyi!</div>' : '');
+  document.getElementById('sa-gameover').style.display = 'block';
+  sfx.kazan();
+}
 
 
 /* ============ RESIZE / ORIENTATION ============ */

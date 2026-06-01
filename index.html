@@ -191,6 +191,28 @@
   .dil-kart:active { transform: scale(.95); }
   .dil-kart.aktif { border-color: #fff; box-shadow: 0 0 16px rgba(255,255,255,.5); }
 
+  /* XOX */
+  .xox-hucre {
+    aspect-ratio: 1; background: linear-gradient(160deg, #4a3a9e, #2a1f63);
+    border-radius: 16px; cursor: pointer; user-select: none;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 3.5em; font-weight: 900;
+    box-shadow: 0 4px 12px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.2);
+    transition: transform .12s, background .2s;
+  }
+  .xox-hucre:active { transform: scale(.95); }
+  .xox-hucre.x { color: #fadb14; text-shadow: 0 0 12px rgba(250,219,20,.6); }
+  .xox-hucre.o { color: #19d3e0; text-shadow: 0 0 12px rgba(25,211,224,.6); }
+  .xox-hucre.kazanan { 
+    background: linear-gradient(160deg, #52c41a, #2ec44f);
+    animation: xoxKazanan .8s infinite alternate;
+  }
+  @keyframes xoxKazanan {
+    0% { box-shadow: 0 4px 12px rgba(0,0,0,.4), inset 0 2px 0 rgba(255,255,255,.2); }
+    100% { box-shadow: 0 0 24px rgba(82,196,26,.8), inset 0 2px 0 rgba(255,255,255,.4); }
+  }
+  .xox-hucre.dolu { cursor: default; }
+
   /* AYARLAR */
   .ayar-grup {
     background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
@@ -706,122 +728,127 @@
   <!-- ÇOCUK -->
   <div class="card" data-kategori="cocuk" onclick="showGame('hayvansesi')">
     <span class="menu-icon">🐾</span>
-    <strong>Hayvan Sesi</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Hayvanı tanı · Doğru sesi seç · Eğlenceli öğren</div>
+    <strong data-tr="Hayvan Sesi" data-en="Animal Sounds">Hayvan Sesi</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Hayvanı tanı · Doğru sesi seç · Eğlenceli öğren" data-en="Identify the animal · Pick the right sound · Fun learning">Hayvanı tanı · Doğru sesi seç · Eğlenceli öğren</div>
   </div>
   <div class="card" data-kategori="cocuk" onclick="showGame('renkesle')">
     <span class="menu-icon">🎨</span>
-    <strong>Renk Eşle</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Renkleri tanı · Hızlı tıkla · Beyin idmanı</div>
+    <strong data-tr="Renk Eşle" data-en="Match Colors">Renk Eşle</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Renkleri tanı · Hızlı tıkla · Beyin idmanı" data-en="Learn colors · Tap fast · Brain training">Renkleri tanı · Hızlı tıkla · Beyin idmanı</div>
   </div>
   <div class="card" data-kategori="cocuk" onclick="showGame('saymaca')">
     <span class="menu-icon">🔢</span>
-    <strong>Sayı Saymaca</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Şekilleri say · Sayıları öğren · Eğitici</div>
+    <strong data-tr="Sayı Saymaca" data-en="Count Numbers">Sayı Saymaca</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Şekilleri say · Sayıları öğren · Eğitici" data-en="Count shapes · Learn numbers · Educational">Şekilleri say · Sayıları öğren · Eğitici</div>
   </div>
 
   <!-- KELİME -->
   <div class="card" data-kategori="kelime" onclick="showGame('kelime')">
     <span class="menu-icon">🔤</span>
-    <strong>Kelime Avı</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Çapraz bulmaca · 100+ kelime</div>
+    <strong data-tr="Kelime Avı" data-en="Word Hunt">Kelime Avı</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Çapraz bulmaca · 100+ kelime" data-en="Crossword · 100+ words">Çapraz bulmaca · 100+ kelime</div>
   </div>
   <div class="card" data-kategori="kelime" onclick="showGame('asma')">
     <span class="menu-icon">✏️</span>
-    <strong>Adam Asmaca</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Klasik kelime tahmin · 6 hak · 4 kategori</div>
+    <strong data-tr="Adam Asmaca" data-en="Hangman">Adam Asmaca</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Klasik kelime tahmin · 6 hak · 4 kategori" data-en="Classic word guess · 6 lives · 4 categories">Klasik kelime tahmin · 6 hak · 4 kategori</div>
   </div>
 
   <!-- PUZZLE -->
   <div class="card" data-kategori="puzzle" onclick="showGame('blok')">
     <span class="menu-icon">🧱</span>
-    <strong>Blok Kırıcı</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Top sürüsü · Artan zorluk</div>
+    <strong data-tr="Blok Kırıcı" data-en="Brick Breaker">Blok Kırıcı</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Top sürüsü · Artan zorluk" data-en="Ball swarm · Growing difficulty">Top sürüsü · Artan zorluk</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('puzzle')">
     <span class="menu-icon">🧩</span>
-    <strong>Blok Yerleştir</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürükle-bırak · Combo</div>
+    <strong data-tr="Blok Yerleştir" data-en="Block Placer">Blok Yerleştir</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Sürükle-bırak · Combo" data-en="Drag and drop · Combo">Sürükle-bırak · Combo</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('eslestir')">
     <span class="menu-icon">🍓</span>
-    <strong>Meyve Eşleştir</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">3'lü eşleştir · Hamle limiti</div>
+    <strong data-tr="Meyve Eşleştir" data-en="Fruit Match">Meyve Eşleştir</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="3'lü eşleştir · Hamle limiti" data-en="Match 3 · Move limit">3'lü eşleştir · Hamle limiti</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('balon')">
     <span class="menu-icon">🎈</span>
-    <strong>Balon Patlat</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Komşu balonları patlat · Zincir kombo</div>
+    <strong data-tr="Balon Patlat" data-en="Balloon Pop">Balon Patlat</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Komşu balonları patlat · Zincir kombo" data-en="Pop neighbor balloons · Chain combo">Komşu balonları patlat · Zincir kombo</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('iki048')">
     <span class="menu-icon">🔢</span>
-    <strong>2048</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Aynı sayıları birleştir · 2048'e ulaş</div>
+    <strong data-tr="2048" data-en="2048">2048</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Kaydır · Aynı sayıları birleştir · 2048'e ulaş" data-en="Swipe · Merge same numbers · Reach 2048">Kaydır · Aynı sayıları birleştir · 2048'e ulaş</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('tetris')">
     <span class="menu-icon">🟦</span>
-    <strong>Tetris</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Bloklar düşer · Satırları doldur · Tek satırda sil</div>
+    <strong data-tr="Tetris" data-en="Tetris">Tetris</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Bloklar düşer · Satırları doldur · Tek satırda sil" data-en="Blocks fall · Fill rows · Clear lines">Bloklar düşer · Satırları doldur · Tek satırda sil</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('memory')">
     <span class="menu-icon">🃏</span>
-    <strong>Hafıza Eşleştir</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kartları çevir · Çiftleri bul · Hafızanı çalıştır</div>
+    <strong data-tr="Hafıza Eşleştir" data-en="Memory Match">Hafıza Eşleştir</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Kartları çevir · Çiftleri bul · Hafızanı çalıştır" data-en="Flip cards · Find pairs · Train your memory">Kartları çevir · Çiftleri bul · Hafızanı çalıştır</div>
   </div>
   <div class="card" data-kategori="puzzle" onclick="showGame('sudoku')">
     <span class="menu-icon">🔢</span>
-    <strong>Sudoku</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">9x9 mantık · 3 zorluk · İpucu sistemi</div>
+    <strong data-tr="Sudoku" data-en="Sudoku">Sudoku</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="9x9 mantık · 3 zorluk · İpucu sistemi" data-en="9x9 logic · 3 difficulties · Hint system">9x9 mantık · 3 zorluk · İpucu sistemi</div>
   </div>
 
   <!-- ARCADE -->
   <div class="card" data-kategori="arcade" onclick="showGame('snake')">
     <span class="menu-icon">🐍</span>
-    <strong>Yılan</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Kaydır · Yemleri topla · Büyü</div>
+    <strong data-tr="Yılan" data-en="Snake">Yılan</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Kaydır · Yemleri topla · Büyü" data-en="Swipe · Collect food · Grow">Kaydır · Yemleri topla · Büyü</div>
   </div>
   <div class="card" data-kategori="arcade" onclick="showGame('pong')">
     <span class="menu-icon">🏓</span>
-    <strong>Pong</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Parmakla raket sür · AI'a karşı 7 sayıya kadar</div>
+    <strong data-tr="Pong" data-en="Pong">Pong</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Parmakla raket sür · AI'a karşı 7 sayıya kadar" data-en="Drag paddle · Vs AI to 7 points">Parmakla raket sür · AI'a karşı 7 sayıya kadar</div>
   </div>
   <div class="card" data-kategori="arcade" onclick="showGame('uzay')">
     <span class="menu-icon">🚀</span>
-    <strong>Uzay Kaçış</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">🔫 Ateş et · Düşmanları vur · Silah yükselt</div>
+    <strong data-tr="Uzay Kaçış" data-en="Space Escape">Uzay Kaçış</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="🔫 Ateş et · Düşmanları vur · Silah yükselt" data-en="🔫 Shoot · Hit enemies · Upgrade weapon">🔫 Ateş et · Düşmanları vur · Silah yükselt</div>
   </div>
   <div class="card" data-kategori="arcade" onclick="showGame('balik')">
     <span class="menu-icon">🎣</span>
-    <strong>Balık Tut</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Oltayı sal · Balıkları yakala · Hedef tutturun</div>
+    <strong data-tr="Balık Tut" data-en="Fishing">Balık Tut</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Oltayı sal · Balıkları yakala · Hedef tutturun" data-en="Cast line · Catch fish · Hit targets">Oltayı sal · Balıkları yakala · Hedef tutturun</div>
   </div>
   <div class="card" data-kategori="arcade" onclick="showGame('kosucu')">
     <span class="menu-icon">🏃</span>
-    <strong>Engel Atla</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Sürekli koş · Zıpla · Engellerden kaç</div>
+    <strong data-tr="Engel Atla" data-en="Obstacle Run">Engel Atla</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Sürekli koş · Zıpla · Engellerden kaç" data-en="Run forever · Jump · Dodge obstacles">Sürekli koş · Zıpla · Engellerden kaç</div>
   </div>
 
   <!-- REFLEKS -->
   <div class="card" data-kategori="refleks" onclick="showGame('reflex')">
     <span class="menu-icon">🎯</span>
-    <strong>Reflex Master</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
+    <strong data-tr="Reflex Master" data-en="Reflex Master">Reflex Master</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Hızla beliren hedefleri vur · 60 saniyede en çok skor" data-en="Hit fast targets · Max score in 60s">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
   </div>
 
   <!-- BİLGİ -->
   <div class="card" data-kategori="bilgi" onclick="showGame('varyok')">
     <span class="menu-icon">💼</span>
-    <strong>Var mısın Yok musun</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">22 kutu · Banker teklifleri · Sat veya devam et</div>
+    <strong data-tr="Var mısın Yok musun" data-en="Deal or No Deal">Var mısın Yok musun</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="22 kutu · Banker teklifleri · Sat veya devam et" data-en="22 boxes · Banker offers · Sell or continue">22 kutu · Banker teklifleri · Sat veya devam et</div>
   </div>
   <div class="card" data-kategori="bilgi" onclick="showGame('milyoner')">
     <span class="menu-icon">💰</span>
-    <strong>Milyoner</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px">12 soru · 3 yardım · 1 milyon TL hedefi</div>
+    <strong data-tr="Milyoner" data-en="Millionaire">Milyoner</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="12 soru · 3 yardım · 1 milyon TL hedefi" data-en="12 questions · 3 lifelines · 1M TL goal">12 soru · 3 yardım · 1 milyon TL hedefi</div>
+  </div>
+  <div class="card" data-kategori="arcade" onclick="showGame('xox')">
+    <span class="menu-icon">⭕</span>
+    <strong data-tr="XOX" data-en="Tic-Tac-Toe">XOX</strong>
+    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="3x3 ızgara · 2 kişi yerel · Klasik X ve O" data-en="3x3 grid · Local 2-player · Classic X and O">3x3 ızgara · 2 kişi yerel · Klasik X ve O</div>
   </div>
 
   <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()" data-tr="📲 Uygulamayı Yükle" data-en="📲 Install App">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 24.0 · 21 oyun · Görev + Dil + Bildirim</div>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 25.0 · 22 oyun · XOX + Pong 2 kişi</div>
 </div>
 
 <!-- PROFİL -->
@@ -1097,7 +1124,7 @@
     <span style="font-size:1.3em;font-weight:800"><span id="i48-skor">0</span></span>
     <span>+<span id="i48-puan">0</span></span>
   </div>
-  <div style="opacity:.85;font-size:.85em;margin-bottom:4px">Hedef: <strong>2048</strong> · En yüksek: <strong id="i48-max">2</strong></div>
+  <div style="opacity:.85;font-size:.85em;margin-bottom:4px">Hedef: <strong data-tr="2048" data-en="2048">2048</strong> · En yüksek: <strong id="i48-max">2</strong></div>
   <canvas id="i48-board" width="360" height="360"></canvas>
   <div id="i48-gameover" style="display:none; background:rgba(0,0,0,.85); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
     <div id="i48-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">Oyun Bitti!</div>
@@ -1174,26 +1201,30 @@
       <span style="opacity:.5"> : </span>
       <span id="pong-skor-ai" style="color:#e94560">0</span>
     </span>
-    <span>Zorluk: <span id="pong-zorluk">Orta</span></span>
+    <span>Mod: <span id="pong-mod-yazi">AI</span></span>
   </div>
   <div class="oyun-kontrol">
-    <button class="btn alt small" onclick="pongZorluk('kolay')" style="padding:6px 12px">😊 Kolay</button>
-    <button class="btn small" onclick="pongZorluk('orta')" style="padding:6px 12px">🎯 Orta</button>
-    <button class="btn alt small" onclick="pongZorluk('zor')" style="padding:6px 12px">🔥 Zor</button>
+    <button class="btn alt small" onclick="pongModSec('ai')" id="pong-m-ai" style="padding:6px 12px" data-tr="🤖 AI" data-en="🤖 AI">🤖 AI</button>
+    <button class="btn alt small" onclick="pongModSec('iki')" id="pong-m-iki" style="padding:6px 12px" data-tr="👥 2 Kişi" data-en="👥 2P">👥 2 Kişi</button>
+  </div>
+  <div class="oyun-kontrol" id="pong-zorluk-bar">
+    <button class="btn alt small" onclick="pongZorluk('kolay')" style="padding:6px 12px" data-tr="😊 Kolay" data-en="😊 Easy">😊 Kolay</button>
+    <button class="btn small" onclick="pongZorluk('orta')" style="padding:6px 12px" data-tr="🎯 Orta" data-en="🎯 Medium">🎯 Orta</button>
+    <button class="btn alt small" onclick="pongZorluk('zor')" style="padding:6px 12px" data-tr="🔥 Zor" data-en="🔥 Hard">🔥 Zor</button>
   </div>
   <canvas id="pong-board" width="360" height="500"></canvas>
   <div id="pong-gameover" style="display:none; background:rgba(0,0,0,.88); border-radius:16px; padding:18px; margin:10px auto; max-width:300px;">
     <div id="pong-gameover-baslik" style="font-weight:800; font-size:1.3em; margin:8px 0">🏆</div>
     <div id="pong-gameover-skor" style="margin:8px 0">─</div>
-    <button class="btn small" onclick="pongBaslat()">🔄 Tekrar</button>
-    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    <button class="btn small" onclick="pongBaslat()" data-tr="🔄 Tekrar" data-en="🔄 Again">🔄 Tekrar</button>
+    <button class="btn alt small" onclick="showGame('menu')" data-tr="🏠 Menü" data-en="🏠 Menu">🏠 Menü</button>
   </div>
   <div class="oyun-kontrol">
-    <button class="btn alt small" onclick="pongDuraklat()" id="pong-duraklat-btn">⏸️ Durdur</button>
-    <button class="btn alt small" onclick="pongBaslat()">🔄 Yeniden</button>
-    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    <button class="btn alt small" onclick="pongDuraklat()" id="pong-duraklat-btn" data-tr="⏸️ Durdur" data-en="⏸️ Pause">⏸️ Durdur</button>
+    <button class="btn alt small" onclick="pongBaslat()" data-tr="🔄 Yeniden" data-en="🔄 Restart">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="showGame('menu')" data-tr="🏠 Menü" data-en="🏠 Menu">🏠 Menü</button>
   </div>
-  <div style="opacity:.7;font-size:.8em;margin-top:6px">Parmağını ekranda sürükle → alt raket takip eder · İlk 7 sayıya ulaşan kazanır</div>
+  <div id="pong-aciklama" style="opacity:.7;font-size:.8em;margin-top:6px" data-tr="Parmağını ekranda sürükle → alt raket takip eder · İlk 7 sayıya ulaşan kazanır" data-en="Drag finger → bottom paddle follows · First to 7 wins">Parmağını ekranda sürükle → alt raket takip eder · İlk 7 sayıya ulaşan kazanır</div>
 </div>
 
 <!-- REFLEX MASTER -->
@@ -1615,6 +1646,38 @@
   <div style="opacity:.7;font-size:.8em;margin-top:6px">Şekilleri say · Doğru sayıya dokun · Her doğru +10 puan</div>
 </div>
 
+<!-- XOX (TIC-TAC-TOE) -->
+<div id="game-xox" class="screen">
+  <div class="hud">
+    <span style="color:#fadb14;font-size:1.2em;font-weight:800">X: <span id="xox-skor-x">0</span></span>
+    <span style="font-size:1em;font-weight:800">Sıra: <span id="xox-sira" style="color:#fadb14">X</span></span>
+    <span style="color:#19d3e0;font-size:1.2em;font-weight:800">O: <span id="xox-skor-o">0</span></span>
+  </div>
+  <!-- Mod seçimi -->
+  <div style="display:flex;justify-content:center;gap:6px;margin-bottom:10px">
+    <button class="btn small" onclick="xoxModSec('iki_kisi')" id="xox-m-iki" style="padding:6px 12px" data-tr="👥 2 Kişi" data-en="👥 2 Players">👥 2 Kişi</button>
+    <button class="btn alt small" onclick="xoxModSec('ai_kolay')" id="xox-m-ai-kolay" style="padding:6px 12px" data-tr="🤖 AI Kolay" data-en="🤖 AI Easy">🤖 AI Kolay</button>
+    <button class="btn alt small" onclick="xoxModSec('ai_zor')" id="xox-m-ai-zor" style="padding:6px 12px" data-tr="🤖 AI Zor" data-en="🤖 AI Hard">🤖 AI Zor</button>
+  </div>
+  <!-- 3x3 Tahta -->
+  <div id="xox-tahta" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-width:300px;margin:14px auto;padding:14px;background:linear-gradient(160deg,#1a1a3e,#2a1f63);border-radius:24px;box-shadow:0 8px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.2)"></div>
+  <!-- Oyun sonu -->
+  <div id="xox-gameover" style="display:none;background:rgba(0,0,0,.9);border-radius:16px;padding:18px;margin:12px auto;max-width:300px;text-align:center;box-shadow:0 8px 24px rgba(0,0,0,.6)">
+    <div id="xox-gameover-baslik" style="font-weight:800;font-size:1.4em;margin:8px 0">🎉</div>
+    <div id="xox-gameover-detay" style="margin:8px 0;font-size:.95em">─</div>
+    <div class="oyun-kontrol">
+      <button class="btn small" onclick="xoxBaslat()" data-tr="🔄 Tekrar" data-en="🔄 Again">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="showGame('menu')" data-tr="🏠 Menü" data-en="🏠 Menu">🏠 Menü</button>
+    </div>
+  </div>
+  <div class="oyun-kontrol">
+    <button class="btn alt small" onclick="xoxBaslat()" data-tr="🔄 Yeniden" data-en="🔄 Restart">🔄 Yeniden</button>
+    <button class="btn alt small" onclick="xoxSkorSifirla()" data-tr="0️⃣ Skor Sıfırla" data-en="0️⃣ Reset Score">0️⃣ Skor Sıfırla</button>
+    <button class="btn alt small" onclick="showGame('menu')" data-tr="🏠 Menü" data-en="🏠 Menu">🏠 Menü</button>
+  </div>
+  <div style="opacity:.7;font-size:.8em;margin-top:6px" data-tr="Hücreye dokun · 3 aynı yan yana = kazandı · Skorlar saklanır" data-en="Tap cell · 3 in a row = win · Scores persist">Hücreye dokun · 3 aynı yan yana = kazandı · Skorlar saklanır</div>
+</div>
+
 <div id="toast" class="toast"></div>
 
 <script>
@@ -1660,7 +1723,8 @@ const ROZETLER = [
   { id: 'var_yarim_m',  emoji: '💼', ad: 'İyi Pazarlık',      aciklama: 'Var mısın\'da 500K kazan' },
   { id: 'kategori',     emoji: '🌟', ad: 'Her Türden',        aciklama: 'Her kategoride oyun oyna' },
   { id: 'gun_3',        emoji: '📅', ad: 'Sadık Ziyaretçi',   aciklama: '3 ayrı gün oyna' },
-  { id: 'tum_oyunlar',  emoji: '🏆', ad: 'Koleksiyoner',      aciklama: 'Tüm oyunları bir kez oyna' }
+  { id: 'tum_oyunlar',  emoji: '🏆', ad: 'Koleksiyoner',      aciklama: 'Tüm oyunları bir kez oyna' },
+  { id: 'xox_usta',     emoji: '⭕', ad: 'XOX Ustası',         aciklama: 'XOX\'ta AI zora karşı kazan' }
 ];
 
 // İstatistikler
@@ -1718,12 +1782,12 @@ function rozetKontrolEt() {
   if (p.toplamOyun >= 100) rozetKazan('yuz_oyun');
   if (p.gunler.length >= 3) rozetKazan('gun_3');
   // Tüm oyunlar oynandı mı (21 farklı oyun)
-  if (p.oynananOyunlar.length >= 21) rozetKazan('tum_oyunlar');
+  if (p.oynananOyunlar.length >= 22) rozetKazan('tum_oyunlar');
   // Kategori - her kategoriden bir oyun oynamış mı
   const kategorilerMap = {
     'cocuk': ['hayvansesi', 'renkesle', 'saymaca'],
     'puzzle': ['blok', 'puzzle', 'eslestir', 'balon', 'iki048', 'tetris', 'memory', 'sudoku'],
-    'arcade': ['snake', 'pong', 'uzay', 'balik', 'kosucu'],
+    'arcade': ['snake', 'pong', 'uzay', 'balik', 'kosucu', 'xox'],
     'refleks': ['reflex'],
     'kelime': ['kelime', 'asma'],
     'bilgi': ['varyok', 'milyoner']
@@ -1797,7 +1861,8 @@ function profilGoster() {
     { id: 'asma',       ad: '✏️ Asmaca',         key: 'as_best',         format: 'puan' },
     { id: 'hayvansesi', ad: '🐾 Hayvan Sesi',    key: 'hs_best',         format: 'puan' },
     { id: 'renkesle',   ad: '🎨 Renk Eşle',      key: 're_best',         format: 'puan' },
-    { id: 'saymaca',    ad: '🔢 Sayı Saymaca',  key: 'sa_best',         format: 'puan' }
+    { id: 'saymaca',    ad: '🔢 Sayı Saymaca',  key: 'sa_best',         format: 'puan' },
+    { id: 'xox',        ad: '⭕ XOX',             key: 'xox_skor_x',      format: 'puan' }
   ];
   const skorDiv = document.getElementById('pr-skorlar');
   skorDiv.innerHTML = '';
@@ -2638,6 +2703,7 @@ function showGame(g) {
   if (g === 'hayvansesi') { setDuvar('doga'); requestAnimationFrame(() => hsBaslat()); }
   if (g === 'renkesle') { setDuvar('varsayilan'); requestAnimationFrame(() => reBaslat()); }
   if (g === 'saymaca') { setDuvar('doga'); requestAnimationFrame(() => saBaslat()); }
+  if (g === 'xox') { setDuvar('teknoloji'); requestAnimationFrame(() => xoxBaslat()); }
   if (g === 'profil') { setDuvar('varsayilan'); requestAnimationFrame(() => profilGoster()); }
   if (g === 'ayarlar') { setDuvar('varsayilan'); requestAnimationFrame(() => ayarlarYukle()); }
   if (g !== 'snake') { clearInterval(window.snTimer); }
@@ -5859,6 +5925,8 @@ let pongIzler = [];             // top arkasındaki iz noktalar
 let pongHedef = 7;              // ilk 7'ye ulaşan kazanır
 let pongTouch = null;
 let pongParticles = [];         // puan anında patlama partiküllleri
+let pongIkiKisi = false;        // 2-kişi yerel mod (üst raket de manuel)
+let pongTouch2 = null;          // üst raket için ikinci dokunma
 
 // AI zorluğu: rakip raketin maksimum hızı + reaksiyon gecikmesi
 const PONG_ZORLUK = {
@@ -5869,13 +5937,55 @@ const PONG_ZORLUK = {
 
 function pongZorluk(z) {
   pongZorlukAyari = z;
-  document.getElementById('pong-zorluk').innerText = z === 'kolay' ? 'Kolay' : z === 'zor' ? 'Zor' : 'Orta';
+  // Mod yazısını güncelle (pong-zorluk eski span'i HUD'dan kaldırıldı, pong-mod-yazi kullanıyoruz)
+  const mEl = document.getElementById('pong-mod-yazi');
+  if (mEl) mEl.innerText = pongIkiKisi ? (aktifDil === 'en' ? '2P' : '2 Kişi') : ('AI ' + (z === 'kolay' ? (aktifDil === 'en' ? 'Easy' : 'Kolay') : z === 'zor' ? (aktifDil === 'en' ? 'Hard' : 'Zor') : (aktifDil === 'en' ? 'Med' : 'Orta')));
+  pongBaslat();
+}
+
+function pongModSec(m) {
+  pongIkiKisi = (m === 'iki');
+  save('pong_iki_kisi', pongIkiKisi);
+  // Butonları güncelle
+  const bAi = document.getElementById('pong-m-ai');
+  const bIki = document.getElementById('pong-m-iki');
+  if (bAi && bIki) {
+    bAi.className = pongIkiKisi ? 'btn alt small' : 'btn small';
+    bIki.className = pongIkiKisi ? 'btn small' : 'btn alt small';
+  }
+  // Zorluk barını 2-kişi modda gizle
+  const zBar = document.getElementById('pong-zorluk-bar');
+  if (zBar) zBar.style.display = pongIkiKisi ? 'none' : '';
+  // Mod yazısı + açıklama
+  const mEl = document.getElementById('pong-mod-yazi');
+  if (mEl) mEl.innerText = pongIkiKisi ? (aktifDil === 'en' ? '2P' : '2 Kişi') : 'AI';
+  const aciklama = document.getElementById('pong-aciklama');
+  if (aciklama) {
+    if (pongIkiKisi) {
+      aciklama.innerText = aktifDil === 'en' ? 'Two players: top and bottom · Each touches own half' : '2 oyuncu: üst ve alt · Her biri kendi yarısına dokunur';
+    } else {
+      aciklama.innerText = aktifDil === 'en' ? 'Drag finger → bottom paddle follows · First to 7 wins' : 'Parmağını ekranda sürükle → alt raket takip eder · İlk 7 sayıya ulaşan kazanır';
+    }
+  }
   pongBaslat();
 }
 
 function pongBaslat() {
   document.getElementById('pong-gameover').style.display = 'none';
-  document.getElementById('pong-duraklat-btn').innerText = '⏸️ Durdur';
+  document.getElementById('pong-duraklat-btn').innerText = aktifDil === 'en' ? '⏸️ Pause' : '⏸️ Durdur';
+  // Mod ayarını localStorage'tan yükle
+  pongIkiKisi = load('pong_iki_kisi', false);
+  // Buton vurguları
+  const bAi = document.getElementById('pong-m-ai');
+  const bIki = document.getElementById('pong-m-iki');
+  if (bAi && bIki) {
+    bAi.className = pongIkiKisi ? 'btn alt small' : 'btn small';
+    bIki.className = pongIkiKisi ? 'btn small' : 'btn alt small';
+  }
+  const zBar = document.getElementById('pong-zorluk-bar');
+  if (zBar) zBar.style.display = pongIkiKisi ? 'none' : '';
+  const mEl = document.getElementById('pong-mod-yazi');
+  if (mEl) mEl.innerText = pongIkiKisi ? (aktifDil === 'en' ? '2P' : '2 Kişi') : 'AI';
   pongBoyutla();
   pongSkorSen = 0;
   pongSkorAi = 0;
@@ -6005,18 +6115,20 @@ function pongAdim() {
     pongIzler = [];
     pongTopSifirla(1); // top aşağı (oyuncuya) gitsin
   }
-  // AI hareketi: topu takip et (zorluk seviyesine göre tepkili)
-  const cfg = PONG_ZORLUK[pongZorlukAyari];
-  const aiMerkez = pongRaketAi.x + pongRaketAi.w / 2;
-  let aiHedef = pongTop.x;
-  // Top aşağı gidiyorsa AI bekleyebilir (zorlukla orantılı)
-  if (pongTop.dy > 0 && pongZorlukAyari !== 'zor') {
-    aiHedef = PONG_W / 2 + (pongTop.x - PONG_W / 2) * 0.4;
+  // AI hareketi: topu takip et (zorluk seviyesine göre tepkili) - sadece tek-kişi modunda
+  if (!pongIkiKisi) {
+    const cfg = PONG_ZORLUK[pongZorlukAyari];
+    const aiMerkez = pongRaketAi.x + pongRaketAi.w / 2;
+    let aiHedef = pongTop.x;
+    // Top aşağı gidiyorsa AI bekleyebilir (zorlukla orantılı)
+    if (pongTop.dy > 0 && pongZorlukAyari !== 'zor') {
+      aiHedef = PONG_W / 2 + (pongTop.x - PONG_W / 2) * 0.4;
+    }
+    const fark = aiHedef - aiMerkez;
+    const hareket = Math.max(-cfg.aiHiz, Math.min(cfg.aiHiz, fark * cfg.aiTakipOran * 4));
+    pongRaketAi.x += hareket;
+    pongRaketAi.x = Math.max(0, Math.min(PONG_W - pongRaketAi.w, pongRaketAi.x));
   }
-  const fark = aiHedef - aiMerkez;
-  const hareket = Math.max(-cfg.aiHiz, Math.min(cfg.aiHiz, fark * cfg.aiTakipOran * 4));
-  pongRaketAi.x += hareket;
-  pongRaketAi.x = Math.max(0, Math.min(PONG_W - pongRaketAi.w, pongRaketAi.x));
   // Partiküller
   pongParticles.forEach(p => {
     p.x += p.dx;
@@ -6043,23 +6155,38 @@ function pongPuanPatlama(x, y, renk) {
 function pongBitir(kazandi) {
   pongBitti = true;
   cancelAnimationFrame(window.pongAnim);
-  if (kazandi) {
-    sfx.kazan();
-    // Skor = oyuncu puanı - rakip puan (kazanılan farka göre); en yüksek skor
-    const skorYeni = pongSkorSen - pongSkorAi;
-    if (skorYeni > pongBest) {
-      pongBest = skorYeni;
-      save('pong_best', pongBest);
-      pongHUDGuncelle();
+  let baslik = '';
+  if (pongIkiKisi) {
+    // 2-kişi modunda: alt = oyuncu 1, üst = oyuncu 2
+    if (kazandi) {
+      baslik = aktifDil === 'en' ? '🏆 Bottom Player Wins!' : '🏆 Alt Oyuncu Kazandı!';
+      sfx.kazan();
+    } else {
+      baslik = aktifDil === 'en' ? '🏆 Top Player Wins!' : '🏆 Üst Oyuncu Kazandı!';
+      sfx.kazan();
     }
-    document.getElementById('pong-gameover-baslik').innerText = '🏆 Sen Kazandın!';
   } else {
-    sfx.yanlis();
-    document.getElementById('pong-gameover-baslik').innerText = '💀 Sen Kaybettin';
+    if (kazandi) {
+      sfx.kazan();
+      const skorYeni = pongSkorSen - pongSkorAi;
+      if (skorYeni > pongBest) {
+        pongBest = skorYeni;
+        save('pong_best', pongBest);
+        pongHUDGuncelle();
+      }
+      baslik = aktifDil === 'en' ? '🏆 You Win!' : '🏆 Sen Kazandın!';
+    } else {
+      sfx.yanlis();
+      baslik = aktifDil === 'en' ? '💀 You Lost' : '💀 Sen Kaybettin';
+    }
   }
+  document.getElementById('pong-gameover-baslik').innerText = baslik;
+  const zorlukYazi = pongZorlukAyari === 'kolay' ? (aktifDil === 'en' ? 'Easy' : 'Kolay') :
+                     pongZorlukAyari === 'zor' ? (aktifDil === 'en' ? 'Hard' : 'Zor') :
+                     (aktifDil === 'en' ? 'Medium' : 'Orta');
   document.getElementById('pong-gameover-skor').innerText =
-    'Skor: ' + pongSkorSen + ' - ' + pongSkorAi + ' · Zorluk: ' +
-    (pongZorlukAyari === 'kolay' ? 'Kolay' : pongZorlukAyari === 'zor' ? 'Zor' : 'Orta');
+    (aktifDil === 'en' ? 'Score: ' : 'Skor: ') + pongSkorSen + ' - ' + pongSkorAi +
+    (pongIkiKisi ? '' : ' · ' + (aktifDil === 'en' ? 'Difficulty' : 'Zorluk') + ': ' + zorlukYazi);
   document.getElementById('pong-gameover').style.display = 'block';
 }
 
@@ -6141,25 +6268,48 @@ function pongCiz() {
 // Oyuncu kontrolü: parmak sürükle (sadece x ekseni alt raketi takip eder)
 (function pongBind() {
   const canvas = document.getElementById('pong-board');
-  function hareket(clientX) {
+  function hareket(clientX, clientY) {
     if (pongBitti || pongDuraklatildi || !pongRaketSen) return;
     const rect = canvas.getBoundingClientRect();
     const lw = canvas._lw || canvas.width;
-    const scale = lw / rect.width;
-    const x = (clientX - rect.left) * scale;
-    pongRaketSen.x = x - pongRaketSen.w / 2;
-    pongRaketSen.x = Math.max(0, Math.min(PONG_W - pongRaketSen.w, pongRaketSen.x));
+    const lh = canvas._lh || canvas.height;
+    const scaleX = lw / rect.width;
+    const scaleY = lh / rect.height;
+    const x = (clientX - rect.left) * scaleX;
+    const y = (clientY - rect.top) * scaleY;
+    // 2-kişi modda Y'ye göre hangi raket
+    if (pongIkiKisi) {
+      if (y < PONG_H / 2) {
+        // Üst raket (2. oyuncu)
+        pongRaketAi.x = x - pongRaketAi.w / 2;
+        pongRaketAi.x = Math.max(0, Math.min(PONG_W - pongRaketAi.w, pongRaketAi.x));
+      } else {
+        // Alt raket
+        pongRaketSen.x = x - pongRaketSen.w / 2;
+        pongRaketSen.x = Math.max(0, Math.min(PONG_W - pongRaketSen.w, pongRaketSen.x));
+      }
+    } else {
+      pongRaketSen.x = x - pongRaketSen.w / 2;
+      pongRaketSen.x = Math.max(0, Math.min(PONG_W - pongRaketSen.w, pongRaketSen.x));
+    }
   }
-  canvas.addEventListener('touchstart', e => {
+  function cokluDokunma(e) {
     e.preventDefault();
-    if (e.touches.length) hareket(e.touches[0].clientX);
-  }, { passive: false });
-  canvas.addEventListener('touchmove', e => {
-    e.preventDefault();
-    if (e.touches.length) hareket(e.touches[0].clientX);
-  }, { passive: false });
-  canvas.addEventListener('mousedown', e => { pongTouch = true; hareket(e.clientX); });
-  canvas.addEventListener('mousemove', e => { if (pongTouch) hareket(e.clientX); });
+    if (!pongIkiKisi) {
+      // Tek dokunma - tek raket
+      if (e.touches && e.touches.length) hareket(e.touches[0].clientX, e.touches[0].clientY);
+      return;
+    }
+    // 2-kişi: tüm aktif dokunmaları işle (her biri kendi tarafındaki raketi kontrol)
+    if (!e.touches) return;
+    for (let i = 0; i < e.touches.length; i++) {
+      hareket(e.touches[i].clientX, e.touches[i].clientY);
+    }
+  }
+  canvas.addEventListener('touchstart', cokluDokunma, { passive: false });
+  canvas.addEventListener('touchmove', cokluDokunma, { passive: false });
+  canvas.addEventListener('mousedown', e => { pongTouch = true; hareket(e.clientX, e.clientY); });
+  canvas.addEventListener('mousemove', e => { if (pongTouch) hareket(e.clientX, e.clientY); });
   canvas.addEventListener('mouseup', () => { pongTouch = false; });
 })();
 
@@ -10616,6 +10766,214 @@ function bildirimDurumGuncelle() {
   else if (durum === 'denied') btn.innerText = '🔕 Bildirimler Engellendi';
   else if (durum === 'destek-yok') btn.innerText = '🚫 Desteklenmiyor';
   else btn.innerText = '🔔 Bildirimleri Aç';
+}
+
+
+
+
+/* ============ XOX (TIC-TAC-TOE) ============ */
+let xoxTahta = [];           // 9 hücre: '', 'X', 'O'
+let xoxSira = 'X';
+let xoxMod = 'iki_kisi';     // 'iki_kisi' | 'ai_kolay' | 'ai_zor'
+let xoxBitti = false;
+let xoxSkorX = 0;
+let xoxSkorO = 0;
+let xoxKilit = false;        // AI düşünürken tıklamayı engelle
+
+// Kazanan kombinasyonlar
+const XOX_KAZANAN_KOMBOLAR = [
+  [0,1,2],[3,4,5],[6,7,8],    // satırlar
+  [0,3,6],[1,4,7],[2,5,8],    // sütunlar
+  [0,4,8],[2,4,6]             // çaprazlar
+];
+
+function xoxBaslat() {
+  document.getElementById('xox-gameover').style.display = 'none';
+  xoxTahta = Array(9).fill('');
+  xoxSira = 'X';
+  xoxBitti = false;
+  xoxKilit = false;
+  // Skorlar kayıtlı (sayfa açıldığında localStorage'tan)
+  xoxSkorX = load('xox_skor_x', 0);
+  xoxSkorO = load('xox_skor_o', 0);
+  xoxHUDGuncelle();
+  xoxTahtayiCiz();
+  xoxModGoster();
+}
+
+function xoxModSec(mod) {
+  xoxMod = mod;
+  save('xox_mod', mod);
+  xoxModGoster();
+  xoxBaslat();
+}
+
+function xoxModGoster() {
+  const modlar = ['iki_kisi', 'ai_kolay', 'ai_zor'];
+  modlar.forEach(m => {
+    const btn = document.getElementById('xox-m-' + (m === 'iki_kisi' ? 'iki' : m.replace('_','-')));
+    if (btn) btn.className = (m === xoxMod) ? 'btn small' : 'btn alt small';
+  });
+}
+
+function xoxHUDGuncelle() {
+  document.getElementById('xox-skor-x').innerText = xoxSkorX;
+  document.getElementById('xox-skor-o').innerText = xoxSkorO;
+  const sEl = document.getElementById('xox-sira');
+  sEl.innerText = xoxSira;
+  sEl.style.color = xoxSira === 'X' ? '#fadb14' : '#19d3e0';
+}
+
+function xoxTahtayiCiz() {
+  const grid = document.getElementById('xox-tahta');
+  grid.innerHTML = '';
+  for (let i = 0; i < 9; i++) {
+    const div = document.createElement('div');
+    let cls = 'xox-hucre';
+    if (xoxTahta[i] === 'X') cls += ' x';
+    else if (xoxTahta[i] === 'O') cls += ' o';
+    if (xoxTahta[i]) cls += ' dolu';
+    div.className = cls;
+    div.innerText = xoxTahta[i];
+    div.onclick = () => xoxOyna(i);
+    grid.appendChild(div);
+  }
+}
+
+function xoxOyna(idx) {
+  if (xoxBitti || xoxKilit) return;
+  if (xoxTahta[idx]) return;
+  xoxTahta[idx] = xoxSira;
+  sfx.tik();
+  xoxTahtayiCiz();
+  // Kazanma kontrolü
+  const kazanan = xoxKazananBul(xoxTahta);
+  if (kazanan) {
+    xoxBitir(kazanan);
+    return;
+  }
+  // Beraberlik
+  if (xoxTahta.every(h => h)) {
+    xoxBitir({ kazanan: 'beraberlik', kombo: [] });
+    return;
+  }
+  // Sıra değiştir
+  xoxSira = (xoxSira === 'X') ? 'O' : 'X';
+  xoxHUDGuncelle();
+  // AI sırası mı?
+  if (xoxMod !== 'iki_kisi' && xoxSira === 'O') {
+    xoxKilit = true;
+    setTimeout(() => {
+      const aiHamle = (xoxMod === 'ai_zor') ? xoxMinimaxHamle() : xoxRastgeleHamle();
+      xoxKilit = false;
+      xoxOyna(aiHamle);
+    }, 400);
+  }
+}
+
+function xoxKazananBul(tahta) {
+  for (const k of XOX_KAZANAN_KOMBOLAR) {
+    const [a,b,c] = k;
+    if (tahta[a] && tahta[a] === tahta[b] && tahta[a] === tahta[c]) {
+      return { kazanan: tahta[a], kombo: k };
+    }
+  }
+  return null;
+}
+
+function xoxBitir(sonuc) {
+  xoxBitti = true;
+  // Kazanan komboyu vurgula
+  if (sonuc.kombo && sonuc.kombo.length) {
+    const grid = document.getElementById('xox-tahta');
+    sonuc.kombo.forEach(i => {
+      if (grid.children[i]) grid.children[i].classList.add('kazanan');
+    });
+  }
+  if (sonuc.kazanan === 'X') {
+    xoxSkorX++; save('xox_skor_x', xoxSkorX);
+    sfx.kazan();
+    // AI zora karşı kazandıysa rozet
+    if (xoxMod === 'ai_zor') {
+      try { if (typeof rozetKazan === 'function') rozetKazan('xox_usta'); } catch (e) {}
+    }
+  } else if (sonuc.kazanan === 'O') {
+    xoxSkorO++; save('xox_skor_o', xoxSkorO);
+    sfx.kazan();
+  } else {
+    sfx.guc();
+  }
+  xoxHUDGuncelle();
+  document.getElementById('xox-gameover-baslik').innerText =
+    sonuc.kazanan === 'beraberlik' ? (aktifDil === 'en' ? '🤝 Draw!' : '🤝 Berabere!') :
+    (aktifDil === 'en' ? (sonuc.kazanan + ' wins!') : (sonuc.kazanan + ' kazandı!'));
+  document.getElementById('xox-gameover-detay').innerHTML =
+    'X: <strong style="color:#fadb14">' + xoxSkorX + '</strong> · O: <strong style="color:#19d3e0">' + xoxSkorO + '</strong>';
+  setTimeout(() => {
+    document.getElementById('xox-gameover').style.display = 'block';
+  }, 600);
+}
+
+function xoxSkorSifirla() {
+  if (!confirm(aktifDil === 'en' ? 'Reset XOX scores?' : 'XOX skorlarını sıfırla?')) return;
+  xoxSkorX = 0;
+  xoxSkorO = 0;
+  save('xox_skor_x', 0);
+  save('xox_skor_o', 0);
+  xoxBaslat();
+  toast(aktifDil === 'en' ? 'Scores reset' : 'Skorlar sıfırlandı');
+}
+
+// AI - Kolay mod: rastgele hamle
+function xoxRastgeleHamle() {
+  const bos = [];
+  for (let i = 0; i < 9; i++) if (!xoxTahta[i]) bos.push(i);
+  return bos[Math.floor(Math.random() * bos.length)];
+}
+
+// AI - Zor mod: minimax (yenilemez)
+function xoxMinimaxHamle() {
+  let enIyiSkor = -Infinity;
+  let enIyiHamle = 0;
+  for (let i = 0; i < 9; i++) {
+    if (xoxTahta[i]) continue;
+    xoxTahta[i] = 'O';
+    const skor = xoxMinimax(xoxTahta, 0, false);
+    xoxTahta[i] = '';
+    if (skor > enIyiSkor) {
+      enIyiSkor = skor;
+      enIyiHamle = i;
+    }
+  }
+  return enIyiHamle;
+}
+
+function xoxMinimax(tahta, derinlik, maximizing) {
+  const kazanan = xoxKazananBul(tahta);
+  if (kazanan) {
+    if (kazanan.kazanan === 'O') return 10 - derinlik;
+    if (kazanan.kazanan === 'X') return derinlik - 10;
+  }
+  if (tahta.every(h => h)) return 0; // beraberlik
+  if (maximizing) {
+    let enIyi = -Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (tahta[i]) continue;
+      tahta[i] = 'O';
+      enIyi = Math.max(enIyi, xoxMinimax(tahta, derinlik + 1, false));
+      tahta[i] = '';
+    }
+    return enIyi;
+  } else {
+    let enIyi = Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (tahta[i]) continue;
+      tahta[i] = 'X';
+      enIyi = Math.min(enIyi, xoxMinimax(tahta, derinlik + 1, true));
+      tahta[i] = '';
+    }
+    return enIyi;
+  }
 }
 
 

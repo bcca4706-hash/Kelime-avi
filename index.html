@@ -166,6 +166,31 @@
   .pr-skor-isim { font-weight: 600; }
   .pr-skor-deger { color: var(--tema-vurgu, #fadb14); font-weight: 800; }
 
+  /* GÖREVLER */
+  .pr-gorev {
+    background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 14px; padding: 12px 14px; margin: 8px 0;
+    box-shadow: 0 3px 10px rgba(0,0,0,.2);
+  }
+  .pr-gorev.tamam {
+    background: linear-gradient(160deg, rgba(82,196,26,.25), rgba(46,196,79,.15));
+    border-color: rgba(82,196,26,.5);
+  }
+
+  /* DİL KARTI */
+  .dil-kart {
+    aspect-ratio: 1; border-radius: 16px; padding: 10px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; user-select: none;
+    color: #fff; font-weight: 700;
+    border: 3px solid transparent;
+    transition: transform .12s, border-color .2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.2);
+  }
+  .dil-kart:active { transform: scale(.95); }
+  .dil-kart.aktif { border-color: #fff; box-shadow: 0 0 16px rgba(255,255,255,.5); }
+
   /* AYARLAR */
   .ayar-grup {
     background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
@@ -221,6 +246,45 @@
   body.tema-koyu { --tema-1: #555; --tema-2: #222; --tema-3: #888; --tema-vurgu: #fadb14; }
   body.tema-koyu { background: #0a0a0a !important; }
   body.tema-koyu #bg-overlay { background: rgba(0,0,0,.7); }
+
+  /* GÖREV KART */
+  .gorev-kart {
+    background: linear-gradient(160deg, rgba(255,255,255,.08), rgba(255,255,255,.03));
+    border: 1px solid rgba(255,255,255,.15);
+    border-radius: 16px; padding: 12px;
+    margin: 8px 0;
+    transition: all .3s;
+  }
+  .gorev-kart.tamam {
+    background: linear-gradient(160deg, rgba(82,196,26,.2), rgba(46,196,79,.1));
+    border-color: rgba(82,196,26,.5);
+  }
+  .gorev-ust {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 8px;
+  }
+  .gorev-emoji { font-size: 1.5em; }
+  .gorev-baslik { flex: 1; font-weight: 600; font-size: .92em; }
+  .gorev-bonus {
+    background: var(--tema-vurgu, #fadb14); color: #1a1a3e;
+    padding: 3px 10px; border-radius: 12px;
+    font-weight: 800; font-size: .78em;
+  }
+  .gorev-bar {
+    height: 8px; background: rgba(255,255,255,.1);
+    border-radius: 4px; overflow: hidden;
+  }
+  .gorev-dolu {
+    height: 100%;
+    background: linear-gradient(90deg, var(--tema-1, #6a4ad0), var(--tema-3, #9b7af5));
+    transition: width .5s;
+  }
+  .gorev-ilerleme {
+    font-size: .78em; opacity: .8; margin-top: 4px; text-align: right;
+  }
+  .gorev-kart.tamam .gorev-dolu {
+    background: linear-gradient(90deg, #52c41a, #2ec44f);
+  }
   .card:active { transform: scale(.98); background: rgba(255,255,255,.14); }
   .menu-icon { font-size: 2.4em; display: block; margin-bottom: 4px; }
 
@@ -628,15 +692,15 @@
 
 <!-- ANA MENÜ -->
 <div id="menu" class="screen active">
-  <h1>🎮 Oyun Merkezi</h1>
+  <h1 data-tr="🎮 Oyun Merkezi" data-en="🎮 Game Hub">🎮 Oyun Merkezi</h1>
   <div class="kategori-sekmeler">
-    <button class="kategori-sekme aktif" data-kat="tum" onclick="kategoriSec('tum')">🌟 Tümü</button>
-    <button class="kategori-sekme" data-kat="cocuk" onclick="kategoriSec('cocuk')">🧸 Çocuk</button>
-    <button class="kategori-sekme" data-kat="puzzle" onclick="kategoriSec('puzzle')">🧩 Puzzle</button>
-    <button class="kategori-sekme" data-kat="arcade" onclick="kategoriSec('arcade')">🕹️ Arcade</button>
-    <button class="kategori-sekme" data-kat="bilgi" onclick="kategoriSec('bilgi')">🧠 Bilgi</button>
-    <button class="kategori-sekme" data-kat="refleks" onclick="kategoriSec('refleks')">⚡ Refleks</button>
-    <button class="kategori-sekme" data-kat="kelime" onclick="kategoriSec('kelime')">📝 Kelime</button>
+    <button class="kategori-sekme aktif" data-kat="tum" onclick="kategoriSec('tum')" data-tr="🌟 Tümü" data-en="🌟 All">🌟 Tümü</button>
+    <button class="kategori-sekme" data-kat="cocuk" onclick="kategoriSec('cocuk')" data-tr="🧸 Çocuk" data-en="🧸 Kids">🧸 Çocuk</button>
+    <button class="kategori-sekme" data-kat="puzzle" onclick="kategoriSec('puzzle')" data-tr="🧩 Puzzle" data-en="🧩 Puzzle">🧩 Puzzle</button>
+    <button class="kategori-sekme" data-kat="arcade" onclick="kategoriSec('arcade')" data-tr="🕹️ Arcade" data-en="🕹️ Arcade">🕹️ Arcade</button>
+    <button class="kategori-sekme" data-kat="bilgi" onclick="kategoriSec('bilgi')" data-tr="🧠 Bilgi" data-en="🧠 Trivia">🧠 Bilgi</button>
+    <button class="kategori-sekme" data-kat="refleks" onclick="kategoriSec('refleks')" data-tr="⚡ Refleks" data-en="⚡ Reflex">⚡ Refleks</button>
+    <button class="kategori-sekme" data-kat="kelime" onclick="kategoriSec('kelime')" data-tr="📝 Kelime" data-en="📝 Word">📝 Kelime</button>
   </div>
 
   <!-- ÇOCUK -->
@@ -756,33 +820,36 @@
     <div style="opacity:.8;font-size:.85em;margin-top:4px">12 soru · 3 yardım · 1 milyon TL hedefi</div>
   </div>
 
-  <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 23.0 · 21 oyun · Profil + Rozetler + Tema</div>
+  <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()" data-tr="📲 Uygulamayı Yükle" data-en="📲 Install App">📲 Uygulamayı Yükle</button>
+  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 24.0 · 21 oyun · Görev + Dil + Bildirim</div>
 </div>
 
 <!-- PROFİL -->
 <div id="game-profil" class="screen">
-  <h1>🏆 Profilim</h1>
+  <h1 data-tr="🏆 Profilim" data-en="🏆 My Profile">🏆 Profilim</h1>
   <!-- Genel istatistikler -->
   <div class="profil-ozet">
     <div class="profil-ozet-hucre">
       <div class="profil-ozet-deger" id="pr-toplam-oyun">0</div>
-      <div class="profil-ozet-etiket">Oyun Oynandı</div>
+      <div class="profil-ozet-etiket" data-tr="Oyun Oynandı" data-en="Games Played">Oyun Oynandı</div>
     </div>
     <div class="profil-ozet-hucre">
       <div class="profil-ozet-deger" id="pr-toplam-puan">0</div>
-      <div class="profil-ozet-etiket">Toplam Puan</div>
+      <div class="profil-ozet-etiket" data-tr="Toplam Puan" data-en="Total Points">Toplam Puan</div>
     </div>
     <div class="profil-ozet-hucre">
       <div class="profil-ozet-deger" id="pr-rozet-sayi">0</div>
-      <div class="profil-ozet-etiket">Rozet</div>
+      <div class="profil-ozet-etiket" data-tr="Rozet" data-en="Badges">Rozet</div>
     </div>
   </div>
+  <!-- Günlük görevler -->
+  <h2 style="margin-top:20px" data-tr="🎯 Günün Görevleri" data-en="🎯 Daily Quests">🎯 Günün Görevleri</h2>
+  <div id="gorev-listesi" style="max-width:380px;margin:10px auto"></div>
   <!-- Rozetler bölümü -->
-  <h2 style="margin-top:20px">🎖️ Rozetler</h2>
+  <h2 style="margin-top:20px" data-tr="🎖️ Rozetler" data-en="🎖️ Badges">🎖️ Rozetler</h2>
   <div id="pr-rozetler" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:380px;margin:10px auto"></div>
   <!-- En iyi skorlar -->
-  <h2 style="margin-top:20px">📊 En İyi Skorlar</h2>
+  <h2 style="margin-top:20px" data-tr="📊 En İyi Skorlar" data-en="📊 Best Scores">📊 En İyi Skorlar</h2>
   <div id="pr-skorlar" style="max-width:380px;margin:10px auto"></div>
 
   <div class="oyun-kontrol">
@@ -792,9 +859,22 @@
 
 <!-- AYARLAR -->
 <div id="game-ayarlar" class="screen">
-  <h1>⚙️ Ayarlar</h1>
+  <h1 data-tr="⚙️ Ayarlar" data-en="⚙️ Settings">⚙️ Ayarlar</h1>
   <div class="ayar-grup">
-    <h2>🎨 Tema</h2>
+    <h2 data-tr="🌐 Dil" data-en="🌐 Language">🌐 Dil</h2>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;max-width:340px;margin:10px auto">
+      <div class="tema-kart dil-kart" data-dil="tr" onclick="dilSec('tr')" style="background:linear-gradient(160deg,#e30a17,#a00000);aspect-ratio:auto;padding:14px">
+        <div style="font-size:1.4em">🇹🇷</div>
+        <div style="font-size:.85em;margin-top:4px;font-weight:700">Türkçe</div>
+      </div>
+      <div class="tema-kart dil-kart" data-dil="en" onclick="dilSec('en')" style="background:linear-gradient(160deg,#1e40af,#1e3a8a);aspect-ratio:auto;padding:14px">
+        <div style="font-size:1.4em">🇬🇧</div>
+        <div style="font-size:.85em;margin-top:4px;font-weight:700">English</div>
+      </div>
+    </div>
+  </div>
+  <div class="ayar-grup">
+    <h2 data-tr="🎨 Tema" data-en="🎨 Theme">🎨 Tema</h2>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:340px;margin:10px auto">
       <div class="tema-kart" data-tema="mor" onclick="temaSec('mor')" style="background:linear-gradient(160deg,#6a4ad0,#2a1f63)">
         <div style="font-size:1.4em">🟣</div>
@@ -815,34 +895,39 @@
     </div>
   </div>
   <div class="ayar-grup">
-    <h2>🔊 Ses & Titreşim</h2>
+    <h2 data-tr="🔊 Ses & Titreşim" data-en="🔊 Sound & Vibration">🔊 Ses & Titreşim</h2>
     <label class="ayar-toggle">
-      <span>🔊 Ses Efektleri</span>
+      <span data-tr="🔊 Ses Efektleri" data-en="🔊 Sound Effects">🔊 Ses Efektleri</span>
       <input type="checkbox" id="ayar-ses" onchange="ayarToggle('ses', this.checked)">
       <span class="ayar-toggle-slider"></span>
     </label>
     <label class="ayar-toggle">
-      <span>📳 Titreşim</span>
+      <span data-tr="📳 Titreşim" data-en="📳 Vibration">📳 Titreşim</span>
       <input type="checkbox" id="ayar-titresim" onchange="ayarToggle('titresim', this.checked)">
       <span class="ayar-toggle-slider"></span>
     </label>
   </div>
   <div class="ayar-grup">
-    <h2>🗑️ Veri</h2>
-    <button class="btn alt small" onclick="ayarSifirla('skor')" style="margin:4px">🔄 Skorları Sıfırla</button>
-    <button class="btn alt small" onclick="ayarSifirla('hepsi')" style="margin:4px">⚠️ Tüm Veriyi Sil</button>
+    <h2 data-tr="🔔 Bildirimler" data-en="🔔 Notifications">🔔 Bildirimler</h2>
+    <button class="btn alt small" id="bildirim-btn" onclick="bildirimIzinIste()" style="margin:6px auto;display:block">🔔 Bildirimleri Aç</button>
+    <div style="opacity:.7;font-size:.78em;text-align:center;margin-top:6px" data-tr="Günlük oyun hatırlatması alırsın" data-en="Get daily game reminders">Günlük oyun hatırlatması alırsın</div>
   </div>
   <div class="ayar-grup">
-    <h2>ℹ️ Hakkında</h2>
+    <h2 data-tr="🗑️ Veri" data-en="🗑️ Data">🗑️ Veri</h2>
+    <button class="btn alt small" onclick="ayarSifirla('skor')" style="margin:4px" data-tr="🔄 Skorları Sıfırla" data-en="🔄 Reset Scores">🔄 Skorları Sıfırla</button>
+    <button class="btn alt small" onclick="ayarSifirla('hepsi')" style="margin:4px" data-tr="⚠️ Tüm Veriyi Sil" data-en="⚠️ Delete All Data">⚠️ Tüm Veriyi Sil</button>
+  </div>
+  <div class="ayar-grup">
+    <h2 data-tr="ℹ️ Hakkında" data-en="ℹ️ About">ℹ️ Hakkında</h2>
     <div style="opacity:.85;font-size:.85em;line-height:1.6">
       <strong>Mega Oyun Portalı</strong><br>
-      21 oyun · Türkçe<br>
-      Tek dosyada PWA<br>
-      sürüm 23.0
+      <span data-tr="21 oyun · Türkçe & English" data-en="21 games · Turkish & English">21 oyun · Türkçe & English</span><br>
+      <span data-tr="Tek dosyada PWA" data-en="Single-file PWA">Tek dosyada PWA</span><br>
+      sürüm 24.0
     </div>
   </div>
   <div class="oyun-kontrol">
-    <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
+    <button class="btn alt small" onclick="showGame('menu')" data-tr="🏠 Menü" data-en="🏠 Menu">🏠 Menü</button>
   </div>
 </div>
 
@@ -1360,6 +1445,7 @@
     <div id="mil-gameover-detay" style="margin:8px 0">─</div>
     <div class="oyun-kontrol">
       <button class="btn small" onclick="milBaslat()">🔄 Tekrar</button>
+      <button class="btn alt small" onclick="skorPaylas('Milyoner', milKazanc.toLocaleString('tr-TR') + ' TL')">📊 Paylaş</button>
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
@@ -1394,6 +1480,7 @@
     <div id="sd-gameover-detay" style="margin:8px 0">─</div>
     <div class="oyun-kontrol">
       <button class="btn small" onclick="sdBaslat()">🔄 Yeni Oyun</button>
+      <button class="btn alt small" onclick="skorPaylas('Sudoku ' + sdZorlukAyar, document.getElementById('sd-sure').innerText)">📊 Paylaş</button>
       <button class="btn alt small" onclick="showGame('menu')">🏠 Menü</button>
     </div>
   </div>
@@ -1532,6 +1619,7 @@
 
 <script>
 /* ============ GENEL YARDIMCILAR ============ */
+
 // Yatay mod tespiti
 function yatayMi() {
   return window.innerWidth > window.innerHeight;
@@ -1606,6 +1694,8 @@ function oyunSonuKaydet(oyunId, kazanilanPuan) {
   profilKaydet(p);
   // Rozet kontrolü
   rozetKontrolEt();
+  // Görev ilerlet
+  try { gorevIlerlet(kazanilanPuan > 0 ? 'kazandi' : 'oynadi', oyunId); } catch (e) {}
 }
 
 // Rozet kazandığında işaretle
@@ -1669,6 +1759,8 @@ function rozetKontrolEt() {
 
 // Profil sayfasını oluştur
 function profilGoster() {
+  // Görevleri göster
+  try { gorevGoster(); } catch (e) {}
   const p = profilGetir();
   document.getElementById('pr-toplam-oyun').innerText = p.toplamOyun;
   document.getElementById('pr-toplam-puan').innerText = p.toplamPuan.toLocaleString('tr-TR');
@@ -1724,6 +1816,8 @@ function profilGoster() {
                     '<span class="pr-skor-deger">' + goster + '</span>';
     skorDiv.appendChild(div);
   });
+  // Görevleri de göster
+  try { gorevleriGoster(); } catch (e) {}
 }
 
 /* ============ AYARLAR ============ */
@@ -1732,6 +1826,10 @@ function ayarlarYukle() {
   // Tema yükle
   const tema = load('tema', 'mor');
   temaUygula(tema);
+  // Dil
+  try { dilDegistir(load('dil', 'tr')); } catch (e) {}
+  // Bildirim durumu
+  try { bildirimDurumGuncelle(); } catch (e) {}
   // Toggle'ları yükle
   const ses = load('ses', true);
   const titresim = load('titresim', true);
@@ -2281,8 +2379,14 @@ window.addEventListener('load', () => {
     const tema = load('tema', 'mor');
     if (typeof temaUygula === 'function') temaUygula(tema);
   } catch (e) {}
+  // Dil uygula
+  try {
+    if (typeof dilDegistir === 'function') dilDegistir(load('dil', 'tr'));
+  } catch (e) {}
   // İlk rozet kontrolü
   try { if (typeof rozetKontrolEt === 'function') rozetKontrolEt(); } catch (e) {}
+  // Bugünün görevlerini oluştur
+  try { if (typeof gorevleriYukle === 'function') gorevleriYukle(); } catch (e) {}
 });
 // Yeniden boyutlandır
 window.addEventListener('resize', () => {
@@ -2306,19 +2410,161 @@ function ses(freq, dur, type, vol) {
   } catch (e) {}
 }
 const sfx = {
-  tik: () => ses(440, 0.05, 'square', 0.08),
-  dogru: () => { ses(523, 0.1); setTimeout(() => ses(659, 0.1), 90); setTimeout(() => ses(784, 0.18), 180); },
-  yanlis: () => ses(160, 0.25, 'sawtooth', 0.12),
-  carp: () => ses(300, 0.05, 'square', 0.1),
-  kazan: () => { [523,587,659,784].forEach((f,i) => setTimeout(() => ses(f, 0.12), i * 80)); },
-  guc: () => ses(880, 0.15, 'triangle', 0.13)
+  // TEMEL EFEKTLER
+  tik: () => { ses(440, 0.05, 'square', 0.08); vib(15); },
+  dogru: () => { ses(523, 0.1); setTimeout(() => ses(659, 0.1), 90); setTimeout(() => ses(784, 0.18), 180); vib(30); },
+  yanlis: () => { ses(160, 0.25, 'sawtooth', 0.12); vib([40,30,40]); },
+  carp: () => { ses(300, 0.05, 'square', 0.1); vib(20); },
+  kazan: () => { [523,587,659,784,1047].forEach((f,i) => setTimeout(() => ses(f, 0.12), i * 80)); vib([50,40,80]); },
+  guc: () => { ses(880, 0.15, 'triangle', 0.13); vib(25); },
+
+  // OYUN ÖZEL EFEKTLERİ
+  ates: () => { ses(880, 0.04, 'sawtooth', 0.06); setTimeout(() => ses(660, 0.03, 'sawtooth', 0.05), 30); }, // Uzay
+  patlama: () => { ses(120, 0.15, 'sawtooth', 0.15); ses(80, 0.2, 'square', 0.1); vib(60); }, // Uzay/atış
+  zipla: () => { ses(523, 0.06, 'sine', 0.1); setTimeout(() => ses(784, 0.08, 'sine', 0.1), 50); }, // Koşucu zıplama
+  para: () => { ses(1047, 0.06, 'sine', 0.1); setTimeout(() => ses(1318, 0.1, 'sine', 0.1), 60); }, // Para/altın
+  oltayi: () => { for (let i = 0; i < 4; i++) setTimeout(() => ses(400 + i*100, 0.04, 'triangle', 0.08), i*40); }, // Balık olta
+  balikYakala: () => { ses(659, 0.08); setTimeout(() => ses(880, 0.1), 70); setTimeout(() => ses(1175, 0.15), 150); vib(40); }, // Balık tut
+  bombaTik: () => { ses(220, 0.04, 'square', 0.1); setTimeout(() => ses(180, 0.06, 'square', 0.08), 40); }, // Reflex bomba
+  yildizTopla: () => { ses(880, 0.05); setTimeout(() => ses(1175, 0.08), 50); }, // Yıldız topla
+  silahYukselt: () => { [659, 880, 1175, 1568].forEach((f,i) => setTimeout(() => ses(f, 0.1, 'triangle', 0.13), i * 60)); vib([30,20,30]); }, // Silah yükselt
+  kart: () => { ses(800, 0.04, 'triangle', 0.07); setTimeout(() => ses(600, 0.04, 'triangle', 0.07), 50); }, // Kart çevirme
+  banker: () => { [392, 466, 587].forEach((f,i) => setTimeout(() => ses(f, 0.15, 'triangle', 0.12), i * 130)); }, // Var mısın banker
+  milyonOl: () => { // Milyoner kazanma - büyük fanfar
+    [523, 659, 784, 1047, 1318, 1568].forEach((f,i) => setTimeout(() => ses(f, 0.2, 'triangle', 0.14), i * 100));
+    vib([100, 50, 100, 50, 200]);
+  },
+  cocukDogru: () => { // Çocuk oyunlarına özel - neşeli üçlü
+    ses(659, 0.1); setTimeout(() => ses(784, 0.1), 80); setTimeout(() => ses(1047, 0.18), 160);
+    vib(40);
+  },
+  uyari: () => { ses(440, 0.08, 'square', 0.1); vib([20,20,20]); }, // Genel uyarı
+  rozetKazan: () => { // Rozet kazanma - özel melodi
+    [784, 1047, 1318, 1568, 1976].forEach((f,i) => setTimeout(() => ses(f, 0.13, 'triangle', 0.13), i * 75));
+    vib([60, 40, 100]);
+  },
+  gorevTamam: () => { // Görev tamamlama
+    [523, 784, 1047].forEach((f,i) => setTimeout(() => ses(f, 0.12, 'sine', 0.13), i * 90));
+    vib(50);
+  }
 };
+
+// Titreşim yardımcısı - ayarda kapalıysa atla
+function vib(pattern) {
+  if (!load('titresim', true)) return;
+  if (!navigator.vibrate) return;
+  try { navigator.vibrate(pattern); } catch (e) {}
+}
 function toggleSound() {
   sesAcik = !sesAcik; save('ses', sesAcik);
   document.getElementById('sound-btn').innerText = sesAcik ? '🔊' : '🔇';
   if (sesAcik) sfx.tik();
 }
 document.getElementById('sound-btn').innerText = sesAcik ? '🔊' : '🔇';
+
+/* ============ ÇOKLU DİL (TR/EN) ============ */
+const DILLER = {
+  tr: {
+    // Genel
+    menu: 'Menü', yeniden: 'Yeniden', baslat: 'Başlat', devam: 'Devam',
+    tekrar: 'Tekrar', durdur: 'Durdur', sonraki: 'Sonraki',
+    skor: 'Skor', tur: 'Tur', sure: 'Süre', can: 'Can', hata: 'Hata',
+    hedef: 'Hedef', mesafe: 'Mesafe', kazandin: 'Kazandın!', kaybettin: 'Kaybettin',
+    yeni_rekor: 'Yeni Rekor!', oyun_bitti: 'Oyun Bitti', tebrikler: 'Tebrikler!',
+    profil: 'Profil', ayarlar: 'Ayarlar', oyun_merkezi: 'Oyun Merkezi',
+    yukle_uygulama: 'Uygulamayı Yükle',
+
+    // Kategoriler
+    kat_tum: '🌟 Tümü', kat_cocuk: '🧸 Çocuk', kat_puzzle: '🧩 Puzzle',
+    kat_arcade: '🕹️ Arcade', kat_bilgi: '🧠 Bilgi', kat_refleks: '⚡ Refleks',
+    kat_kelime: '📝 Kelime',
+
+    // Profil/Ayarlar
+    profilim: 'Profilim', oyun_oynandi: 'Oyun Oynandı', toplam_puan: 'Toplam Puan',
+    rozet: 'Rozet', rozetler: 'Rozetler', en_iyi_skorlar: 'En İyi Skorlar',
+    tema: 'Tema', ses_efektleri: 'Ses Efektleri', titresim: 'Titreşim',
+    veri: 'Veri', skorlari_sifirla: 'Skorları Sıfırla',
+    tum_veriyi_sil: 'Tüm Veriyi Sil', hakkinda: 'Hakkında',
+    dil: 'Dil', tr_dil: 'Türkçe', en_dil: 'English',
+    paylas: 'Paylaş', gorevler: 'Günlük Görevler',
+
+    // Görev
+    gorev_baslik: 'Günün Görevleri', gorev_bonus: 'Bonus',
+    tamamlandi: 'Tamamlandı', kalan: 'Kalan',
+    gorev_3oyun: '3 farklı oyun oyna', gorev_50puan: 'Bir oyunda 50+ puan al',
+    gorev_dogru10: '10 doğru cevap ver', gorev_sudoku: 'Bir Sudoku tamamla',
+    gorev_kelime: 'Bir kelime tahmin et', gorev_yuksek: 'Yeni bir rekor kır',
+
+    // Bildirim
+    bildirim_aciklama: 'Hatırlatma için izin ver',
+    bildirim_basligi: '🎮 Mega Oyun Portalı',
+    bildirim_metin: 'Bugünkü görevlerini tamamladın mı? Hadi oyna!'
+  },
+  en: {
+    // Genel
+    menu: 'Menu', yeniden: 'Restart', baslat: 'Start', devam: 'Resume',
+    tekrar: 'Try Again', durdur: 'Pause', sonraki: 'Next',
+    skor: 'Score', tur: 'Round', sure: 'Time', can: 'Lives', hata: 'Mistakes',
+    hedef: 'Goal', mesafe: 'Distance', kazandin: 'You Won!', kaybettin: 'You Lost',
+    yeni_rekor: 'New Record!', oyun_bitti: 'Game Over', tebrikler: 'Congrats!',
+    profil: 'Profile', ayarlar: 'Settings', oyun_merkezi: 'Game Hub',
+    yukle_uygulama: 'Install App',
+
+    // Kategoriler
+    kat_tum: '🌟 All', kat_cocuk: '🧸 Kids', kat_puzzle: '🧩 Puzzle',
+    kat_arcade: '🕹️ Arcade', kat_bilgi: '🧠 Trivia', kat_refleks: '⚡ Reflex',
+    kat_kelime: '📝 Word',
+
+    // Profil/Ayarlar
+    profilim: 'My Profile', oyun_oynandi: 'Games Played', toplam_puan: 'Total Points',
+    rozet: 'Badges', rozetler: 'Badges', en_iyi_skorlar: 'Best Scores',
+    tema: 'Theme', ses_efektleri: 'Sound Effects', titresim: 'Vibration',
+    veri: 'Data', skorlari_sifirla: 'Reset Scores',
+    tum_veriyi_sil: 'Delete All Data', hakkinda: 'About',
+    dil: 'Language', tr_dil: 'Türkçe', en_dil: 'English',
+    paylas: 'Share', gorevler: 'Daily Quests',
+
+    // Görev
+    gorev_baslik: 'Daily Quests', gorev_bonus: 'Bonus',
+    tamamlandi: 'Done', kalan: 'Left',
+    gorev_3oyun: 'Play 3 different games', gorev_50puan: 'Score 50+ in one game',
+    gorev_dogru10: 'Answer 10 questions correctly', gorev_sudoku: 'Complete a Sudoku',
+    gorev_kelime: 'Guess a word', gorev_yuksek: 'Break a new record',
+
+    // Bildirim
+    bildirim_aciklama: 'Allow reminders',
+    bildirim_basligi: '🎮 Mega Game Portal',
+    bildirim_metin: 'Did you complete today\'s quests? Come play!'
+  }
+};
+
+let aktifDil = load('dil', 'tr');
+
+function t(anahtar) {
+  return (DILLER[aktifDil] && DILLER[aktifDil][anahtar]) || (DILLER.tr[anahtar]) || anahtar;
+}
+
+function dilDegistir(d) {
+  aktifDil = d;
+  save('dil', d);
+  // HTML'deki data-tr/data-en attribute'lu elementleri güncelle
+  document.querySelectorAll('[data-tr]').forEach(el => {
+    const txt = el.getAttribute('data-' + d);
+    if (txt) el.innerText = txt;
+  });
+  // Aktif kategoride dil butonunu işaretle
+  document.querySelectorAll('.dil-kart').forEach(k => {
+    k.classList.toggle('aktif', k.dataset.dil === d);
+  });
+}
+
+// onclick için kısa wrapper
+function dilSec(d) {
+  dilDegistir(d);
+  try { toast(d === 'tr' ? '🇹🇷 Türkçe' : '🇬🇧 English'); } catch (e) {}
+}
+
+
 
 const DUVAR = {
   meyve:'linear-gradient(135deg,#ff7e5f,#feb47b)',
@@ -2355,6 +2601,19 @@ function showGame(g) {
   if (g !== 'menu' && g !== 'profil' && g !== 'ayarlar') {
     if (typeof oyunSonuKaydet === 'function') {
       try { oyunSonuKaydet(g, 0); } catch (e) {}
+    }
+    // Görev: farklı oyun oynama
+    if (typeof gorevIlerlet === 'function') {
+      try {
+        const oynanan = load('bugun_oyunlar', { tarih: '', oyunlar: [] });
+        const bugun = new Date().toISOString().slice(0, 10);
+        if (oynanan.tarih !== bugun) { oynanan.tarih = bugun; oynanan.oyunlar = []; }
+        if (!oynanan.oyunlar.includes(g)) {
+          oynanan.oyunlar.push(g);
+          save('bugun_oyunlar', oynanan);
+          gorevIlerlet('farklioyun', 1);
+        }
+      } catch (e) {}
     }
   }
   if (g === 'menu') setDuvar('varsayilan');
@@ -9059,6 +9318,7 @@ function milCevapla(idx) {
       grid.children[idx].style.background = '';
       grid.children[idx].style.color = '';
       sfx.kazan();
+      try { gorevIlerlet('dogru', 1); } catch (e) {}
       milKazanc = MIL_ODULLER[milSoruIdx];
       document.getElementById('mil-kazanc').innerText = milKazanc.toLocaleString('tr-TR');
       setTimeout(() => {
@@ -9417,11 +9677,14 @@ function sdBitir(kazandi) {
   let yeniRekor = false;
   if (kazandi) {
     sfx.kazan();
+    // GÖREV: Sudoku tamamlandı
+    try { gorevIlerlet('sudokuBit', 1); } catch (e) {}
     const onceki = sdBest[sdZorlukAyar];
     if (!onceki || sure < onceki) {
       sdBest[sdZorlukAyar] = sure;
       save('sd_best', sdBest);
       yeniRekor = true;
+      try { gorevIlerlet('yeniRekor', 1); } catch (e) {}
     }
     document.getElementById('sd-gameover-baslik').innerText = '🎉 Tamamlandı!';
   } else {
@@ -9557,9 +9820,12 @@ function asTahminEt(harf) {
       // Skor: kalan can × 10 + zorluk bonusu
       const kazanc = asCan * 10 + asKelime.length * 2;
       asSkor += kazanc;
+      // GÖREV: Kelime tahmin edildi
+      try { gorevIlerlet('kelimeTah', 1); } catch (e) {}
       if (asSkor > asBest) {
         asBest = asSkor;
         save('as_best', asBest);
+        try { gorevIlerlet('yeniRekor', 1); } catch (e) {}
       }
       asHUDGuncelle();
       asBitir(true, kazanc);
@@ -9788,7 +10054,8 @@ function hsCevapla(el, hayvan) {
     el.classList.add('dogru');
     hsSkor += 10;
     if (hsSkor > hsBest) { hsBest = hsSkor; save('hs_best', hsBest); }
-    sfx.dogru();
+    sfx.cocukDogru();
+    try { gorevIlerlet('dogru', 1); } catch (e) {}
     setTimeout(() => {
       hsTur++;
       hsYeniTur();
@@ -9881,7 +10148,8 @@ function reCevapla(el, renk) {
     el.style.boxShadow = '0 0 30px ' + renk.hex + ', 0 6px 18px rgba(0,0,0,.4)';
     reSkor += 5;
     if (reSkor > reBest) { reBest = reSkor; save('re_best', reBest); }
-    sfx.dogru();
+    sfx.cocukDogru();
+    try { gorevIlerlet('dogru', 1); } catch (e) {}
     setTimeout(() => {
       reTur++;
       reYeniTur();
@@ -10000,7 +10268,8 @@ function saCevapla(el, sayi) {
     el.style.transform = 'scale(1.15)';
     saSkor += 10;
     if (saSkor > saBest) { saBest = saSkor; save('sa_best', saBest); }
-    sfx.dogru();
+    sfx.cocukDogru();
+    try { gorevIlerlet('dogru', 1); } catch (e) {}
     setTimeout(() => {
       saTur++;
       saYeniTur();
@@ -10032,6 +10301,323 @@ function saBitir() {
   document.getElementById('sa-gameover').style.display = 'block';
   sfx.kazan();
 }
+
+
+
+/* ============ GÜNLÜK GÖREV SİSTEMİ ============ */
+const GOREV_HAVUZU = [
+  { id: 'oyna3',     emoji: '🎮', anahtar: 'gorev_3oyun',  hedef: 3,  bonus: 50,  tip: 'farklioyun' },
+  { id: 'puan50',    emoji: '⭐', anahtar: 'gorev_50puan', hedef: 50, bonus: 30,  tip: 'enyuksek' },
+  { id: 'dogru10',   emoji: '✅', anahtar: 'gorev_dogru10',hedef: 10, bonus: 40,  tip: 'dogru' },
+  { id: 'sudokuBit', emoji: '🔢', anahtar: 'gorev_sudoku', hedef: 1,  bonus: 100, tip: 'sudokuBit' },
+  { id: 'kelimeTah', emoji: '✏️', anahtar: 'gorev_kelime', hedef: 1,  bonus: 60,  tip: 'kelimeTah' },
+  { id: 'yeniRekor', emoji: '🏆', anahtar: 'gorev_yuksek', hedef: 1,  bonus: 80,  tip: 'yeniRekor' }
+];
+
+function gorevBugun() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function gorevGetir() {
+  const bugun = gorevBugun();
+  const kayit = load('gorev_gunluk', {});
+  if (kayit.tarih !== bugun) {
+    // Yeni gün - 3 görev karıştırıp seç
+    const karistir = [...GOREV_HAVUZU].sort(() => Math.random() - 0.5).slice(0, 3);
+    const yeni = {
+      tarih: bugun,
+      gorevler: karistir.map(g => ({
+        id: g.id, emoji: g.emoji, anahtar: g.anahtar,
+        hedef: g.hedef, bonus: g.bonus, tip: g.tip,
+        ilerleme: 0, tamamlandi: false
+      }))
+    };
+    save('gorev_gunluk', yeni);
+    return yeni;
+  }
+  return kayit;
+}
+
+function gorevIlerlet(tip, miktar) {
+  miktar = miktar || 1;
+  const data = gorevGetir();
+  let degisti = false;
+  let yeniTamam = false;
+  data.gorevler.forEach(g => {
+    if (g.tip === tip && !g.tamamlandi) {
+      g.ilerleme += miktar;
+      if (g.ilerleme >= g.hedef) {
+        g.ilerleme = g.hedef;
+        g.tamamlandi = true;
+        yeniTamam = true;
+        // Bonus puan ekle
+        try {
+          const p = profilGetir();
+          p.toplamPuan += g.bonus;
+          profilKaydet(p);
+        } catch (e) {}
+        try { toast('🎯 Görev tamamlandı! +' + g.bonus); sfx.gorevTamam(); } catch (e) {}
+      }
+      degisti = true;
+    }
+  });
+  if (degisti) save('gorev_gunluk', data);
+}
+
+function gorevGoster() {
+  const data = gorevGetir();
+  const wrap = document.getElementById('gorev-listesi');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  data.gorevler.forEach(g => {
+    const div = document.createElement('div');
+    div.className = 'gorev-kart' + (g.tamamlandi ? ' tamam' : '');
+    const yuzde = Math.min(100, Math.floor((g.ilerleme / g.hedef) * 100));
+    div.innerHTML = '<div class="gorev-ust">' +
+      '<div class="gorev-emoji">' + g.emoji + '</div>' +
+      '<div class="gorev-baslik">' + t(g.anahtar) + '</div>' +
+      '<div class="gorev-bonus">+' + g.bonus + '</div>' +
+      '</div>' +
+      '<div class="gorev-bar"><div class="gorev-dolu" style="width:' + yuzde + '%"></div></div>' +
+      '<div class="gorev-ilerleme">' + g.ilerleme + ' / ' + g.hedef +
+      (g.tamamlandi ? ' ✅' : '') + '</div>';
+    wrap.appendChild(div);
+  });
+}
+
+/* ============ SKOR PAYLAŞIMI ============ */
+function skorPaylas(oyunAdi, skor, ekstra) {
+  const metin = oyunAdi + ' oyununda ' + skor + ' puan yaptım! 🎮' +
+                (ekstra ? '\n' + ekstra : '') +
+                '\nSen de dene: ' + (location.origin + location.pathname);
+  if (navigator.share) {
+    navigator.share({
+      title: 'Mega Oyun Portalı',
+      text: metin
+    }).catch(() => {
+      // İptal edildi - sessiz
+    });
+  } else {
+    // Web Share desteklenmiyorsa - panoya kopyala
+    try {
+      navigator.clipboard.writeText(metin);
+      toast('📋 Panoya kopyalandı!');
+    } catch (e) {
+      toast('Paylaşım desteklenmiyor');
+    }
+  }
+}
+
+/* ============ PWA BİLDİRİM ============ */
+function bildirimDurum() {
+  if (!('Notification' in window)) return 'destek-yok';
+  return Notification.permission; // 'granted', 'denied', 'default'
+}
+
+function bildirimIzinIste() {
+  if (typeof Notification === 'undefined' || !('Notification' in window) || !Notification) {
+    toast(aktifDil === 'en' ? 'Notifications not supported' : 'Bildirim desteklenmiyor');
+    return;
+  }
+  if (Notification.permission === 'granted') {
+    toast('🔔 Bildirim zaten açık');
+    bildirimZamanla();
+    return;
+  }
+  if (Notification.permission === 'denied') {
+    toast('Bildirim engellenmiş - tarayıcı ayarlarından aç');
+    return;
+  }
+  Notification.requestPermission().then(p => {
+    if (p === 'granted') {
+      toast('🔔 Bildirim açıldı');
+      bildirimZamanla();
+      // Test bildirimi göster
+      try {
+        new Notification('🎮 Mega Oyun Portalı', {
+          body: 'Bildirimler aktif - yarın hatırlatacağım!',
+          icon: 'icon-192.png'
+        });
+      } catch (e) {}
+    } else {
+      toast('Bildirim reddedildi');
+    }
+    bildirimDurumGuncelle();
+  });
+}
+
+function bildirimZamanla() {
+  // Basit yaklaşım: bir sonraki gün için planla
+  // Service worker olmadığı için sayfa açıkken çalışır
+  // Production'da SW push gerekir ama burada local fallback
+  const son = load('son_bildirim_tarih', null);
+  const bugun = gorevBugun();
+  if (son === bugun) return;
+  save('son_bildirim_tarih', bugun);
+  // 24 saat sonra hatırlat
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      try {
+        new Notification(t('bildirim_basligi'), {
+          body: t('bildirim_metin'),
+          icon: 'icon-192.png'
+        });
+      } catch (e) {}
+    }
+  }, 24 * 60 * 60 * 1000);
+}
+
+/* ============ SKOR PAYLAŞIMI ============ */
+function paylasSkor(oyunAdi, skor) {
+  const metin = t('paylas_metin')
+    .replace('%OYUN%', oyunAdi)
+    .replace('%SKOR%', skor);
+  const url = location.href;
+  // Web Share API (modern mobile)
+  if (navigator.share) {
+    navigator.share({
+      title: t('menu'),
+      text: metin,
+      url: url
+    }).catch(e => {
+      // Kullanıcı iptal ettiyse sessiz
+    });
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    // Fallback: clipboard
+    navigator.clipboard.writeText(metin + ' ' + url).then(() => {
+      toast('📋 ' + (aktifDil === 'en' ? 'Copied to clipboard' : 'Panoya kopyalandı'));
+    }).catch(() => {
+      toast(metin);
+    });
+  } else {
+    toast(metin);
+  }
+}
+
+// Helper: her gameover'a kez bir paylaş butonu ekle (gameover gösterildiğinde çağır)
+function paylasButonuEkle(gameoverId, oyunAdi, skor) {
+  const go = document.getElementById(gameoverId);
+  if (!go) return;
+  // Daha önce eklendi mi?
+  if (go.querySelector('.btn-paylas-ekli')) return;
+  // İçindeki .oyun-kontrol'u bul
+  const kontrol = go.querySelector('.oyun-kontrol');
+  if (!kontrol) return;
+  const btn = document.createElement('button');
+  btn.className = 'btn alt small btn-paylas-ekli';
+  btn.innerText = aktifDil === 'en' ? '📤 Share' : '📤 Paylaş';
+  btn.onclick = () => paylasSkor(oyunAdi, skor);
+  kontrol.appendChild(btn);
+}
+
+
+/* ============ GÜNLÜK GÖREV SİSTEMİ ============ */
+// Görev şablonları - rastgele 3'ü seçilir her gün
+const GOREV_SABLONLAR = [
+  { id: 'oyna3',       hedef: 3,    metin_tr: '3 farklı oyun oyna',           metin_en: 'Play 3 different games', tip: 'farklioyun', bonus: 50 },
+  { id: 'oyna5',       hedef: 5,    metin_tr: '5 oyun tamamla',                metin_en: 'Complete 5 games',         tip: 'oyunsayisi', bonus: 100 },
+  { id: 'kazan_2',     hedef: 2,    metin_tr: '2 oyun kazan',                  metin_en: 'Win 2 games',               tip: 'kazanma',     bonus: 80 },
+  { id: 'cocuk_1',     hedef: 1,    metin_tr: 'Bir çocuk oyunu oyna',          metin_en: 'Play one kids game',        tip: 'kategori_cocuk', bonus: 30 },
+  { id: 'puzzle_1',    hedef: 1,    metin_tr: 'Bir puzzle oyunu oyna',         metin_en: 'Play one puzzle game',      tip: 'kategori_puzzle', bonus: 30 },
+  { id: 'arcade_1',    hedef: 1,    metin_tr: 'Bir arcade oyunu oyna',         metin_en: 'Play one arcade game',      tip: 'kategori_arcade', bonus: 30 },
+  { id: 'bilgi_1',     hedef: 1,    metin_tr: 'Bir bilgi yarışması oyna',      metin_en: 'Play one quiz game',        tip: 'kategori_bilgi',  bonus: 30 },
+  { id: 'asma',        hedef: 1,    metin_tr: 'Adam Asmaca\'da bir kelime bul', metin_en: 'Guess a word in Hangman',   tip: 'asma_kazan',  bonus: 50 },
+  { id: 'sudoku',      hedef: 1,    metin_tr: 'Bir Sudoku tamamla',            metin_en: 'Complete one Sudoku',       tip: 'sudoku_kazan', bonus: 80 }
+];
+
+function gorevBugun() {
+  return new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+}
+
+function gorevleriYukle() {
+  const bugun = gorevBugun();
+  const kayit = load('gorevler', null);
+  if (!kayit || kayit.tarih !== bugun) {
+    // Yeni gün - 3 rastgele görev seç
+    const karistir = [...GOREV_SABLONLAR].sort(() => Math.random() - 0.5);
+    const secili = karistir.slice(0, 3).map(g => ({
+      ...g, ilerleme: 0, tamamlandi: false, alindi: false
+    }));
+    const yeni = { tarih: bugun, gorevler: secili, baslangic_oyunlar: 0, baslangic_oyunlar_listesi: [] };
+    save('gorevler', yeni);
+    return yeni;
+  }
+  return kayit;
+}
+
+function gorevIlerlet(tip, oyunId) {
+  const g = gorevleriYukle();
+  let degisti = false;
+  g.gorevler.forEach(gor => {
+    if (gor.tamamlandi) return;
+    let ilerleAdim = false;
+    if (gor.tip === 'oyunsayisi') ilerleAdim = true;
+    else if (gor.tip === 'farklioyun') {
+      // Sadece bu görev için ayrı sayım
+      if (!gor._listeli) gor._listeli = [];
+      if (oyunId && !gor._listeli.includes(oyunId)) {
+        gor._listeli.push(oyunId);
+        ilerleAdim = true;
+      }
+    } else if (gor.tip === 'kazanma' && tip === 'kazandi') ilerleAdim = true;
+    else if (gor.tip === 'kategori_cocuk' && ['hayvansesi','renkesle','saymaca'].includes(oyunId)) ilerleAdim = true;
+    else if (gor.tip === 'kategori_puzzle' && ['blok','puzzle','eslestir','balon','iki048','tetris','memory','sudoku'].includes(oyunId)) ilerleAdim = true;
+    else if (gor.tip === 'kategori_arcade' && ['snake','pong','uzay','balik','kosucu'].includes(oyunId)) ilerleAdim = true;
+    else if (gor.tip === 'kategori_bilgi' && ['varyok','milyoner'].includes(oyunId)) ilerleAdim = true;
+    else if (gor.tip === 'asma_kazan' && oyunId === 'asma' && tip === 'kazandi') ilerleAdim = true;
+    else if (gor.tip === 'sudoku_kazan' && oyunId === 'sudoku' && tip === 'kazandi') ilerleAdim = true;
+    if (ilerleAdim) {
+      gor.ilerleme++;
+      degisti = true;
+      if (gor.ilerleme >= gor.hedef && !gor.tamamlandi) {
+        gor.tamamlandi = true;
+        // Bonus puanı profil toplam puanına ekle
+        const p = profilGetir();
+        p.toplamPuan += gor.bonus;
+        profilKaydet(p);
+        toast('🎯 Görev: ' + (aktifDil === 'en' ? gor.metin_en : gor.metin_tr) + ' +' + gor.bonus);
+        try { sfx.gorevTamam(); } catch (e) {}
+      }
+    }
+  });
+  if (degisti) save('gorevler', g);
+}
+
+function gorevleriGoster() {
+  const liste = document.getElementById('gorev-listesi');
+  if (!liste) return;
+  const g = gorevleriYukle();
+  liste.innerHTML = '';
+  g.gorevler.forEach(gor => {
+    const metin = aktifDil === 'en' ? gor.metin_en : gor.metin_tr;
+    const div = document.createElement('div');
+    div.className = 'pr-gorev' + (gor.tamamlandi ? ' tamam' : '');
+    div.innerHTML =
+      '<div style="display:flex;justify-content:space-between;align-items:center">' +
+        '<span style="font-weight:600">' + (gor.tamamlandi ? '✅' : '🎯') + ' ' + metin + '</span>' +
+        '<span style="font-weight:800;color:var(--tema-vurgu,#fadb14)">+' + gor.bonus + '</span>' +
+      '</div>' +
+      '<div style="display:flex;align-items:center;gap:8px;margin-top:6px">' +
+        '<div style="flex:1;height:8px;background:rgba(255,255,255,.15);border-radius:4px;overflow:hidden">' +
+          '<div style="height:100%;background:linear-gradient(90deg,var(--tema-1,#6a4ad0),var(--tema-3,#9b7af5));width:' + Math.min(100, (gor.ilerleme/gor.hedef)*100) + '%;transition:width .4s"></div>' +
+        '</div>' +
+        '<span style="font-size:.8em;opacity:.85">' + Math.min(gor.ilerleme, gor.hedef) + '/' + gor.hedef + '</span>' +
+      '</div>';
+    liste.appendChild(div);
+  });
+}
+
+
+function bildirimDurumGuncelle() {
+  const btn = document.getElementById('bildirim-btn');
+  if (!btn) return;
+  const durum = bildirimDurum();
+  if (durum === 'granted') btn.innerText = '🔔 Bildirimler Açık ✓';
+  else if (durum === 'denied') btn.innerText = '🔕 Bildirimler Engellendi';
+  else if (durum === 'destek-yok') btn.innerText = '🚫 Desteklenmiyor';
+  else btn.innerText = '🔔 Bildirimleri Aç';
+}
+
 
 
 /* ============ RESIZE / ORIENTATION ============ */

@@ -1,5 +1,5 @@
 /* Service Worker - HER ZAMAN GÜNCEL HTML + çevrimdışı destek */
-const CACHE = 'oyun-portali-final-31';
+const CACHE = 'oyun-portali-final-33';
 const DOSYALAR = [
   './',
   './index.html',
@@ -8,7 +8,9 @@ const DOSYALAR = [
   './icon-192.png',
   './icon-512.png',
   './icon-maskable.png',
-  './apple-touch-icon.png'
+  './apple-touch-icon.png',
+  './privacy-policy.html',
+  './terms.html'
 ];
 
 self.addEventListener('install', e => {

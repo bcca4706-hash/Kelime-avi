@@ -98,6 +98,97 @@
     transition: transform .12s, background .2s, box-shadow .2s;
     box-shadow: 0 8px 24px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.15);
   }
+  .card:active { transform: scale(.96); }
+  .menu-icon { font-size: 2.2em; display: block; margin-bottom: 4px; }
+
+  /* ============ PLAY STORE BENZERİ MENÜ ============ */
+  #menu.kitaplik-mod {
+    max-width: 100%;
+    padding: 12px;
+  }
+  #menu.kitaplik-mod > h1 {
+    text-align: left;
+    font-size: 1.5em;
+    margin: 8px 4px 16px;
+    padding-left: 4px;
+  }
+
+  /* Grid container - Play Store ana ekran benzeri */
+  .oyun-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    max-width: 100%;
+    margin: 12px 0 20px;
+    padding: 0 4px;
+  }
+  @media (min-width: 480px) {
+    .oyun-grid { grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  }
+  @media (min-width: 720px) {
+    .oyun-grid { grid-template-columns: repeat(5, 1fr); gap: 18px; }
+  }
+  @media (orientation: landscape) and (max-height: 500px) {
+    .oyun-grid { grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  }
+
+  /* Kitaplık kartı - kare, sadece ikon + ad */
+  .oyun-kart {
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: flex-start;
+    cursor: pointer; user-select: none;
+    transition: transform .15s;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    margin: 0;
+  }
+  .oyun-kart:active { transform: scale(.92); }
+  .oyun-kart-ikon {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 22%;  /* Play Store ikon yuvarlama */
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(0,0,0,.4),
+                inset 0 1px 0 rgba(255,255,255,.2),
+                inset 0 -2px 0 rgba(0,0,0,.1);
+    background: linear-gradient(160deg, #4a3a9e, #2a1f63);
+    position: relative;
+  }
+  .oyun-kart-ikon canvas {
+    width: 100%; height: 100%; display: block;
+  }
+  .oyun-kart-ad {
+    font-size: .82em;
+    font-weight: 600;
+    text-align: center;
+    margin-top: 6px;
+    line-height: 1.2;
+    color: #fff;
+    text-shadow: 0 1px 2px rgba(0,0,0,.5);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    padding: 0 2px;
+  }
+  .oyun-kart.gizli { display: none !important; }
+
+  /* Kategori başlığı - bölüm ayrıştırıcı */
+  .bolum-baslik {
+    font-size: 1.1em;
+    font-weight: 700;
+    margin: 16px 6px 8px;
+    color: #fff;
+    display: flex; align-items: center; gap: 8px;
+    text-shadow: 0 1px 2px rgba(0,0,0,.4);
+  }
+  .bolum-baslik-cizgi {
+    flex: 1; height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,.25), transparent);
+  }
+  .bolum-baslik.gizli { display: none; }
 
   /* KATEGORİ SEKMELERİ */
   .kategori-sekmeler {
@@ -713,142 +804,156 @@
 </div>
 
 <!-- ANA MENÜ -->
-<div id="menu" class="screen active">
-  <h1 data-tr="🎮 Oyun Merkezi" data-en="🎮 Game Hub">🎮 Oyun Merkezi</h1>
+<div id="menu" class="screen active kitaplik-mod">
+  <h1 data-tr="🎮 Oyun Merkezi" data-en="🎮 Game Center">🎮 Oyun Merkezi</h1>
   <div class="kategori-sekmeler">
     <button class="kategori-sekme aktif" data-kat="tum" onclick="kategoriSec('tum')" data-tr="🌟 Tümü" data-en="🌟 All">🌟 Tümü</button>
     <button class="kategori-sekme" data-kat="cocuk" onclick="kategoriSec('cocuk')" data-tr="🧸 Çocuk" data-en="🧸 Kids">🧸 Çocuk</button>
     <button class="kategori-sekme" data-kat="puzzle" onclick="kategoriSec('puzzle')" data-tr="🧩 Puzzle" data-en="🧩 Puzzle">🧩 Puzzle</button>
     <button class="kategori-sekme" data-kat="arcade" onclick="kategoriSec('arcade')" data-tr="🕹️ Arcade" data-en="🕹️ Arcade">🕹️ Arcade</button>
-    <button class="kategori-sekme" data-kat="bilgi" onclick="kategoriSec('bilgi')" data-tr="🧠 Bilgi" data-en="🧠 Trivia">🧠 Bilgi</button>
-    <button class="kategori-sekme" data-kat="refleks" onclick="kategoriSec('refleks')" data-tr="⚡ Refleks" data-en="⚡ Reflex">⚡ Refleks</button>
+    <button class="kategori-sekme" data-kat="bilgi" onclick="kategoriSec('bilgi')" data-tr="🧠 Bilgi" data-en="🧠 Quiz">🧠 Bilgi</button>
+    <button class="kategori-sekme" data-kat="refleks" onclick="kategoriSec('refleks')" data-tr="⚡ Refleks" data-en="⚡ Reflex">⚡ Reflex</button>
     <button class="kategori-sekme" data-kat="kelime" onclick="kategoriSec('kelime')" data-tr="📝 Kelime" data-en="📝 Word">📝 Kelime</button>
   </div>
 
-  <!-- ÇOCUK -->
-  <div class="card" data-kategori="cocuk" onclick="showGame('hayvansesi')">
-    <span class="menu-icon">🐾</span>
-    <strong data-tr="Hayvan Sesi" data-en="Animal Sounds">Hayvan Sesi</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Hayvanı tanı · Doğru sesi seç · Eğlenceli öğren" data-en="Identify the animal · Pick the right sound · Fun learning">Hayvanı tanı · Doğru sesi seç · Eğlenceli öğren</div>
+  <!-- ÇOCUK BÖLÜMÜ -->
+  <div class="bolum-baslik" data-bolum="cocuk">
+    <span data-tr="🧸 Çocuk Oyunları" data-en="🧸 Kids Games">🧸 Çocuk Oyunları</span>
+    <span class="bolum-baslik-cizgi"></span>
   </div>
-  <div class="card" data-kategori="cocuk" onclick="showGame('renkesle')">
-    <span class="menu-icon">🎨</span>
-    <strong data-tr="Renk Eşle" data-en="Match Colors">Renk Eşle</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Renkleri tanı · Hızlı tıkla · Beyin idmanı" data-en="Learn colors · Tap fast · Brain training">Renkleri tanı · Hızlı tıkla · Beyin idmanı</div>
-  </div>
-  <div class="card" data-kategori="cocuk" onclick="showGame('saymaca')">
-    <span class="menu-icon">🔢</span>
-    <strong data-tr="Sayı Saymaca" data-en="Count Numbers">Sayı Saymaca</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Şekilleri say · Sayıları öğren · Eğitici" data-en="Count shapes · Learn numbers · Educational">Şekilleri say · Sayıları öğren · Eğitici</div>
-  </div>
-
-  <!-- KELİME -->
-  <div class="card" data-kategori="kelime" onclick="showGame('kelime')">
-    <span class="menu-icon">🔤</span>
-    <strong data-tr="Kelime Avı" data-en="Word Hunt">Kelime Avı</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Çapraz bulmaca · 100+ kelime" data-en="Crossword · 100+ words">Çapraz bulmaca · 100+ kelime</div>
-  </div>
-  <div class="card" data-kategori="kelime" onclick="showGame('asma')">
-    <span class="menu-icon">✏️</span>
-    <strong data-tr="Adam Asmaca" data-en="Hangman">Adam Asmaca</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Klasik kelime tahmin · 6 hak · 4 kategori" data-en="Classic word guess · 6 lives · 4 categories">Klasik kelime tahmin · 6 hak · 4 kategori</div>
+  <div class="oyun-grid" data-bolum-grid="cocuk">
+    <div class="oyun-kart" data-kategori="cocuk" data-oyun="hayvansesi" onclick="showGame('hayvansesi')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="hayvansesi"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Hayvan Sesi" data-en="Animal Sounds">Hayvan Sesi</div>
+    </div>
+    <div class="oyun-kart" data-kategori="cocuk" data-oyun="renkesle" onclick="showGame('renkesle')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="renkesle"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Renk Eşle" data-en="Match Colors">Renk Eşle</div>
+    </div>
+    <div class="oyun-kart" data-kategori="cocuk" data-oyun="saymaca" onclick="showGame('saymaca')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="saymaca"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Sayı Saymaca" data-en="Count Numbers">Sayı Saymaca</div>
+    </div>
   </div>
 
-  <!-- PUZZLE -->
-  <div class="card" data-kategori="puzzle" onclick="showGame('blok')">
-    <span class="menu-icon">🧱</span>
-    <strong data-tr="Blok Kırıcı" data-en="Brick Breaker">Blok Kırıcı</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Top sürüsü · Artan zorluk" data-en="Ball swarm · Growing difficulty">Top sürüsü · Artan zorluk</div>
+  <!-- PUZZLE BÖLÜMÜ -->
+  <div class="bolum-baslik" data-bolum="puzzle">
+    <span data-tr="🧩 Puzzle" data-en="🧩 Puzzle">🧩 Puzzle</span>
+    <span class="bolum-baslik-cizgi"></span>
   </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('puzzle')">
-    <span class="menu-icon">🧩</span>
-    <strong data-tr="Blok Yerleştir" data-en="Block Placer">Blok Yerleştir</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Sürükle-bırak · Combo" data-en="Drag and drop · Combo">Sürükle-bırak · Combo</div>
-  </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('eslestir')">
-    <span class="menu-icon">🍓</span>
-    <strong data-tr="Meyve Eşleştir" data-en="Fruit Match">Meyve Eşleştir</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="3'lü eşleştir · Hamle limiti" data-en="Match 3 · Move limit">3'lü eşleştir · Hamle limiti</div>
-  </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('balon')">
-    <span class="menu-icon">🎈</span>
-    <strong data-tr="Balon Patlat" data-en="Balloon Pop">Balon Patlat</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Komşu balonları patlat · Zincir kombo" data-en="Pop neighbor balloons · Chain combo">Komşu balonları patlat · Zincir kombo</div>
-  </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('iki048')">
-    <span class="menu-icon">🔢</span>
-    <strong data-tr="2048" data-en="2048">2048</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Kaydır · Aynı sayıları birleştir · 2048'e ulaş" data-en="Swipe · Merge same numbers · Reach 2048">Kaydır · Aynı sayıları birleştir · 2048'e ulaş</div>
-  </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('tetris')">
-    <span class="menu-icon">🟦</span>
-    <strong data-tr="Tetris" data-en="Tetris">Tetris</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Bloklar düşer · Satırları doldur · Tek satırda sil" data-en="Blocks fall · Fill rows · Clear lines">Bloklar düşer · Satırları doldur · Tek satırda sil</div>
-  </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('memory')">
-    <span class="menu-icon">🃏</span>
-    <strong data-tr="Hafıza Eşleştir" data-en="Memory Match">Hafıza Eşleştir</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Kartları çevir · Çiftleri bul · Hafızanı çalıştır" data-en="Flip cards · Find pairs · Train your memory">Kartları çevir · Çiftleri bul · Hafızanı çalıştır</div>
-  </div>
-  <div class="card" data-kategori="puzzle" onclick="showGame('sudoku')">
-    <span class="menu-icon">🔢</span>
-    <strong data-tr="Sudoku" data-en="Sudoku">Sudoku</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="9x9 mantık · 3 zorluk · İpucu sistemi" data-en="9x9 logic · 3 difficulties · Hint system">9x9 mantık · 3 zorluk · İpucu sistemi</div>
+  <div class="oyun-grid" data-bolum-grid="puzzle">
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="sudoku" onclick="showGame('sudoku')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="sudoku"></canvas></div>
+      <div class="oyun-kart-ad">Sudoku</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="tetris" onclick="showGame('tetris')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="tetris"></canvas></div>
+      <div class="oyun-kart-ad">Tetris</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="iki048" onclick="showGame('iki048')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="iki048"></canvas></div>
+      <div class="oyun-kart-ad">2048</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="blok" onclick="showGame('blok')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="blok"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Blok Kırıcı" data-en="Brick Breaker">Blok Kırıcı</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="puzzle" onclick="showGame('puzzle')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="puzzle"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Blok Yerleştir" data-en="Block Placer">Blok Yerleştir</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="eslestir" onclick="showGame('eslestir')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="eslestir"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Meyve Eşle" data-en="Fruit Match">Meyve Eşle</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="balon" onclick="showGame('balon')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="balon"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Balon Patlat" data-en="Balloon Pop">Balon Patlat</div>
+    </div>
+    <div class="oyun-kart" data-kategori="puzzle" data-oyun="memory" onclick="showGame('memory')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="memory"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Hafıza" data-en="Memory">Hafıza</div>
+    </div>
   </div>
 
-  <!-- ARCADE -->
-  <div class="card" data-kategori="arcade" onclick="showGame('snake')">
-    <span class="menu-icon">🐍</span>
-    <strong data-tr="Yılan" data-en="Snake">Yılan</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Kaydır · Yemleri topla · Büyü" data-en="Swipe · Collect food · Grow">Kaydır · Yemleri topla · Büyü</div>
+  <!-- ARCADE BÖLÜMÜ -->
+  <div class="bolum-baslik" data-bolum="arcade">
+    <span data-tr="🕹️ Arcade" data-en="🕹️ Arcade">🕹️ Arcade</span>
+    <span class="bolum-baslik-cizgi"></span>
   </div>
-  <div class="card" data-kategori="arcade" onclick="showGame('pong')">
-    <span class="menu-icon">🏓</span>
-    <strong data-tr="Pong" data-en="Pong">Pong</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Parmakla raket sür · AI'a karşı 7 sayıya kadar" data-en="Drag paddle · Vs AI to 7 points">Parmakla raket sür · AI'a karşı 7 sayıya kadar</div>
-  </div>
-  <div class="card" data-kategori="arcade" onclick="showGame('uzay')">
-    <span class="menu-icon">🚀</span>
-    <strong data-tr="Uzay Kaçış" data-en="Space Escape">Uzay Kaçış</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="🔫 Ateş et · Düşmanları vur · Silah yükselt" data-en="🔫 Shoot · Hit enemies · Upgrade weapon">🔫 Ateş et · Düşmanları vur · Silah yükselt</div>
-  </div>
-  <div class="card" data-kategori="arcade" onclick="showGame('balik')">
-    <span class="menu-icon">🎣</span>
-    <strong data-tr="Balık Tut" data-en="Fishing">Balık Tut</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Oltayı sal · Balıkları yakala · Hedef tutturun" data-en="Cast line · Catch fish · Hit targets">Oltayı sal · Balıkları yakala · Hedef tutturun</div>
-  </div>
-  <div class="card" data-kategori="arcade" onclick="showGame('kosucu')">
-    <span class="menu-icon">🏃</span>
-    <strong data-tr="Engel Atla" data-en="Obstacle Run">Engel Atla</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Sürekli koş · Zıpla · Engellerden kaç" data-en="Run forever · Jump · Dodge obstacles">Sürekli koş · Zıpla · Engellerden kaç</div>
-  </div>
-
-  <!-- REFLEKS -->
-  <div class="card" data-kategori="refleks" onclick="showGame('reflex')">
-    <span class="menu-icon">🎯</span>
-    <strong data-tr="Reflex Master" data-en="Reflex Master">Reflex Master</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="Hızla beliren hedefleri vur · 60 saniyede en çok skor" data-en="Hit fast targets · Max score in 60s">Hızla beliren hedefleri vur · 60 saniyede en çok skor</div>
+  <div class="oyun-grid" data-bolum-grid="arcade">
+    <div class="oyun-kart" data-kategori="arcade" data-oyun="snake" onclick="showGame('snake')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="snake"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Yılan" data-en="Snake">Yılan</div>
+    </div>
+    <div class="oyun-kart" data-kategori="arcade" data-oyun="pong" onclick="showGame('pong')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="pong"></canvas></div>
+      <div class="oyun-kart-ad">Pong</div>
+    </div>
+    <div class="oyun-kart" data-kategori="arcade" data-oyun="uzay" onclick="showGame('uzay')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="uzay"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Uzay" data-en="Space">Uzay</div>
+    </div>
+    <div class="oyun-kart" data-kategori="arcade" data-oyun="balik" onclick="showGame('balik')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="balik"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Balık Tut" data-en="Fishing">Balık Tut</div>
+    </div>
+    <div class="oyun-kart" data-kategori="arcade" data-oyun="kosucu" onclick="showGame('kosucu')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="kosucu"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Engel Atla" data-en="Obstacle">Engel Atla</div>
+    </div>
+    <div class="oyun-kart" data-kategori="arcade" data-oyun="xox" onclick="showGame('xox')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="xox"></canvas></div>
+      <div class="oyun-kart-ad">XOX</div>
+    </div>
   </div>
 
-  <!-- BİLGİ -->
-  <div class="card" data-kategori="bilgi" onclick="showGame('varyok')">
-    <span class="menu-icon">💼</span>
-    <strong data-tr="Var mısın Yok musun" data-en="Deal or No Deal">Var mısın Yok musun</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="22 kutu · Banker teklifleri · Sat veya devam et" data-en="22 boxes · Banker offers · Sell or continue">22 kutu · Banker teklifleri · Sat veya devam et</div>
+  <!-- BİLGİ BÖLÜMÜ -->
+  <div class="bolum-baslik" data-bolum="bilgi">
+    <span data-tr="🧠 Bilgi Yarışması" data-en="🧠 Quiz">🧠 Bilgi Yarışması</span>
+    <span class="bolum-baslik-cizgi"></span>
   </div>
-  <div class="card" data-kategori="bilgi" onclick="showGame('milyoner')">
-    <span class="menu-icon">💰</span>
-    <strong data-tr="Milyoner" data-en="Millionaire">Milyoner</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="12 soru · 3 yardım · 1 milyon TL hedefi" data-en="12 questions · 3 lifelines · 1M TL goal">12 soru · 3 yardım · 1 milyon TL hedefi</div>
-  </div>
-  <div class="card" data-kategori="arcade" onclick="showGame('xox')">
-    <span class="menu-icon">⭕</span>
-    <strong data-tr="XOX" data-en="Tic-Tac-Toe">XOX</strong>
-    <div style="opacity:.8;font-size:.85em;margin-top:4px" data-tr="3x3 ızgara · 2 kişi yerel · Klasik X ve O" data-en="3x3 grid · Local 2-player · Classic X and O">3x3 ızgara · 2 kişi yerel · Klasik X ve O</div>
+  <div class="oyun-grid" data-bolum-grid="bilgi">
+    <div class="oyun-kart" data-kategori="bilgi" data-oyun="milyoner" onclick="showGame('milyoner')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="milyoner"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Milyoner" data-en="Millionaire">Milyoner</div>
+    </div>
+    <div class="oyun-kart" data-kategori="bilgi" data-oyun="varyok" onclick="showGame('varyok')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="varyok"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Var mısın" data-en="Deal/No Deal">Var mısın</div>
+    </div>
   </div>
 
-  <button id="kurulum-btn" class="btn" style="display:none" onclick="uygulamayiKur()" data-tr="📲 Uygulamayı Yükle" data-en="📲 Install App">📲 Uygulamayı Yükle</button>
-  <div style="opacity:.4;font-size:.75em;margin-top:14px">sürüm 25.0 · 22 oyun · XOX + Pong 2 kişi</div>
+  <!-- KELİME BÖLÜMÜ -->
+  <div class="bolum-baslik" data-bolum="kelime">
+    <span data-tr="📝 Kelime" data-en="📝 Word">📝 Kelime</span>
+    <span class="bolum-baslik-cizgi"></span>
+  </div>
+  <div class="oyun-grid" data-bolum-grid="kelime">
+    <div class="oyun-kart" data-kategori="kelime" data-oyun="kelime" onclick="showGame('kelime')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="kelime"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Kelime Avı" data-en="Word Hunt">Kelime Avı</div>
+    </div>
+    <div class="oyun-kart" data-kategori="kelime" data-oyun="asma" onclick="showGame('asma')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="asma"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Adam Asmaca" data-en="Hangman">Adam Asmaca</div>
+    </div>
+  </div>
+
+  <!-- REFLEKS BÖLÜMÜ -->
+  <div class="bolum-baslik" data-bolum="refleks">
+    <span data-tr="⚡ Refleks" data-en="⚡ Reflex">⚡ Refleks</span>
+    <span class="bolum-baslik-cizgi"></span>
+  </div>
+  <div class="oyun-grid" data-bolum-grid="refleks">
+    <div class="oyun-kart" data-kategori="refleks" data-oyun="reflex" onclick="showGame('reflex')">
+      <div class="oyun-kart-ikon"><canvas data-ikon="reflex"></canvas></div>
+      <div class="oyun-kart-ad" data-tr="Reflex Master" data-en="Reflex Master">Reflex Master</div>
+    </div>
+  </div>
+
+  <button id="kurulum-btn" class="btn" style="display:none;margin:20px auto" onclick="uygulamayiKur()" data-tr="📲 Uygulamayı Yükle" data-en="📲 Install App">📲 Uygulamayı Yükle</button>
+  <div style="opacity:.4;font-size:.75em;margin:20px 0 12px;text-align:center">sürüm 27.0 · 22 oyun · Kitaplık modu</div>
 </div>
 
 <!-- PROFİL -->
@@ -946,11 +1051,15 @@
   </div>
   <div class="ayar-grup">
     <h2 data-tr="ℹ️ Hakkında" data-en="ℹ️ About">ℹ️ Hakkında</h2>
-    <div style="opacity:.85;font-size:.85em;line-height:1.6">
+    <div style="opacity:.85;font-size:.85em;line-height:1.7">
       <strong>Mega Oyun Portalı</strong><br>
-      <span data-tr="21 oyun · Türkçe & English" data-en="21 games · Turkish & English">21 oyun · Türkçe & English</span><br>
+      <span data-tr="22 oyun · Türkçe & English" data-en="22 games · Turkish & English">22 oyun · Türkçe & English</span><br>
       <span data-tr="Tek dosyada PWA" data-en="Single-file PWA">Tek dosyada PWA</span><br>
-      sürüm 24.0
+      sürüm 26.0
+    </div>
+    <div style="margin-top:12px;display:flex;flex-direction:column;gap:6px">
+      <a href="privacy-policy.html" target="_blank" style="color:var(--tema-3,#9b7af5);text-decoration:none;font-size:.85em" data-tr="🔒 Gizlilik Politikası" data-en="🔒 Privacy Policy">🔒 Gizlilik Politikası</a>
+      <a href="terms.html" target="_blank" style="color:var(--tema-3,#9b7af5);text-decoration:none;font-size:.85em" data-tr="📋 Kullanım Şartları" data-en="📋 Terms of Service">📋 Kullanım Şartları</a>
     </div>
   </div>
   <div class="oyun-kontrol">
@@ -1693,11 +1802,23 @@ function kategoriSec(kat) {
   document.querySelectorAll('.kategori-sekme').forEach(s => {
     s.classList.toggle('aktif', s.dataset.kat === kat);
   });
-  document.querySelectorAll('#menu .card').forEach(c => {
+  // Oyun kartları (hem eski .card hem yeni .oyun-kart)
+  document.querySelectorAll('#menu .oyun-kart, #menu .card').forEach(c => {
     if (kat === 'tum') c.classList.remove('gizli');
     else c.classList.toggle('gizli', c.dataset.kategori !== kat);
   });
+  // Bölüm başlıkları + grid'ler - sadece o kategoride göster
+  document.querySelectorAll('.bolum-baslik').forEach(b => {
+    if (kat === 'tum') b.classList.remove('gizli');
+    else b.classList.toggle('gizli', b.dataset.bolum !== kat);
+  });
+  document.querySelectorAll('.oyun-grid').forEach(g => {
+    if (kat === 'tum') g.style.display = '';
+    else g.style.display = g.dataset.bolumGrid === kat ? '' : 'none';
+  });
   try { save('son_kategori', kat); } catch (e) {}
+  // İkonları yeniden çiz (resize sonrası boyut değişmiş olabilir)
+  try { setTimeout(() => tumIkonlariCiz(), 50); } catch (e) {}
 }
 
 /* ============ PROFİL + ROZETLER + AYARLAR ============ */
@@ -2452,10 +2573,14 @@ window.addEventListener('load', () => {
   try { if (typeof rozetKontrolEt === 'function') rozetKontrolEt(); } catch (e) {}
   // Bugünün görevlerini oluştur
   try { if (typeof gorevleriYukle === 'function') gorevleriYukle(); } catch (e) {}
+  // İkonları çiz (CSS layout sonrası küçük gecikme)
+  try { setTimeout(() => { if (typeof tumIkonlariCiz === 'function') tumIkonlariCiz(); }, 100); } catch (e) {}
 });
 // Yeniden boyutlandır
 window.addEventListener('resize', () => {
   hayvanCanvasBoyutla();
+  // İkonları yeniden çiz
+  try { if (typeof tumIkonlariCiz === 'function') tumIkonlariCiz(); } catch (e) {}
 });
 
 
@@ -2528,6 +2653,604 @@ function toggleSound() {
 document.getElementById('sound-btn').innerText = sesAcik ? '🔊' : '🔇';
 
 /* ============ ÇOKLU DİL (TR/EN) ============ */
+/* ============ OYUN İKONLARI - CANVAS ÇİZİM MOTORU ============ */
+// Her oyun için özel renkli ikon çizilir. PNG'ye gerek yok.
+
+function ikonHDKur(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = rect.width || canvas.clientWidth || 100;
+  const h = rect.height || canvas.clientHeight || 100;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w, h };
+}
+
+// Yardımcı: arka plan gradyanı + yumuşak shadow
+function ikonArkaPlan(ctx, w, h, renk1, renk2) {
+  const g = ctx.createLinearGradient(0, 0, w, h);
+  g.addColorStop(0, renk1);
+  g.addColorStop(1, renk2);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, w, h);
+  // İç ışıltı
+  ctx.fillStyle = 'rgba(255,255,255,.08)';
+  ctx.beginPath();
+  ctx.arc(w * 0.3, h * 0.25, w * 0.5, 0, Math.PI * 2);
+  ctx.fill();
+}
+
+// Yardımcı: emoji yerine çizdirme
+function ikonEmojiYazi(ctx, w, h, emoji, boyut) {
+  ctx.font = (boyut || w * 0.55) + 'px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#fff';
+  ctx.shadowColor = 'rgba(0,0,0,.4)';
+  ctx.shadowBlur = 4;
+  ctx.shadowOffsetY = 2;
+  ctx.fillText(emoji, w / 2, h / 2);
+  ctx.shadowBlur = 0;
+  ctx.shadowOffsetY = 0;
+}
+
+// İkon çizicileri - her oyun için özel
+const IKON_CIZICILER = {
+  // ÇOCUK
+  hayvansesi: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#ff9a8b', '#ff6a88');
+    ikonEmojiYazi(ctx, w, h, '🐶');
+  },
+  renkesle: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#43cea2', '#185a9d');
+    // 4 renk parça
+    const r = w * 0.18;
+    const cx = w / 2, cy = h / 2;
+    [['#e94560', cx - r, cy - r], ['#1890ff', cx + r, cy - r],
+     ['#52c41a', cx - r, cy + r], ['#fadb14', cx + r, cy + r]].forEach(([c, x, y]) => {
+      ctx.fillStyle = c;
+      ctx.beginPath(); ctx.arc(x, y, r * 0.85, 0, Math.PI * 2); ctx.fill();
+    });
+    ctx.strokeStyle = 'rgba(255,255,255,.4)';
+    ctx.lineWidth = w * 0.02;
+    [['#e94560', cx - r, cy - r], ['#1890ff', cx + r, cy - r],
+     ['#52c41a', cx - r, cy + r], ['#fadb14', cx + r, cy + r]].forEach(([c, x, y]) => {
+      ctx.beginPath(); ctx.arc(x, y, r * 0.85, 0, Math.PI * 2); ctx.stroke();
+    });
+  },
+  saymaca: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#85d8ce', '#4a90b8');
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + (w * 0.45) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,.3)';
+    ctx.shadowBlur = 3;
+    ctx.fillText('1 2 3', w / 2, h / 2);
+    ctx.shadowBlur = 0;
+  },
+
+  // PUZZLE
+  sudoku: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#667eea', '#764ba2');
+    // 3x3 grid
+    const pad = w * 0.15;
+    const cell = (w - pad * 2) / 3;
+    ctx.strokeStyle = 'rgba(255,255,255,.85)';
+    ctx.lineWidth = w * 0.025;
+    for (let i = 0; i <= 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(pad + i * cell, pad);
+      ctx.lineTo(pad + i * cell, pad + cell * 3);
+      ctx.moveTo(pad, pad + i * cell);
+      ctx.lineTo(pad + cell * 3, pad + i * cell);
+      ctx.stroke();
+    }
+    // Bazı sayılar
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + (cell * 0.65) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    const nums = [['5', 0, 0], ['3', 1, 1], ['7', 2, 0], ['9', 1, 2], ['2', 0, 2]];
+    nums.forEach(([n, c, r]) => {
+      ctx.fillText(n, pad + cell * (c + 0.5), pad + cell * (r + 0.5));
+    });
+  },
+  tetris: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#1a1a3e', '#4a3a9e');
+    const cell = w * 0.13;
+    const baslangicX = w * 0.18, baslangicY = h * 0.25;
+    // T parçası
+    const T = [[0,0,'#9b5de5'],[1,0,'#9b5de5'],[2,0,'#9b5de5'],[1,1,'#9b5de5']];
+    // L parçası
+    const L = [[3,2,'#fa8c16'],[3,3,'#fa8c16'],[3,4,'#fa8c16'],[4,4,'#fa8c16']];
+    // Kare
+    const O = [[0,3,'#fadb14'],[1,3,'#fadb14'],[0,4,'#fadb14'],[1,4,'#fadb14']];
+    [...T, ...L, ...O].forEach(([x, y, c]) => {
+      ctx.fillStyle = c;
+      ctx.fillRect(baslangicX + x * cell, baslangicY + y * cell, cell - 1, cell - 1);
+      ctx.strokeStyle = 'rgba(255,255,255,.3)';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(baslangicX + x * cell, baslangicY + y * cell, cell - 1, cell - 1);
+    });
+  },
+  iki048: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#faaca8', '#ddd6f3');
+    ctx.fillStyle = '#bbada0';
+    const pad = w * 0.1;
+    ctx.fillRect(pad, pad, w - pad * 2, h - pad * 2);
+    // Tile'lar
+    const tiles = [['2', 0, 0, '#eee4da'], ['4', 1, 0, '#ede0c8'],
+                   ['8', 0, 1, '#f2b179'], ['16', 1, 1, '#f59563']];
+    const tw = (w - pad * 2 - 6) / 2;
+    tiles.forEach(([t, c, r, col]) => {
+      ctx.fillStyle = col;
+      ctx.fillRect(pad + 2 + c * (tw + 4), pad + 2 + r * (tw + 4), tw, tw);
+      ctx.fillStyle = '#776e65';
+      ctx.font = 'bold ' + (tw * 0.5) + 'px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(t, pad + 2 + c * (tw + 4) + tw / 2, pad + 2 + r * (tw + 4) + tw / 2);
+    });
+  },
+  blok: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#0f2027', '#2c5364');
+    // Blok satırları
+    const renkler = ['#e94560', '#fa8c16', '#fadb14', '#52c41a', '#1890ff'];
+    const cell = w * 0.13;
+    const baslangicY = h * 0.2;
+    renkler.forEach((c, i) => {
+      for (let j = 0; j < 5; j++) {
+        ctx.fillStyle = c;
+        ctx.fillRect(w * 0.13 + j * cell, baslangicY + i * (cell * 0.6), cell - 2, cell * 0.55);
+      }
+    });
+    // Top
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(w / 2, h * 0.75, w * 0.06, 0, Math.PI * 2); ctx.fill();
+    // Raket
+    ctx.fillStyle = '#fadb14';
+    ctx.fillRect(w * 0.35, h * 0.85, w * 0.3, h * 0.04);
+  },
+  puzzle: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#d3cce3', '#e9e4f0');
+    // Puzzle parça
+    ctx.fillStyle = '#9b5de5';
+    ctx.beginPath();
+    const cx = w / 2, cy = h / 2, s = w * 0.3;
+    ctx.moveTo(cx - s, cy - s);
+    ctx.lineTo(cx + s, cy - s);
+    ctx.lineTo(cx + s, cy);
+    ctx.arc(cx + s + s * 0.25, cy, s * 0.25, Math.PI, 0);
+    ctx.lineTo(cx + s, cy + s);
+    ctx.lineTo(cx - s, cy + s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = w * 0.02;
+    ctx.stroke();
+  },
+  eslestir: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#ff9966', '#ff5e62');
+    // 3'lü meyve dizilimi
+    const emojis = ['🍓', '🍓', '🍓'];
+    const r = w * 0.16;
+    [w * 0.25, w * 0.5, w * 0.75].forEach((x, i) => {
+      ctx.font = (r * 2) + 'px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(emojis[i], x, h / 2);
+    });
+    // Patlama efekti üstte
+    ctx.strokeStyle = '#fadb14';
+    ctx.lineWidth = w * 0.02;
+    ctx.beginPath();
+    for (let a = 0; a < 8; a++) {
+      const ang = (a / 8) * Math.PI * 2;
+      ctx.moveTo(w / 2 + Math.cos(ang) * w * 0.05, h / 2 + Math.sin(ang) * w * 0.05);
+      ctx.lineTo(w / 2 + Math.cos(ang) * w * 0.1, h / 2 + Math.sin(ang) * w * 0.1);
+    }
+    ctx.stroke();
+  },
+  balon: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#ee9ca7', '#ffdde1');
+    const renkler = ['#e94560', '#1890ff', '#52c41a', '#fadb14', '#9b5de5'];
+    const positions = [[0.3, 0.3], [0.7, 0.35], [0.25, 0.65], [0.7, 0.7], [0.5, 0.5]];
+    positions.forEach(([px, py], i) => {
+      ctx.fillStyle = renkler[i];
+      ctx.beginPath();
+      ctx.arc(w * px, h * py, w * 0.13, 0, Math.PI * 2);
+      ctx.fill();
+      // İp
+      ctx.strokeStyle = '#fff';
+      ctx.lineWidth = w * 0.01;
+      ctx.beginPath();
+      ctx.moveTo(w * px, h * py + w * 0.13);
+      ctx.lineTo(w * px + (Math.random() - 0.5) * 8, h * py + w * 0.25);
+      ctx.stroke();
+      // Parlama
+      ctx.fillStyle = 'rgba(255,255,255,.5)';
+      ctx.beginPath();
+      ctx.arc(w * px - w * 0.04, h * py - w * 0.04, w * 0.03, 0, Math.PI * 2);
+      ctx.fill();
+    });
+  },
+  memory: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#4568dc', '#b06ab3');
+    // 4 kart - 2'si açık 2'si kapalı
+    const pad = w * 0.1;
+    const cw = (w - pad * 2 - 8) / 2;
+    const ch = (h - pad * 2 - 8) / 2;
+    // Sol üst: açık (yıldız)
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(pad, pad, cw, ch);
+    ctx.fillStyle = '#fadb14';
+    ctx.font = (cw * 0.6) + 'px sans-serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText('⭐', pad + cw / 2, pad + ch / 2);
+    // Sağ üst: kapalı
+    const g = ctx.createLinearGradient(0, 0, w, h);
+    g.addColorStop(0, '#9b5de5'); g.addColorStop(1, '#4a3a9e');
+    ctx.fillStyle = g;
+    ctx.fillRect(pad + cw + 8, pad, cw, ch);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold ' + (cw * 0.4) + 'px sans-serif';
+    ctx.fillText('?', pad + cw + 8 + cw / 2, pad + ch / 2);
+    // Sol alt: kapalı
+    ctx.fillStyle = g;
+    ctx.fillRect(pad, pad + ch + 8, cw, ch);
+    ctx.fillStyle = '#fff';
+    ctx.fillText('?', pad + cw / 2, pad + ch + 8 + ch / 2);
+    // Sağ alt: açık
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(pad + cw + 8, pad + ch + 8, cw, ch);
+    ctx.fillStyle = '#fadb14';
+    ctx.font = (cw * 0.6) + 'px sans-serif';
+    ctx.fillText('⭐', pad + cw + 8 + cw / 2, pad + ch + 8 + ch / 2);
+  },
+
+  // ARCADE
+  snake: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#11998e', '#38ef7d');
+    // Yılan gövdesi
+    ctx.fillStyle = '#1a1a3e';
+    const segments = [[0.2, 0.5], [0.32, 0.5], [0.44, 0.5], [0.56, 0.5], [0.56, 0.35], [0.68, 0.35], [0.8, 0.35]];
+    segments.forEach((s, i) => {
+      ctx.beginPath();
+      ctx.arc(w * s[0], h * s[1], w * 0.06, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // Yem
+    ctx.fillStyle = '#e94560';
+    ctx.beginPath();
+    ctx.arc(w * 0.85, h * 0.7, w * 0.07, 0, Math.PI * 2);
+    ctx.fill();
+    // Yılan gözü
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(w * 0.82, h * 0.32, w * 0.018, 0, Math.PI * 2);
+    ctx.fill();
+  },
+  pong: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#0f2027', '#203a43');
+    // Üst raket
+    ctx.fillStyle = '#e94560';
+    ctx.fillRect(w * 0.3, h * 0.15, w * 0.4, h * 0.04);
+    // Alt raket
+    ctx.fillStyle = '#19d3e0';
+    ctx.fillRect(w * 0.3, h * 0.8, w * 0.4, h * 0.04);
+    // Top
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(w * 0.6, h * 0.5, w * 0.06, 0, Math.PI * 2);
+    ctx.fill();
+    // Orta çizgi
+    ctx.setLineDash([w * 0.04, w * 0.04]);
+    ctx.strokeStyle = 'rgba(255,255,255,.3)';
+    ctx.lineWidth = w * 0.01;
+    ctx.beginPath();
+    ctx.moveTo(0, h / 2);
+    ctx.lineTo(w, h / 2);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  },
+  uzay: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#0c0033', '#1a1a3e');
+    // Yıldızlar
+    ctx.fillStyle = '#fff';
+    for (let i = 0; i < 12; i++) {
+      const x = (i * 137) % w;
+      const y = ((i * 53) % h) * 0.7;
+      ctx.beginPath();
+      ctx.arc(x, y, 1, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    // Roket
+    const cx = w / 2;
+    ctx.fillStyle = '#19d3e0';
+    ctx.beginPath();
+    ctx.moveTo(cx, h * 0.3);
+    ctx.lineTo(cx - w * 0.12, h * 0.7);
+    ctx.lineTo(cx + w * 0.12, h * 0.7);
+    ctx.closePath();
+    ctx.fill();
+    // Roket alev
+    ctx.fillStyle = '#fa8c16';
+    ctx.beginPath();
+    ctx.moveTo(cx - w * 0.08, h * 0.7);
+    ctx.lineTo(cx, h * 0.92);
+    ctx.lineTo(cx + w * 0.08, h * 0.7);
+    ctx.closePath();
+    ctx.fill();
+    // Cam
+    ctx.fillStyle = '#1a1a3e';
+    ctx.beginPath();
+    ctx.arc(cx, h * 0.5, w * 0.05, 0, Math.PI * 2);
+    ctx.fill();
+  },
+  balik: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#2980b9', '#6dd5fa');
+    // Su dalgaları
+    ctx.strokeStyle = 'rgba(255,255,255,.3)';
+    ctx.lineWidth = w * 0.01;
+    for (let y of [h * 0.25, h * 0.45]) {
+      ctx.beginPath();
+      for (let x = 0; x <= w; x += 5) {
+        const yy = y + Math.sin(x * 0.1) * 4;
+        if (x === 0) ctx.moveTo(x, yy);
+        else ctx.lineTo(x, yy);
+      }
+      ctx.stroke();
+    }
+    // Olta ipi
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = w * 0.008;
+    ctx.beginPath();
+    ctx.moveTo(w * 0.55, 0);
+    ctx.lineTo(w * 0.55, h * 0.65);
+    ctx.stroke();
+    // Olta kancası
+    ctx.beginPath();
+    ctx.arc(w * 0.55, h * 0.7, w * 0.05, 0, Math.PI);
+    ctx.stroke();
+    // Balık
+    ctx.fillStyle = '#fa8c16';
+    ctx.beginPath();
+    ctx.ellipse(w * 0.3, h * 0.75, w * 0.15, w * 0.08, 0, 0, Math.PI * 2);
+    ctx.fill();
+    // Balık kuyruğu
+    ctx.beginPath();
+    ctx.moveTo(w * 0.15, h * 0.75);
+    ctx.lineTo(w * 0.08, h * 0.68);
+    ctx.lineTo(w * 0.08, h * 0.82);
+    ctx.closePath();
+    ctx.fill();
+    // Balık gözü
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(w * 0.38, h * 0.73, w * 0.018, 0, Math.PI * 2);
+    ctx.fill();
+  },
+  kosucu: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#ff9966', '#ff5e62');
+    // Zemin
+    ctx.fillStyle = '#6a4030';
+    ctx.fillRect(0, h * 0.7, w, h * 0.3);
+    // Engel
+    ctx.fillStyle = '#52c41a';
+    ctx.beginPath();
+    ctx.arc(w * 0.75, h * 0.7, w * 0.08, Math.PI, 0);
+    ctx.fill();
+    // Koşucu emoji
+    ctx.font = (w * 0.4) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('🏃', w * 0.3, h * 0.55);
+  },
+  xox: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#1a1a3e', '#2a1f63');
+    // Grid
+    const pad = w * 0.15;
+    const cell = (w - pad * 2) / 3;
+    ctx.strokeStyle = 'rgba(255,255,255,.7)';
+    ctx.lineWidth = w * 0.025;
+    ctx.lineCap = 'round';
+    for (let i = 1; i < 3; i++) {
+      ctx.beginPath();
+      ctx.moveTo(pad + i * cell, pad);
+      ctx.lineTo(pad + i * cell, pad + cell * 3);
+      ctx.moveTo(pad, pad + i * cell);
+      ctx.lineTo(pad + cell * 3, pad + i * cell);
+      ctx.stroke();
+    }
+    // X ve O
+    ctx.lineCap = 'round';
+    ctx.lineWidth = w * 0.04;
+    // X (sol üst)
+    ctx.strokeStyle = '#fadb14';
+    let cx = pad + cell * 0.5, cy = pad + cell * 0.5, s = cell * 0.3;
+    ctx.beginPath();
+    ctx.moveTo(cx - s, cy - s); ctx.lineTo(cx + s, cy + s);
+    ctx.moveTo(cx + s, cy - s); ctx.lineTo(cx - s, cy + s);
+    ctx.stroke();
+    // O (orta)
+    ctx.strokeStyle = '#19d3e0';
+    ctx.beginPath();
+    ctx.arc(pad + cell * 1.5, pad + cell * 1.5, cell * 0.3, 0, Math.PI * 2);
+    ctx.stroke();
+    // X (sağ alt)
+    ctx.strokeStyle = '#fadb14';
+    cx = pad + cell * 2.5; cy = pad + cell * 2.5;
+    ctx.beginPath();
+    ctx.moveTo(cx - s, cy - s); ctx.lineTo(cx + s, cy + s);
+    ctx.moveTo(cx + s, cy - s); ctx.lineTo(cx - s, cy + s);
+    ctx.stroke();
+  },
+
+  // BİLGİ
+  milyoner: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#bf953f', '#fcf6ba');
+    // 1M yazı
+    ctx.fillStyle = '#1a1a3e';
+    ctx.font = 'bold ' + (w * 0.35) + 'px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.shadowColor = 'rgba(0,0,0,.3)';
+    ctx.shadowBlur = 4;
+    ctx.fillText('1M', w / 2, h * 0.45);
+    ctx.shadowBlur = 0;
+    // TL altta
+    ctx.font = 'bold ' + (w * 0.18) + 'px sans-serif';
+    ctx.fillStyle = '#5a3a1a';
+    ctx.fillText('TL', w / 2, h * 0.75);
+    // Taç üstte
+    ctx.font = (w * 0.18) + 'px sans-serif';
+    ctx.fillText('👑', w / 2, h * 0.15);
+  },
+  varyok: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#4568dc', '#2a1f63');
+    // 4 kutu (briefcase tarzı)
+    const positions = [[0.2, 0.25], [0.55, 0.25], [0.2, 0.6], [0.55, 0.6]];
+    const sayilar = ['100K', '500K', '1', '1M'];
+    const renkler = ['#9b5de5', '#fadb14', '#e94560', '#fadb14'];
+    positions.forEach(([px, py], i) => {
+      ctx.fillStyle = renkler[i];
+      const x = w * px, y = h * py;
+      const bw = w * 0.25, bh = h * 0.25;
+      // Kutu
+      ctx.fillRect(x, y, bw, bh);
+      ctx.strokeStyle = 'rgba(255,255,255,.5)';
+      ctx.lineWidth = w * 0.01;
+      ctx.strokeRect(x, y, bw, bh);
+      // Yazı
+      ctx.fillStyle = '#1a1a3e';
+      ctx.font = 'bold ' + (bh * 0.4) + 'px sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(sayilar[i], x + bw / 2, y + bh / 2);
+    });
+  },
+
+  // KELİME
+  kelime: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#5e60ce', '#4ea8de');
+    // Çapraz bulmaca grid
+    const pad = w * 0.15;
+    const cell = (w - pad * 2) / 5;
+    // Bazı hücreler dolu (siyah), bazıları boş (beyaz), bazıları harf
+    const grid = [
+      [1, 0, 0, 1, 1],
+      [0, 'A', 'B', 'C', 0],
+      [0, 'D', 0, 'E', 0],
+      [0, 'F', 'G', 'H', 0],
+      [1, 0, 0, 0, 1]
+    ];
+    for (let r = 0; r < 5; r++) {
+      for (let c = 0; c < 5; c++) {
+        const x = pad + c * cell;
+        const y = pad + r * cell;
+        const v = grid[r][c];
+        if (v === 1) {
+          ctx.fillStyle = '#1a1a3e';
+          ctx.fillRect(x, y, cell - 1, cell - 1);
+        } else {
+          ctx.fillStyle = '#fff';
+          ctx.fillRect(x, y, cell - 1, cell - 1);
+          if (typeof v === 'string') {
+            ctx.fillStyle = '#1a1a3e';
+            ctx.font = 'bold ' + (cell * 0.55) + 'px sans-serif';
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            ctx.fillText(v, x + cell / 2, y + cell / 2);
+          }
+        }
+      }
+    }
+  },
+  asma: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#2c3e50', '#4ca1af');
+    // Asma direği
+    ctx.strokeStyle = '#8a6a3a';
+    ctx.lineWidth = w * 0.04;
+    ctx.lineCap = 'round';
+    ctx.beginPath();
+    ctx.moveTo(w * 0.15, h * 0.85);
+    ctx.lineTo(w * 0.85, h * 0.85);
+    ctx.moveTo(w * 0.3, h * 0.85);
+    ctx.lineTo(w * 0.3, h * 0.15);
+    ctx.lineTo(w * 0.65, h * 0.15);
+    ctx.stroke();
+    // İp
+    ctx.strokeStyle = '#5a3a1a';
+    ctx.lineWidth = w * 0.015;
+    ctx.beginPath();
+    ctx.moveTo(w * 0.65, h * 0.15);
+    ctx.lineTo(w * 0.65, h * 0.3);
+    ctx.stroke();
+    // Adam (sadece kafa - tehlike değil çocuk dostu)
+    ctx.strokeStyle = '#fadb14';
+    ctx.lineWidth = w * 0.025;
+    ctx.beginPath();
+    ctx.arc(w * 0.65, h * 0.4, w * 0.08, 0, Math.PI * 2);
+    ctx.stroke();
+    // Gözler
+    ctx.fillStyle = '#fadb14';
+    ctx.beginPath();
+    ctx.arc(w * 0.63, h * 0.38, w * 0.008, 0, Math.PI * 2);
+    ctx.arc(w * 0.67, h * 0.38, w * 0.008, 0, Math.PI * 2);
+    ctx.fill();
+    // Harfler altta _ _ _
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = w * 0.02;
+    for (let i = 0; i < 4; i++) {
+      ctx.beginPath();
+      ctx.moveTo(w * 0.15 + i * w * 0.18, h * 0.7);
+      ctx.lineTo(w * 0.15 + i * w * 0.18 + w * 0.1, h * 0.7);
+      ctx.stroke();
+    }
+  },
+
+  // REFLEKS
+  reflex: (ctx, w, h) => {
+    ikonArkaPlan(ctx, w, h, '#ff6b6b', '#ee5a52');
+    // Hedef halkalar
+    const cx = w / 2, cy = h / 2;
+    const halkalar = [['#fff', 0.4], ['#e94560', 0.32], ['#fff', 0.24], ['#e94560', 0.16], ['#fff', 0.08]];
+    halkalar.forEach(([c, r]) => {
+      ctx.fillStyle = c;
+      ctx.beginPath();
+      ctx.arc(cx, cy, w * r, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    // Şimşek
+    ctx.fillStyle = '#fadb14';
+    ctx.beginPath();
+    ctx.moveTo(cx - w * 0.06, cy - w * 0.04);
+    ctx.lineTo(cx + w * 0.02, cy - w * 0.04);
+    ctx.lineTo(cx - w * 0.02, cy + w * 0.02);
+    ctx.lineTo(cx + w * 0.06, cy + w * 0.02);
+    ctx.lineTo(cx - w * 0.04, cy + w * 0.08);
+    ctx.lineTo(cx, cy + w * 0.02);
+    ctx.lineTo(cx - w * 0.04, cy + w * 0.02);
+    ctx.closePath();
+    ctx.fill();
+  }
+};
+
+// Tüm ikonları çiz
+function tumIkonlariCiz() {
+  document.querySelectorAll('canvas[data-ikon]').forEach(canvas => {
+    const oyun = canvas.dataset.ikon;
+    const cizici = IKON_CIZICILER[oyun];
+    if (!cizici) return;
+    try {
+      const { ctx, w, h } = ikonHDKur(canvas);
+      ctx.clearRect(0, 0, w, h);
+      cizici(ctx, w, h);
+    } catch (e) { console.warn('İkon hatası:', oyun, e); }
+  });
+}
+
+
 const DILLER = {
   tr: {
     // Genel
